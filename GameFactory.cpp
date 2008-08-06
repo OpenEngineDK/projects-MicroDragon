@@ -11,6 +11,7 @@
 
 // Class header
 #include "GameFactory.h"
+#include "LightFader.h"
 
 #include "Modules/InputGrabber/InputGrabber.h"
 #include "Modules/Island/Island.h"
@@ -100,44 +101,60 @@ GameFactory::GameFactory() {
  */
 
 
-class GLSettings : public IRenderNode {
+class GLSettings : public IModule, public IRenderNode {
+private:
+  float timeSpend,time;
+  bool done;
 public:
+  GLSettings(float time) : time(time) {
+      timeSpend = 0.0;
+      done = false;
+  }
+  
+  void Initialize() {
+  }
+
+  void Deinitialize() {
+  }
+
+  bool IsTypeOf(const std::type_info& inf) {
+    return (typeid(GLSettings) == inf);
+  }
+
+  void Process(const float deltaTime, const float percent) {
+    if(done) return;
+
+    if (timeSpend >= time) {
+      timeSpend = time;
+      done = true;
+    }
+    else
+      timeSpend += deltaTime;
+
+
+  }
+  
   void Apply(IRenderingView* rv) {
-    /*
-        GLfloat light_position[] = { 0.0, 0.0, 10.0, 1.0 };
-        GLfloat lm_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
-        glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lm_ambient);
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-    */
-    /*
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    */
+    if(!done) {
+      double pctDone = timeSpend/time;
+      float pFade = 1.4 * pctDone;
+      glClearColor( 0.39*pFade, 0.45*pFade, 1.0*pFade, 1.0 );
 
-    //glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
+    }
 
-    //OpenGL settings
     /*
-    glShadeModel(GL_SMOOTH); // Enable Smooth Shading
-    glClearColor(0.0f, 0.0f, 0.0f, 0.5f); // Black Background
     glClearDepth(1.0f); // Depth Buffer Setup
     glEnable(GL_DEPTH_TEST); // Enables Depth Testing
     glDepthFunc(GL_LEQUAL); // The Type Of Depth Testing To Do
-*/
+    glEnable( GL_DEPTH_TEST );
+    */
+
+    glShadeModel(GL_SMOOTH); // Enable Smooth Shading
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Really Nice Perspective Calculations
 
-    /*
-    glShadeModel( GL_SMOOTH );
-
-    glEnable( GL_DEPTH_TEST );
-    glEnable( GL_NORMALIZE );
-    glDisable(GL_COLOR);
-*/
-    //glEnable(GL_CULL_FACE);
+    
+    glEnable(GL_NORMALIZE);
     //glEnable(GL_AUTO_NORMAL);
-
-    //glDisable(GL_BLEND);
 
     glEnable(GL_COLOR_MATERIAL);
     VisitSubNodes(*rv);
@@ -166,17 +183,50 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
     engine.AddModule(*input);
 
     // Create a root scene node
-    ISceneNode* scene = new GLSettings();
+    float fadetime = 3000.0;
+    GLSettings* scene = new GLSettings(fadetime);
+    engine.AddModule(*scene);
+
     // Supply the scene to the renderer
     this->renderer->SetSceneRoot(scene);
 
     // Set scene lighting
-    PointLightNode* light = new PointLightNode();
-    TransformationNode* lightPosition = new TransformationNode();
-    lightPosition->SetPosition(Vector<3,float>(0,0,100));
-    lightPosition->AddNode(light);
-    scene->AddNode(lightPosition);
+    float pFade = 1.4;
 
+
+    PointLightNode* light1 = new PointLightNode();
+    light1->ambient = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
+    light1->diffuse = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
+    light1->specular = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
+    TransformationNode* light1Position = new TransformationNode();
+    light1Position->SetPosition(Vector<3,float>(0.8, 0.7, 0.4));
+    light1Position->AddNode(light1);
+    scene->AddNode(light1Position);
+    PointLightNode* to1 = new PointLightNode();
+    to1->ambient = Vector<4,float>(0.1*pFade, 0.1*pFade, 0.1*pFade, 1.0);
+    to1->diffuse = Vector<4,float>(0.4*pFade, 0.4*pFade, 0.7*pFade, 1.0);
+    to1->specular = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
+    LightFader* light1Fader = new LightFader(*light1, *to1, light1, fadetime);
+    engine.AddModule(*light1Fader);
+
+
+    PointLightNode* light2 = new PointLightNode();
+    light2->ambient = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
+    light2->diffuse = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
+    light2->specular = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
+    TransformationNode* light2Position = new TransformationNode();
+    light2Position->SetPosition(Vector<3,float>(-1.0, 1.0, 0.7));
+    light2Position->AddNode(light2);
+    scene->AddNode(light2Position);
+    PointLightNode* to2 = new PointLightNode();
+    to2->ambient = Vector<4,float>(0.1*pFade, 0.1*pFade, 0.1*pFade, 1.0);
+    to2->diffuse = Vector<4,float>(0.8*pFade, 0.8*pFade, 0.7*pFade, 1.0);
+    to2->specular = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
+    LightFader* light2Fader = new LightFader(*light2, *to2, light2, fadetime);
+    engine.AddModule(*light2Fader);
+
+
+    
     // Bind the quit handler (the keyboard module needs to work for
     // the handler to actually quit).
     QuitHandler* quit_h = new QuitHandler();

@@ -13,7 +13,6 @@
 Follower::Follower(Vec3 initPos) {
     this->position = initPos;
     this->velocity = Vec3(0,0,0);
-    logger.info << "init pos: " << initPos << logger.end;
 }
 
 Follower::~Follower() {}

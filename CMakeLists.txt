@@ -8,6 +8,7 @@ SET( PROJECT_SOURCES
   main.cpp
   GameFactory.cpp
   KeyHandler.cpp
+  LightFader.cpp
 
   Common/utilities.cpp
   Common/OpenGLUtil.cpp
