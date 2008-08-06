@@ -46,7 +46,6 @@
 #include <Scene/VertexArrayTransformer.cpp>
 #include <Scene/DisplayListTransformer.h>
 
-#include <Renderers/AcceleratedRenderingView.h>
 #include <Renderers/OpenGL/TextureLoader.h>
 
 // Additional namespaces (others are in the header).
