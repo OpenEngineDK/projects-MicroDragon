@@ -27,7 +27,7 @@ SET( PROJECT_SOURCES
 
   Modules/Particle/ParticleSystem.cpp
   Modules/Particle/Particle.cpp
-  Modules/Particle/Fireball.cpp
+  Modules/Particle/FireBall.cpp
 
   Modules/Dragon/Dragon.cpp
   Modules/Dragon/Tube.cpp

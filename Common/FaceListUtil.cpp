@@ -84,7 +84,7 @@ float FaceListUtil::Unitize(FaceSet* fset) {
 }
 
 void FaceListUtil::OverrideSoftNormsWithHardNorm(FaceSet* fset) {
-    FaceList::iterator itr = NULL;
+    FaceList::iterator itr;
     for (itr = fset->begin(); itr != fset->end(); itr++) {
         FacePtr f = (*itr);
 	f->CalcHardNorm();
