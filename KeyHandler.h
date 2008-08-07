@@ -22,8 +22,10 @@ using namespace OpenEngine::Display;
 using namespace OpenEngine::Scene;
 using namespace OpenEngine::Devices;
 
-class KeyHandler : public IListener<KeyboardEventArg> {
+class KeyHandler : public IModule, public IListener<KeyboardEventArg> {
 private:
+    list<Key> keysPressed;
+
     float moveChunkMouse, rotChunkMouse, moveChunkKeyboard, rotChunkKeyboard;
     int mousex_prev, mousey_prev, mousex_orig, mousey_orig;
     bool warping;
@@ -33,9 +35,14 @@ public:
     KeyHandler();
     ~KeyHandler();
     void Handle(KeyboardEventArg arg);
-    void HandleUp(KeyboardEventArg arg);
-    void HandleDown(KeyboardEventArg arg);
+    void HandleUp(Key key);
+    void HandleDown(Key key);
     void BindToEventSystem();
+
+    void Initialize();
+    void Deinitialize();
+    void Process(const float deltaTime, const float percent);
+    bool IsTypeOf(const std::type_info& inf);
 };
 
 #endif // _KEY_HANDLER_H_

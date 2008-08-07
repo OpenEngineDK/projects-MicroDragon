@@ -44,16 +44,50 @@ void KeyHandler::reset() {
 
 KeyHandler::~KeyHandler() {}
 
+
+/*
+process
+for each key in keys
+  ...
+
+handle down
+  keys.push key
+
+handle up
+  keys.remove key
+*/
+
 // set state of keys on up/down events
 void KeyHandler::Handle(KeyboardEventArg arg) {
     if(arg.type == KeyboardEventArg::PRESS)
-      HandleDown(arg);
-    else
-      HandleUp(arg);
+      keysPressed.push_back(arg.sym);
+    else {
+      keysPressed.remove(arg.sym);
+      HandleUp(arg.sym);
+    }
 }
 
-void KeyHandler::HandleDown(KeyboardEventArg arg) {
-    switch (arg.sym) {
+void KeyHandler::Initialize(){
+}
+
+void KeyHandler::Deinitialize() {
+}
+
+void KeyHandler::Process(const float deltaTime, const float percent) {
+    list<Key>::iterator key;
+    for(key=keysPressed.begin(); key != keysPressed.end(); ++key) {
+      HandleDown(*key);
+    }
+}
+
+bool KeyHandler::IsTypeOf(const std::type_info& inf) {
+    return (typeid(KeyHandler) == inf);
+}
+
+
+void KeyHandler::HandleDown(Key key) {
+
+    switch (key) {
     case KEY_1:
         BoidsSystem::getInstance()->toggleRenderState();
         break;
@@ -124,13 +158,73 @@ void KeyHandler::HandleDown(KeyboardEventArg arg) {
     case KEY_q:
         Dragon::getInstance()->chargeFireball( true );
         break;
+
+
+    case KEY_F1:
+      InputGrabber::getInstance()->rotateViewAbsolute( 30, 5, 50, 1.0 );
+        Target::getInstance()->setTarget(0, 0, 0);
+        break;
+    case KEY_F2: // ved siden af hovedet
+      InputGrabber::getInstance()->rotateViewAbsolute( 25.8872, 257.27, 13.8784, 1.0 );
+        Target::getInstance()->setTarget( -10.5859, 5.4856, -10.0325 );
+        break;
+    case KEY_F3:
+      InputGrabber::getInstance()->rotateViewAbsolute( 16.1391, 335, 500, 1.0 );
+        Target::getInstance()->setTarget(-10.5859, 5.4856, -10.0325);
+        break;
+    case KEY_F4: // inde i munden
+      InputGrabber::getInstance()->rotateViewAbsolute( 54.4593, 266.533, 7.75, 1.0 );
+        Target::getInstance()->setTarget( -2.77879, 3.63685, 0.168352);
+        break;
+    case KEY_F5: //Mellem bjergene
+      InputGrabber::getInstance()->rotateViewAbsolute( 340, 245.064, 68.548, 1.0 );
+        Target::getInstance()->setTarget( 39.9721, 6.39716, -27.3046 );
+        break;
+    case KEY_F9:
+      InputGrabber::getInstance()->scaleGlobal( -0.05 );
+        break;
+    case KEY_F10:
+      InputGrabber::getInstance()->scaleGlobal( 0.05 );
+        break;
+    case KEY_F11:
+      //GLUTClock::getInstance()->decTimeFactor();
+        break;
+    case KEY_F12:
+      //GLUTClock::getInstance()->incTimeFactor();
+        break;
+    case KEY_PAGEUP:
+      InputGrabber::getInstance()->zoom(0.05);
+        break;
+    case KEY_PAGEDOWN:
+      InputGrabber::getInstance()->zoom(-0.05);
+        break;
+    case KEY_HOME:
+      InputGrabber::getInstance()->incMultiplier();
+        break;
+    case KEY_END:
+      InputGrabber::getInstance()->decMultiplier();
+        break;
+    case KEY_UP:
+        InputGrabber::getInstance()->
+	  rotateViewRelative( rotChunkKeyboard * -1, 0 );
+        break;
+    case KEY_DOWN:
+      InputGrabber::getInstance()->rotateViewRelative( rotChunkKeyboard, 0 );
+        break;
+    case KEY_LEFT:
+        InputGrabber::getInstance()->
+	  rotateViewRelative( 0, rotChunkKeyboard * -1 );
+        break;
+    case KEY_RIGHT:
+      InputGrabber::getInstance()->rotateViewRelative( 0, rotChunkKeyboard );
+        break;
     default:
         break;
     }
 }
 
-void KeyHandler::HandleUp(KeyboardEventArg arg) {
-    switch (arg.sym) {
+void KeyHandler::HandleUp(Key key) {
+    switch (key) {
     case KEY_e:
         Dragon::getInstance()->useBreathWeapon( false );
         break;

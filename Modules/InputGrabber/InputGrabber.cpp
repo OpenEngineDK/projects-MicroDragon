@@ -14,13 +14,19 @@ Vec3 cameraPos;
 
 InputGrabber* InputGrabber::instance = NULL;
 
-InputGrabber* InputGrabber::getInstance(){
+InputGrabber* InputGrabber::getInstance() {
     if( instance == NULL )
-        instance = new InputGrabber();
+      throw Exception("inputgrabber is null");
     return instance;
 }
 
-InputGrabber::InputGrabber() {
+InputGrabber* InputGrabber::getInstance(IViewingVolume* vv) {
+    if( instance == NULL )
+        instance = new InputGrabber(vv);
+    return instance;
+}
+
+InputGrabber::InputGrabber(IViewingVolume* vv) : vv(vv) {
     pauseTime = false;
     target = NULL;
     focus = NULL;
@@ -130,20 +136,36 @@ void InputGrabber::OnLogicEnter(float timeStep) {
 }
 
 void InputGrabber::OnRenderEnter(float timeStep) {
-    glPushMatrix();
+  //glPushMatrix();
+  /*
     glTranslatef( 0, 0,  5 );
     glScalef(globalScale,globalScale,globalScale);
     glTranslatef( 0, 0, -5 );
     glTranslatef( 0, 0, -distanceI );
+  */
+
+    /*
     glRotatef( rotZ,  0.0, 0.0, 1.0 );
     glRotatef( rotXI, 1.0, 0.0, 0.0 );
     glRotatef( rotYI, 0.0, 1.0, 0.0 );
+    */
+
+    Quaternion<float> x
+      ( PI*(rotXI/180.0),Vector<3,float>(-1.0, 0.0, 0.0));
+    Quaternion<float> y
+      ( PI*(rotYI/180.0),Vector<3,float>(0.0, -1.0, 0.0));
+    Quaternion<float> z
+      ( PI*(rotZ/180.0),Vector<3,float>(0.0, 0.0, -1.0));
+  
+    vv->SetDirection(x*y*z);
+
     Vec3 focusPos = focus->getPos()+Vec3(0,1,0)*distanceI*0.2;
-    glTranslatef( -focusPos.x, -focusPos.y, -focusPos.z);
+    //glTranslatef( -focusPos.x, -focusPos.y, -focusPos.z);
+    vv->SetPosition( Vector<3,float>(focusPos.x, focusPos.y, focusPos.z));
 }
 
 void InputGrabber::OnRenderLeave(float timeStep) {
-    glPopMatrix();
+  //glPopMatrix();
 }
 
 void InputGrabber::incMultiplier() {

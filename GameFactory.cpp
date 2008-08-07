@@ -234,6 +234,7 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
 
     KeyHandler* key_h = new KeyHandler();
     key_h->BindToEventSystem();
+    engine.AddModule(*key_h);
 
     // Register movement handler to be able to move the camera
     MoveHandler* move = new MoveHandler(*camera);
@@ -249,7 +250,7 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
     ResourceManager<ITextureResource>::AddPlugin(new TGAPlugin());
 
 
-    InputGrabber* inputgrabber = InputGrabber::getInstance();
+    InputGrabber* inputgrabber = InputGrabber::getInstance(camera);
     scene->AddNode(inputgrabber);
     engine.AddModule(*inputgrabber);
     //scene = inputgrabber;
