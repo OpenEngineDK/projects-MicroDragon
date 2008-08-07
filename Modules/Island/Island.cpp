@@ -40,7 +40,8 @@ Island::Island() {
     renderState = numberOfRenderStates-1;
 
     unsigned char g_HeightMap[IMAGE_SIZE*IMAGE_SIZE]; // Holds The Height Map Data
-    string filename = "projects/DragonPanic/data/Island/Terrain5.raw";
+    string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
+
     scale = 300.0f;
     HEIGHT_RATIO = 0.25f;
     translate = Vec3(-150,-3.75,-150);

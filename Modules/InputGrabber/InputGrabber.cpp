@@ -20,13 +20,13 @@ InputGrabber* InputGrabber::getInstance() {
     return instance;
 }
 
-InputGrabber* InputGrabber::getInstance(IViewingVolume* vv) {
+InputGrabber* InputGrabber::getInstance(Camera* camera) {
     if( instance == NULL )
-        instance = new InputGrabber(vv);
+        instance = new InputGrabber(camera);
     return instance;
 }
 
-InputGrabber::InputGrabber(IViewingVolume* vv) : vv(vv) {
+InputGrabber::InputGrabber(Camera* camera) : camera(camera) {
     pauseTime = false;
     target = NULL;
     focus = NULL;
@@ -95,7 +95,6 @@ bool InputGrabber::IsTypeOf(const std::type_info& inf) {
 void InputGrabber::Apply(IRenderingView* rv) {
   OnRenderEnter(0.0);
   VisitSubNodes(*rv);
-  OnRenderLeave(0.0);
 }
 
 void InputGrabber::OnLogicEnter(float timeStep) {
@@ -136,7 +135,6 @@ void InputGrabber::OnLogicEnter(float timeStep) {
 }
 
 void InputGrabber::OnRenderEnter(float timeStep) {
-  //glPushMatrix();
   /*
     glTranslatef( 0, 0,  5 );
     glScalef(globalScale,globalScale,globalScale);
@@ -144,29 +142,24 @@ void InputGrabber::OnRenderEnter(float timeStep) {
     glTranslatef( 0, 0, -distanceI );
   */
 
-    /*
-    glRotatef( rotZ,  0.0, 0.0, 1.0 );
-    glRotatef( rotXI, 1.0, 0.0, 0.0 );
-    glRotatef( rotYI, 0.0, 1.0, 0.0 );
-    */
-
+    Vector<3,float> cameraPos(0.0,30.0,-distance);
     Quaternion<float> x
-      ( PI*(rotXI/180.0),Vector<3,float>(-1.0, 0.0, 0.0));
+      ( PI*(rotXI/180.0),Vector<3,float>(1.0, 0.0, 0.0));
     Quaternion<float> y
-      ( PI*(rotYI/180.0),Vector<3,float>(0.0, -1.0, 0.0));
+      ( PI*(rotYI/180.0),Vector<3,float>(0.0, 1.0, 0.0));
     Quaternion<float> z
-      ( PI*(rotZ/180.0),Vector<3,float>(0.0, 0.0, -1.0));
-  
-    vv->SetDirection(x*y*z);
+      ( PI*(rotZ/180.0),Vector<3,float>(0.0, 0.0, 1.0));
+    cameraPos = x.RotateVector(cameraPos);
+    cameraPos = y.RotateVector(cameraPos);
+    cameraPos = z.RotateVector(cameraPos);
+    camera->SetPosition(cameraPos);
 
-    Vec3 focusPos = focus->getPos()+Vec3(0,1,0)*distanceI*0.2;
-    //glTranslatef( -focusPos.x, -focusPos.y, -focusPos.z);
-    vv->SetPosition( Vector<3,float>(focusPos.x, focusPos.y, focusPos.z));
+
+    Vec3 t = Target::getInstance()->getTarget();
+    Vector<3,float> pos(t.x,t.y,t.z);
+    camera->LookAt(pos);
 }
 
-void InputGrabber::OnRenderLeave(float timeStep) {
-  //glPopMatrix();
-}
 
 void InputGrabber::incMultiplier() {
     if( multiplier >= maxMultiplier )
@@ -200,8 +193,11 @@ void InputGrabber::rotateViewRelative( float x, float y ) {
     if (x>0 && rotX<rotXI) { 
         rotX = rotXI;
     }
+
     rotX += x;
     rotY += y;
+    
+    logger.info << "rotX: " << rotX << " rotY: " << rotY << logger.end;
 }
 
 void InputGrabber::rotateViewAbsolute(float x, float y, float distance, float globalScale) {
@@ -221,6 +217,7 @@ void InputGrabber::moveTarget( float x, float z ) {
     Vec3 screenZ = Vec3(-sin(rotY*PI/180.0),0,cos(rotY*PI/180.0));
     Vec3 screenX = Vec3(0,1,0).getCross(screenZ);
     Vec3 targetP = getTarget();
+
     targetP = targetP + (screenX*x+screenZ*z)*sqrt(distance);
     target->setTarget(targetP);
 }

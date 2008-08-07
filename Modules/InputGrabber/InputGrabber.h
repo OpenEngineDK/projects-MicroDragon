@@ -5,12 +5,12 @@
 #include "../../Common/Follower.h"
 #include "../Target/Target.h"
 #include <Renderers/IRenderNode.h>
-#include <Display/IViewingVolume.h>
+#include <Display/Camera.h>
 
 using OpenEngine::Core::IModule;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
-using OpenEngine::Display::IViewingVolume;
+using OpenEngine::Display::Camera;
 
 #define minMultiplier 0
 #define maxMultiplier 100
@@ -19,12 +19,11 @@ using OpenEngine::Display::IViewingVolume;
 class InputGrabber : public IModule, public IRenderNode {
 public:
     static InputGrabber* getInstance();
-    static InputGrabber* getInstance(IViewingVolume* vv);
+    static InputGrabber* getInstance(Camera* camera);
 
     ~InputGrabber();
     void OnLogicEnter(float timeStep);
     void OnRenderEnter(float timeStep);
-    void OnRenderLeave(float timeStep);
     void Initialize();
     void Deinitialize();
 
@@ -55,9 +54,9 @@ protected:
     Target* target;
   bool pauseTime;
 private:
-    IViewingVolume* vv;
+    Camera* camera;
     static InputGrabber* instance;
-    InputGrabber(IViewingVolume* vv);
+    InputGrabber(Camera* camera);
     void reset( float rotX, float rotY, float rotZ, float distance );
 };
 
