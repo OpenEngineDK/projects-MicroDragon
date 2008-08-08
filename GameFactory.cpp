@@ -251,7 +251,6 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
 
 
     InputGrabber* inputgrabber = InputGrabber::getInstance(camera);
-    scene->AddNode(inputgrabber);
     engine.AddModule(*inputgrabber);
     //scene = inputgrabber;
 

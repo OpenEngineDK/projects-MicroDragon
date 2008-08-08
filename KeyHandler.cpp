@@ -78,6 +78,7 @@ void KeyHandler::Process(const float deltaTime, const float percent) {
     for(key=keysPressed.begin(); key != keysPressed.end(); ++key) {
       HandleDown(*key);
     }
+    //keysPressed.clear();
 }
 
 bool KeyHandler::IsTypeOf(const std::type_info& inf) {
@@ -124,12 +125,14 @@ void KeyHandler::HandleDown(Key key) {
     case KEY_s:
       InputGrabber::getInstance()->moveTarget( 0, 1*moveChunkKeyboard );
         break;
+	/*
     case KEY_z:
       InputGrabber::getInstance()->rotZ = InputGrabber::getInstance()->rotZ - rotChunkKeyboard;
         break;
     case KEY_x:
       InputGrabber::getInstance()->rotZ = InputGrabber::getInstance()->rotZ + rotChunkKeyboard;
         break;
+	*/
     case KEY_p:
       InputGrabber::getInstance()->togglePause();
         break;

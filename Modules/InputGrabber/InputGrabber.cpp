@@ -41,12 +41,12 @@ InputGrabber::~InputGrabber() {
 void InputGrabber::reset() {
     target = Target::getInstance();
     target->setTarget(0,0,0);
-    float rX = 11.5, rY = 0, rZ = 0, d = 115;
-    reset( rX, rY, rZ, d );
+    float rX = 11.5, rY = 0, d = 115;
+    reset( rX, rY, d );
 }
 
-void InputGrabber::reset( float rotX, float rotY, float rotZ, float distance ) {
-    this->rotX = rotX; this->rotY = rotY; this->rotZ = rotZ;
+void InputGrabber::reset( float rotX, float rotY, float distance ) {
+    this->rotX = rotX; this->rotY = rotY;
     this->distance = distance;
     globalScale = 1;
     rotXI = rotX;
@@ -63,8 +63,10 @@ void InputGrabber::reset( float rotX, float rotY, float rotZ, float distance ) {
 
 void InputGrabber::printLocation() {
     logger.info << "--------------------" << logger.end;
-    logger.info << "rotX:" << customFmod(rotX,360) << " rotY:" << customFmod(rotY,360) << " rotZ:" << customFmod(rotZ,360) << logger.end;
-    logger.info << "distance:" << distance << " globalScale:" << globalScale << logger.end;
+    logger.info << "rotX:" << customFmod(rotX,360);
+    logger.info << " rotY:" << customFmod(rotY,360) << logger.end;
+    logger.info << "distance:" << distance;
+    logger.info << " globalScale:" << globalScale << logger.end;
     target->printTarget();
     logger.info << "--------------------" << logger.end;
 }
@@ -90,11 +92,6 @@ void InputGrabber::Process(const float deltaTime, const float percent) {
 
 bool InputGrabber::IsTypeOf(const std::type_info& inf) {
     return (typeid(InputGrabber) == inf);
-}
-
-void InputGrabber::Apply(IRenderingView* rv) {
-  OnRenderEnter(0.0);
-  VisitSubNodes(*rv);
 }
 
 void InputGrabber::OnLogicEnter(float timeStep) {
@@ -132,34 +129,43 @@ void InputGrabber::OnLogicEnter(float timeStep) {
     focusPos = focusPos + Vec3(0,1,0)*distanceI*0.2;
     cameraDir = Vec3(0,0,1).rotateAround(Vec3(1,0,0),-(rotXI)/180.0*PI).rotateAround(Vec3(0,1,0),-rotYI/180.0*PI);
     cameraPos = (cameraDir*distanceI)+focusPos;
-}
 
-void InputGrabber::OnRenderEnter(float timeStep) {
-  /*
-    glTranslatef( 0, 0,  5 );
-    glScalef(globalScale,globalScale,globalScale);
-    glTranslatef( 0, 0, -5 );
-    glTranslatef( 0, 0, -distanceI );
-  */
 
-    Vector<3,float> cameraPos(0.0,30.0,-distance);
-    Quaternion<float> x
-      ( PI*(rotXI/180.0),Vector<3,float>(1.0, 0.0, 0.0));
-    Quaternion<float> y
-      ( PI*(rotYI/180.0),Vector<3,float>(0.0, 1.0, 0.0));
-    Quaternion<float> z
-      ( PI*(rotZ/180.0),Vector<3,float>(0.0, 0.0, 1.0));
-    cameraPos = x.RotateVector(cameraPos);
-    cameraPos = y.RotateVector(cameraPos);
-    cameraPos = z.RotateVector(cameraPos);
-    camera->SetPosition(cameraPos);
+    /*
+      glTranslatef( 0, 0,  5 );
+      glScalef(globalScale,globalScale,globalScale);
+      glTranslatef( 0, 0, -5 );
+      glTranslatef( 0, 0, -distanceI );
+    */
+
+
+    //logger.info << "rotXI: " << rotXI << " rotYI: " << rotYI << logger.end;
+
+    Vector<3,float> cPos(0.0,0.0,-distance);
+
+    // up and down
+    Quaternion<float> x(PI*((double)rotXI/(double)180.0),
+			Vector<3,float>(1.0,0.0,0.0));
+    cPos = x.RotateVector(cPos);
+
+
+    Vector<3,float> yAxis(0.0,1.0,0.0);
+    //yAxis = x.RotateVector(yAxis);
+
+    // left and right
+    Quaternion<float> y(PI*((double)rotYI/(double)180.0),
+			yAxis);
+    cPos = y.RotateVector(cPos);
+
+    
+    camera->SetPosition(cPos);
+    //camera->SetPosition(Vector<3,float>(cameraPos.x,cameraPos.y,cameraPos.z));
 
 
     Vec3 t = Target::getInstance()->getTarget();
     Vector<3,float> pos(t.x,t.y,t.z);
     camera->LookAt(pos);
 }
-
 
 void InputGrabber::incMultiplier() {
     if( multiplier >= maxMultiplier )
@@ -196,8 +202,6 @@ void InputGrabber::rotateViewRelative( float x, float y ) {
 
     rotX += x;
     rotY += y;
-    
-    logger.info << "rotX: " << rotX << " rotY: " << rotY << logger.end;
 }
 
 void InputGrabber::rotateViewAbsolute(float x, float y, float distance, float globalScale) {
