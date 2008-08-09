@@ -68,5 +68,8 @@ void Target::setTarget( Vec3 v ){
 }
 
 void Target::printTarget() {
-    logger.info << "Target x:" << target.x << " y:" << target.y << " z:" << target.z << logger.end;
+  logger.info << "Target x:" << target.x;
+  logger.info << " y:" << target.y;
+  logger.info << " z:" << target.z;
+  logger.info << logger.end;
 }

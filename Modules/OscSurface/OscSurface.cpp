@@ -5,6 +5,11 @@
 
 #include <Meta/OpenGL.h>
 #include <Logging/Logger.h>
+#include <Utils/Convert.h>
+
+#include <string>
+
+using OpenEngine::Utils::Convert;
 
 OscSurface* OscSurface::instance = NULL;
 
@@ -27,10 +32,10 @@ OscSurface::OscSurface() {
     runningTime = 0;
 }
 
-OscSurface::~OscSurface(){
+OscSurface::~OscSurface() {
 }
 
-void OscSurface::Initialize(){
+void OscSurface::Initialize() {
     float *zInit;
 
     z_norm = (float *)malloc( M*N*3*sizeof(float) );
@@ -46,8 +51,9 @@ void OscSurface::Initialize(){
     tauxy2 = 2.0 - 2.0*taux2 - 2.0*tauy2;
 
     if ( (taux2 > 0.25) || (tauy2 > 0.25) ) {
-        printf( "\n\nUnstable rubberPlane !, tau2x= %f,  tau3y= %f\n\n", taux2, tauy2 );
-        exit(1);
+      throw Exception( string("Unstable rubberPlane,") +
+		       " tau2x= " + Convert::ToString(taux2) +
+		       " tau2y= " + Convert::ToString(tauy2) );
     }
 
     zOld = (float *)malloc( M*N*sizeof(float) );
@@ -62,8 +68,8 @@ void OscSurface::Initialize(){
     free( zInit );
 }
 
-void OscSurface::OnLogicEnter(float timeStep){
-    float   nzx, nzy, hx, hy;
+void OscSurface::OnLogicEnter(float timeStep) {
+    float nzx, nzy, hx, hy;
 
     runningTime += timeStep*0.2;
 
@@ -148,7 +154,7 @@ void OscSurface::createRipple(float posX, float posZ, float width, float height)
                                      )*height/scale;
 }
 
-void OscSurface::OnRenderEnter(float timeStep){
+void OscSurface::OnRenderEnter(float timeSte) {
     float hx = 1.0/(M-1);
     float hz = aspect/(N-1);
 
@@ -187,7 +193,7 @@ void OscSurface::OnRenderEnter(float timeStep){
     glEnd();
 }
 
-void OscSurface::OnRenderLeave(float timeStep){
+void OscSurface::OnRenderLeave(float timeSte) {
     glPopMatrix();
 }
 

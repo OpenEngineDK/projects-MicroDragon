@@ -54,6 +54,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   OpenEngine_Devices
   OpenEngine_Renderers_OpenGL
   OpenEngine_Scene
+  OpenEngine_Utils
   # Extension dependencies
   Extensions_GenericHandlers
   Extensions_OBJResource
