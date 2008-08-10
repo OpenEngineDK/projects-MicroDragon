@@ -1,21 +1,33 @@
 #ifndef _DRAGON_H_
 #define _DRAGON_H_
 
-#include "Tube.h"
+// using templates
+#include <Math/Vector.h>
 
-#include "../../Common/Vec3.h"
-#include "../../Common/Follower.h"
-/*
-#include "../../Common/glm.h"
-#include "../../Common/gltga.h"
-*/
-
+// inherits from
 #include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
+
+class Follower;
+class Island;
+class ParticleSystem;
+class Target;
+class Tube;
+namespace OpenEngine {
+    namespace Scene {
+        class TransformationNode;
+    }
+}
+
+/*
+#include "Tube.h"
+#include "../../Common/Follower.h"
 #include <Meta/OpenGL.h>
 #include <Scene/TransformationNode.h>
+*/
 
 using OpenEngine::Core::IModule;
+using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Scene::TransformationNode;
@@ -26,7 +38,8 @@ const static int JAW_DISPLAY_ID  = 11;
 class Dragon : public IModule, public IRenderNode {
 public:
   bool enabled;
-    static Dragon* getInstance();
+
+  Dragon(Island* island, Target* target, ParticleSystem* particlesystem);
     ~Dragon();
     void toggleRenderState();
 
@@ -44,12 +57,13 @@ public:
     void useBreathWeapon( bool input );
     void chargeFireball( bool input );
 private:
+    Island* island;
+    ParticleSystem* particlesystem;
+    Target* target;
+
     TransformationNode* headNode;
     TransformationNode* jawAngleNode;
 
-    Dragon();
-
-    static Dragon* instance;
     Tube* neck;
 
     unsigned int neckTextureID;
@@ -59,16 +73,16 @@ private:
     Follower* headFocus;
     Follower* headPos;
     // Render flags
-    GLuint flags;
+    unsigned int flags;
 
     bool enableTexture;
     int renderState, numberOfRenderStates;
     bool usingBreathWeapon, chargingFireball;
     float fireballCharge;
   
-    Vec3 fireSource;
-    Vec3 fireSourceVel;
-    Vec3 fireDir;
+    Vector<3,float> fireSource;
+    Vector<3,float> fireSourceVel;
+    Vector<3,float> fireDir;
 };
 
 #endif

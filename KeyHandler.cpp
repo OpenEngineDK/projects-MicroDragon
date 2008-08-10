@@ -15,9 +15,8 @@
 #include "Modules/Intro/Intro.h"
 #include "Modules/OscSurface/OscSurface.h"
 #include "Modules/Target/Target.h"
-#include "Modules/Particle/ParticleSystem.h"
-#include "Modules/Intro/Intro.h"
 #include "Modules/InputGrabber/InputGrabber.h"
+//#include "Modules/Particle/ParticleSystem.h"
 
 #include <Logging/Logger.h>
 #include <Core/IGameEngine.h>
@@ -28,12 +27,20 @@ using OpenEngine::Core::IGameEngine;
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::TransformationNode;
 
-KeyHandler::KeyHandler() {
+KeyHandler::KeyHandler(InputGrabber* inputgrabber, Intro* intro,
+		       Island* island, Target* target, Dragon* dragon,
+		       BoidsSystem* boidssystem) {
+  this->inputgrabber = inputgrabber;
+  this->intro= intro;
+  this->island = island;
+  this->target = target;
+  this->dragon = dragon;
+  this->boidssystem = boidssystem;
   reset();
 }
 
 void KeyHandler::reset() {
-  //InputGrabber::reset();
+  inputgrabber->reset();
     //mousex_prev = mousey_prev = 0;
     rotChunkMouse = 0.05;
     moveChunkMouse = 0.0015;
@@ -43,19 +50,6 @@ void KeyHandler::reset() {
 }
 
 KeyHandler::~KeyHandler() {}
-
-
-/*
-process
-for each key in keys
-  ...
-
-handle down
-  keys.push key
-
-handle up
-  keys.remove key
-*/
 
 // set state of keys on up/down events
 void KeyHandler::Handle(KeyboardEventArg arg) {
@@ -90,104 +84,104 @@ void KeyHandler::HandleDown(Key key) {
 
     switch (key) {
     case KEY_1:
-        BoidsSystem::getInstance()->toggleRenderState();
+      boidssystem->toggleRenderState();
         break;
     case KEY_2:
-        Dragon::getInstance()->toggleRenderState();
+        dragon->toggleRenderState();
         break;
     case KEY_3:
-        Island::getInstance()->toggleRenderState();
+        island->toggleRenderState();
         break;
     case KEY_4:
       //OscSurface::getInstance()->enableDisable();
         break;
     case KEY_5:
-      //Target::getInstance()->enableDisable();
+      //target->enableDisable();
         break;
     case KEY_6:
       //ParticleSystem::getInstance()->enableDisable();
         break;
     case KEY_8:
-        BoidsSystem::getInstance()->DecNumberOfShownBoids();
+      boidssystem->DecNumberOfShownBoids();
         break;
     case KEY_9:
-        BoidsSystem::getInstance()->IncNumberOfShownBoids();
+        boidssystem->IncNumberOfShownBoids();
         break;
     case KEY_a:
-      InputGrabber::getInstance()->moveTarget( -1*moveChunkKeyboard, 0 );
+      inputgrabber->moveTarget( -1*moveChunkKeyboard, 0 );
         break;
     case KEY_d:
-      InputGrabber::getInstance()->moveTarget( 1*moveChunkKeyboard, 0 );
+      inputgrabber->moveTarget( 1*moveChunkKeyboard, 0 );
         break;
     case KEY_w:
-      InputGrabber::getInstance()->moveTarget( 0, -1*moveChunkKeyboard );
+      inputgrabber->moveTarget( 0, -1*moveChunkKeyboard );
         break;
     case KEY_s:
-      InputGrabber::getInstance()->moveTarget( 0, 1*moveChunkKeyboard );
+      inputgrabber->moveTarget( 0, 1*moveChunkKeyboard );
         break;
 	/*
     case KEY_z:
-      InputGrabber::getInstance()->rotZ = InputGrabber::getInstance()->rotZ - rotChunkKeyboard;
+      inputgrabber->rotZ = inputgrabber->rotZ - rotChunkKeyboard;
         break;
     case KEY_x:
-      InputGrabber::getInstance()->rotZ = InputGrabber::getInstance()->rotZ + rotChunkKeyboard;
+      inputgrabber->rotZ = inputgrabber->rotZ + rotChunkKeyboard;
         break;
 	*/
     case KEY_p:
-      InputGrabber::getInstance()->togglePause();
+      inputgrabber->togglePause();
         break;
     case KEY_f:
-      InputGrabber::getInstance()->printLocation();
+      inputgrabber->printLocation();
         break;
     case KEY_SPACE:
-        if( !Intro::getInstance()->isDone() )
-            Intro::getInstance()->disable();
+        if( !intro->isDone() )
+            intro->disable();
         break;
     case KEY_r:
       reset();
         break;
     case KEY_b:
-        BoidsSystem::getInstance()->Initialize();
+        boidssystem->Initialize();
         break;
     case KEY_t:
-        BoidsSystem::getInstance()->DecAlignment();
+        boidssystem->DecAlignment();
         break;
     case KEY_y:
-        BoidsSystem::getInstance()->IncAlignment();
+        boidssystem->IncAlignment();
         break;
     case KEY_e:
-        Dragon::getInstance()->useBreathWeapon( true );
+        dragon->useBreathWeapon( true );
         break;
     case KEY_q:
-        Dragon::getInstance()->chargeFireball( true );
+        dragon->chargeFireball( true );
         break;
 
 
     case KEY_F1:
-      InputGrabber::getInstance()->rotateViewAbsolute( 30, 5, 50, 1.0 );
-        Target::getInstance()->setTarget(0, 0, 0);
+      inputgrabber->rotateViewAbsolute( 30, 5, 50, 1.0 );
+        target->setTarget(0, 0, 0);
         break;
     case KEY_F2: // ved siden af hovedet
-      InputGrabber::getInstance()->rotateViewAbsolute( 25.8872, 257.27, 13.8784, 1.0 );
-        Target::getInstance()->setTarget( -10.5859, 5.4856, -10.0325 );
+      inputgrabber->rotateViewAbsolute( 25.8872, 257.27, 13.8784, 1.0 );
+        target->setTarget( -10.5859, 5.4856, -10.0325 );
         break;
     case KEY_F3:
-      InputGrabber::getInstance()->rotateViewAbsolute( 16.1391, 335, 500, 1.0 );
-        Target::getInstance()->setTarget(-10.5859, 5.4856, -10.0325);
+      inputgrabber->rotateViewAbsolute( 16.1391, 335, 500, 1.0 );
+        target->setTarget(-10.5859, 5.4856, -10.0325);
         break;
     case KEY_F4: // inde i munden
-      InputGrabber::getInstance()->rotateViewAbsolute( 54.4593, 266.533, 7.75, 1.0 );
-        Target::getInstance()->setTarget( -2.77879, 3.63685, 0.168352);
+      inputgrabber->rotateViewAbsolute( 54.4593, 266.533, 7.75, 1.0 );
+        target->setTarget( -2.77879, 3.63685, 0.168352);
         break;
     case KEY_F5: //Mellem bjergene
-      InputGrabber::getInstance()->rotateViewAbsolute( 340, 245.064, 68.548, 1.0 );
-        Target::getInstance()->setTarget( 39.9721, 6.39716, -27.3046 );
+      inputgrabber->rotateViewAbsolute( 340, 245.064, 68.548, 1.0 );
+        target->setTarget( 39.9721, 6.39716, -27.3046 );
         break;
     case KEY_F9:
-      InputGrabber::getInstance()->scaleGlobal( -0.05 );
+      inputgrabber->scaleGlobal( -0.05 );
         break;
     case KEY_F10:
-      InputGrabber::getInstance()->scaleGlobal( 0.05 );
+      inputgrabber->scaleGlobal( 0.05 );
         break;
     case KEY_F11:
       //GLUTClock::getInstance()->decTimeFactor();
@@ -196,30 +190,30 @@ void KeyHandler::HandleDown(Key key) {
       //GLUTClock::getInstance()->incTimeFactor();
         break;
     case KEY_PAGEUP:
-      InputGrabber::getInstance()->zoom(0.05);
+      inputgrabber->zoom(0.05);
         break;
     case KEY_PAGEDOWN:
-      InputGrabber::getInstance()->zoom(-0.05);
+      inputgrabber->zoom(-0.05);
         break;
     case KEY_HOME:
-      InputGrabber::getInstance()->incMultiplier();
+      inputgrabber->incMultiplier();
         break;
     case KEY_END:
-      InputGrabber::getInstance()->decMultiplier();
+      inputgrabber->decMultiplier();
         break;
     case KEY_UP:
-        InputGrabber::getInstance()->
+        inputgrabber->
 	  rotateViewRelative( rotChunkKeyboard * -1, 0 );
         break;
     case KEY_DOWN:
-      InputGrabber::getInstance()->rotateViewRelative( rotChunkKeyboard, 0 );
+      inputgrabber->rotateViewRelative( rotChunkKeyboard, 0 );
         break;
     case KEY_LEFT:
-        InputGrabber::getInstance()->
+        inputgrabber->
 	  rotateViewRelative( 0, rotChunkKeyboard * -1 );
         break;
     case KEY_RIGHT:
-      InputGrabber::getInstance()->rotateViewRelative( 0, rotChunkKeyboard );
+      inputgrabber->rotateViewRelative( 0, rotChunkKeyboard );
         break;
     default:
         break;
@@ -229,10 +223,10 @@ void KeyHandler::HandleDown(Key key) {
 void KeyHandler::HandleUp(Key key) {
     switch (key) {
     case KEY_e:
-        Dragon::getInstance()->useBreathWeapon( false );
+        dragon->useBreathWeapon( false );
         break;
     case KEY_q:
-        Dragon::getInstance()->chargeFireball( false );
+        dragon->chargeFireball( false );
         break;
     default:
         break;

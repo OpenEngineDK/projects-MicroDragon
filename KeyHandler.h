@@ -10,20 +10,51 @@
 #ifndef _KEY_HANDLER_H_
 #define _KEY_HANDLER_H_
 
+// inherits from
 #include <Core/IModule.h>
+
+class BoidsSystem;
+class Dragon;
+class InputGrabber;
+class Intro;
+class Island;
+class Target;
+namespace OpenEngine {
+    namespace Devices {
+        class IKeyboard;
+        class IMouse;
+    }
+    namespace Display {
+        class Camera;
+    }
+    namespace Scene {
+        class TransformationNode;
+    }
+}
+/*
 #include <Display/Camera.h>
-#include <Devices/IKeyboard.h>
 #include <Devices/IMouse.h>
 #include <Scene/TransformationNode.h>
-#include <vector>
+*/
+#include <Devices/IKeyboard.h>
+
+#include <list>
 
 using namespace OpenEngine::Core;
 using namespace OpenEngine::Display;
 using namespace OpenEngine::Scene;
 using namespace OpenEngine::Devices;
+using std::list;
 
 class KeyHandler : public IModule, public IListener<KeyboardEventArg> {
 private:
+    InputGrabber* inputgrabber;
+    Intro* intro;
+    Island* island;
+    Target* target;
+    Dragon* dragon;
+    BoidsSystem* boidssystem;
+
     list<Key> keysPressed;
 
     float moveChunkMouse, rotChunkMouse, moveChunkKeyboard, rotChunkKeyboard;
@@ -32,7 +63,8 @@ private:
     
     void reset();
 public:
-    KeyHandler();
+    KeyHandler(InputGrabber* inputgrabber, Intro* intro, Island* island,
+	       Target* target, Dragon* dragon, BoidsSystem* boidssystem);
     ~KeyHandler();
     void Handle(KeyboardEventArg arg);
     void HandleUp(Key key);

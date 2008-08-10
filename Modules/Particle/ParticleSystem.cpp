@@ -2,10 +2,16 @@
 #include "FireBall.h"
 
 #include "../Boid/BoidsSystem.h"
+#include "../Island/Island.h"
 //#include "../Dragon/Dragon.h"
 //#include "../../Common/gltga.h"
 
+#include "Particle.h"
+#include "../../Common/random.h"
+
+#include <Display/IViewingVolume.h>
 #include <Meta/OpenGL.h>
+#include <Renderers/IRenderingView.h>
 #include <Resources/ResourceManager.h>
 #include <Resources/ITextureResource.h>
 #include <Renderers/OpenGL/TextureLoader.h>
@@ -16,21 +22,14 @@ using namespace OpenEngine::Renderers::OpenGL;
 #include <iostream>
 using namespace std;
 
-extern Vec3 cameraDir;
-
 unsigned int textures[10];
 int textureIndex;
 
-ParticleSystem* ParticleSystem::instance = NULL;
-
-ParticleSystem* ParticleSystem::getInstance()
-{
-    if( instance == NULL )
-        instance = new ParticleSystem();
-    return instance;
-}
-
-ParticleSystem::ParticleSystem() {
+ParticleSystem::ParticleSystem(Island* island, IViewingVolume* vv,
+			       BoidsSystem* boidssystem) {
+  this->island = island;
+  this->vv = vv;
+  this->boidssystem = boidssystem;
 }
 
 ParticleSystem::~ParticleSystem(){
@@ -84,26 +83,30 @@ void ParticleSystem::Apply(IRenderingView* rv) {
 
 struct closerToCamera : public binary_function<Particle*, Particle*, bool> {
     bool operator()(Particle* x, Particle* y) {
-        return x->getPosition().getDot(cameraDir) < y->getPosition().getDot(cameraDir);
+      return x->IsCloserToCamera(y);
     }
 };
 
-void ParticleSystem::CreateParticles(double time, double prevTime, float particlesPerSecond,
-                                     Vec3 position, Vec3 velocity, float velocityRandomness,
+void ParticleSystem::CreateParticles(double time, double prevTime, 
+				     float particlesPerSecond,
+                                     Vector<3,float> position, 
+				     Vector<3,float> velocity, 
+				     float velocityRandomness,
                                      double size, double lifeTime) {
     
-    // Create particles in the world at arbritrary points in time, independent on frame rate
+    // Create particles in the world at arbritrary
+    // points in time, independent on frame rate
     int startI = int(prevTime*particlesPerSecond);
     int endI   = int(time    *particlesPerSecond);
     for (int i=startI; i<endI; i++) {
-        Vec3 randomVector = Vec3(
+        Vector<3,float> randomVector = Vector<3,float>(
                                  randObject->ran_uniform_0to1()-0.5,
                                  randObject->ran_uniform_0to1()-0.5,
                                  randObject->ran_uniform_0to1()-0.5
                                  );
-        Vec3 pos = position;
+        Vector<3,float> pos = position;
         if (endI-startI>1) pos = pos-velocity*2/2*(time-prevTime);
-        Particle* p = new Particle(
+        Particle* p = new Particle(island,vv,
                                    pos,
                                    velocity+(randomVector*velocityRandomness),
                                    size,
@@ -111,7 +114,9 @@ void ParticleSystem::CreateParticles(double time, double prevTime, float particl
                                    randObject->ran_uniform_0to1()
                                    );
         // Update particles based on current time compared to birth time
-        if (endI-startI>1) p->update(time-(i/(particlesPerSecond*1.0)));
+        if (endI-startI>1)
+	  p->update(time-(i/(particlesPerSecond*1.0)));
+
         tmpParticles.push_back(p);
     }
 }
@@ -125,13 +130,13 @@ void ParticleSystem::OnLogicEnter(float timeStep){
 
     // Fire on boids
     for (vector<Particle*>::iterator i=particles.begin(); i!=particles.end(); ++i) {
-        BoidsSystem::getInstance()->HandleFire((*i)->getPosition(),3.0);
+        boidssystem->HandleFire((*i)->getPosition(),3.0);
     }
 
     // Gravity and slight randomness
     for (vector<Particle*>::iterator i=particles.begin(); i!=particles.end(); ++i) {
-        (*i)->addExternalForce(Vec3(0,10,0));
-        (*i)->addExternalForce(Vec3(randObject->ran_uniform_0to1()-0.5,
+        (*i)->addExternalForce(Vector<3,float>(0,10,0));
+        (*i)->addExternalForce(Vector<3,float>(randObject->ran_uniform_0to1()-0.5,
                                     randObject->ran_uniform_0to1()-0.5,
                                     randObject->ran_uniform_0to1()-0.5)*20);
     }
@@ -147,13 +152,13 @@ void ParticleSystem::OnLogicEnter(float timeStep){
     }
 }
 
-void ParticleSystem::CreateFireball(Vec3 position, Vec3 velocity, float size) {
-    Vec3 randomVector = Vec3(
+void ParticleSystem::CreateFireball(Vector<3,float> position, Vector<3,float> velocity, float size) {
+    Vector<3,float> randomVector = Vector<3,float>(
                              randObject->ran_uniform_0to1()-0.5,
                              randObject->ran_uniform_0to1()-0.5,
                              randObject->ran_uniform_0to1()-0.5
                              );
-    FireBall* p = new FireBall( position, velocity, size, 2.0, randObject->ran_uniform_0to1()*1.0 );
+    FireBall* p = new FireBall( island, vv, boidssystem, this, position, velocity, size, 2.0, randObject->ran_uniform_0to1()*1.0 );
     particles.push_back(p);
 }
 

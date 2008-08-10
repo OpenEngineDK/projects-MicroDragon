@@ -1,68 +1,54 @@
 #ifndef _ISLAND_H_
 #define _ISLAND_H_
 
-#include "../../Common/Vec3.h"
-
+//inherits from
 #include <Renderers/IRenderNode.h>
-#include <Renderers/IRenderingView.h>
-#include <Resources/ITextureResource.h>
-#include <Geometry/Face.h>
 
-using namespace OpenEngine::Geometry;
+//templated classes
+#include <Math/Vector.h>
+
+//forward reference
+class HeightMap;
+namespace OpenEngine {
+    namespace Geometry {
+        class Face;
+    }
+    namespace Renderers {
+        class IRenderingView;
+    }
+}
+
+using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
-using OpenEngine::Resources::ITextureResourcePtr;
 using namespace std;
 
 class Island : public IRenderNode {
 private:
-  bool enabled; //original inherited from MTree - Module
+    HeightMap* heightMap;
+    Vector<3,float>** treePositions;
 
-    static Island* instance;
-    Island();
+    bool enabled; //original inherited from MTree - Module
     bool bRender; /* Polygon Flag Set To TRUE By Default */
-    void RenderLines();
-    const static int IMAGE_SIZE = 1024; /* Size Of Our .RAW Height Map */
-    const static int STEP_SIZE = 16; /* Width And Height Of Each Quad */
-    const static int MAP_SIZE = IMAGE_SIZE/STEP_SIZE;
-    const static int DISPLAY_ID = 1;
-    const static int WIREFRAME_DISPLAY_ID = 100;
-    int texID;
 
-    float HEIGHT_RATIO; /* Ratio That The Y Is Scaled According To The X And Z */
-    Vec3 translate;
-    float scale;
-
-    unsigned char heightArray[(IMAGE_SIZE/STEP_SIZE)*(IMAGE_SIZE/STEP_SIZE)];
-    Vec3 normalArray[(IMAGE_SIZE/STEP_SIZE)*(IMAGE_SIZE/STEP_SIZE)]; /* Holds The Normal Map Data */
-    //float scaleValue; /* Scale Value For The Terrain */
-    void drawTrees( Vec3 pos );
-    Vec3** treePositions;
+    void drawTrees( Vector<3,float> pos );
     int numberOfTrees;
     bool renderTrees;
     bool enableTexture;
     int renderState, numberOfRenderStates;
 
 public:
-    static Island* getInstance();
+    Island();
     ~Island();
-    void toggleRenderState();
 
     virtual void Apply(IRenderingView* rv);
 
-    GeometryNode* RenderHeightMap(ITextureResourcePtr texture);
+    void toggleRenderState();
 
-    void LoadRawFile(const char* strName, int nSize,unsigned char *pHeightMap);
-    void calcHeightArray(unsigned char *pHeightMap);
-    void calcNormalArray();
-
-    float Height(int X, int Z);
+    //temp
+    Vector<3,float> normalAt(Vector<3,float> p);
     float heightAt(float x, float z);
-    Vec3 Point(int X, int Z);
-    Vec3 heightAt(Vec3 p);
-    Vec3 normalAt(Vec3 p);
-    Vec3 Normal(int X, int Z);
-    Vec3 Color(int X, int Z);
+    Vector<3,float> heightAt(Vector<3,float> p);
 };
 
 #endif

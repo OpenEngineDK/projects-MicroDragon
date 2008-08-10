@@ -3,23 +3,18 @@
 #include "../../Common/utilities.h"
 #include "../Island/Island.h"
 
-#include <Meta/OpenGL.h>
+#include <Core/Exceptions.h>
 #include <Logging/Logger.h>
+#include <Meta/OpenGL.h>
+#include <Renderers/IRenderingView.h>
 #include <Utils/Convert.h>
 
 #include <string>
 
+using OpenEngine::Core::Exception;
 using OpenEngine::Utils::Convert;
 
-OscSurface* OscSurface::instance = NULL;
-
-OscSurface* OscSurface::getInstance() {
-    if( instance == NULL )
-        instance = new OscSurface();
-    return instance;
-}
-
-OscSurface::OscSurface() {
+OscSurface::OscSurface(Island* island) : island(island) {
     M = 80;
     N = 80;
     aspect = 1.0;
@@ -27,7 +22,7 @@ OscSurface::OscSurface() {
     dt = 0.005;
 
     scale = 120;
-    translate = Vec3(-60,0,-60);
+    translate = Vector<3,float>(-60,0,-60);
 
     runningTime = 0;
 }
@@ -118,7 +113,7 @@ void OscSurface::preFrame( double time ) {
                     - zOld[i*N+j];
 
                 // Block waves where there is solid land
-                if (Island::getInstance()->heightAt(i*scale/(M-1)+translate.x,j*scale/(N-1)+translate.z)>0)
+                if (island->heightAt(i*scale/(M-1)+translate[0],j*scale/(N-1)+translate[2])>0)
                     zNew[i*N+j] = 0;
             }
 
@@ -134,8 +129,8 @@ void OscSurface::preFrame( double time ) {
         zNew   = zDummy;
 
         if (rand()%20==0) {
-            float my_x = (rand()%100/100.0)*scale+translate.x;
-            float my_z = (rand()%100/100.0)*scale+translate.z;
+            float my_x = (rand()%100/100.0)*scale+translate[0];
+            float my_z = (rand()%100/100.0)*scale+translate[2];
             createRipple(my_x, my_z, 3.0, 3.0);
         }
     }
@@ -148,8 +143,8 @@ void OscSurface::createRipple(float posX, float posZ, float width, float height)
     for ( int i=1; i<(M-1); i++ )
         for ( int j=1; j<(N-1); j++ )
             zCur[i*N+j] += gaussPeak(
-                                     (posX-translate.x)/scale,
-                                     (posZ-translate.z)/scale,
+                                     (posX-translate[0])/scale,
+                                     (posZ-translate[2])/scale,
                                      width/scale, width/scale, i*hx, j*hy
                                      )*height/scale;
 }
@@ -161,7 +156,7 @@ void OscSurface::OnRenderEnter(float timeSte) {
     // draw the surface:
     glPushMatrix();
     glColor3f( 0.8, 0.25, 0.0 );
-    glTranslatef( translate.x, translate.y, translate.z);
+    glTranslatef( translate[0], translate[1], translate[2]);
     glScalef(scale,scale,scale);
 
     glColor4f(0.8f,0.25f,0.0f,0.7f);
@@ -171,8 +166,8 @@ void OscSurface::OnRenderEnter(float timeSte) {
     for (int i=0; i<(M-1); i++)
         for (int j=0; j<(N-1); j++) {
             int x, z, xz;
-            Vec3 point[4];
-            Vec3 normal[4];
+            Vector<3,float> point[4];
+            Vector<3,float> normal[4];
 
             for (int c=0; c<4; c++) {
                 if (c==0) { x = i;   z = j;   }
@@ -180,12 +175,12 @@ void OscSurface::OnRenderEnter(float timeSte) {
                 if (c==2) { x = i+1; z = j+1; }
                 if (c==3) { x = i;   z = j+1; }
                 xz = x*N+z;
-                point[c] = Vec3(x*hx, zCur[xz]*15.0/120, z*hz);
-                normal[c] = Vec3(z_norm[xz*3+0], 1.0f, z_norm[xz*3+1]);
+                point[c] = Vector<3,float>(x*hx, zCur[xz]*15.0/120, z*hz);
+                normal[c] = Vector<3,float>(z_norm[xz*3+0], 1.0f, z_norm[xz*3+1]);
             }
 
-            Vec3 diagonalCross = (point[0]-point[2]).getCross(point[1]-point[3]);
-            bool flip = (diagonalCross.x*diagonalCross.z>0);
+            Vector<3,float> diagonalCross = (point[0]-point[2]) % (point[1]-point[3]);
+            bool flip = (diagonalCross[0]*diagonalCross[2]>0);
 
             drawTriangleQuad(point,normal,flip);
         }

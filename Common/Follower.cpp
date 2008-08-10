@@ -1,7 +1,5 @@
 #include "Follower.h"
 
-#include <Logging/Logger.h>
-
 #include <math.h>
 
 #if defined(_WIN32)
@@ -10,25 +8,25 @@
 #include <sys/time.h>
 #endif
 
-Follower::Follower(Vec3 initPos) {
+Follower::Follower(Vector<3,float> initPos) {
     this->position = initPos;
-    this->velocity = Vec3(0,0,0);
+    this->velocity = Vector<3,float>(0,0,0);
 }
 
 Follower::~Follower() {}
 
-void Follower::update(Vec3 target, float acceleration, float speed, float timeStep) {
+void Follower::update(Vector<3,float> target, float acceleration, float speed, float timeStep) {
     if(timeStep<0.0001) return; //@todo: remove this hack, done by cpvc
-    float factor = min(1.0f,(float)pow(acceleration,timeStep));
+    float factor = std::min(1.0f,(float)pow(acceleration,timeStep));
     velocity = velocity*(1-factor)+(target-position)*factor;
     position = position+velocity*speed*timeStep;
 }
 
-Vec3 Follower::getPos() { return position; }
+Vector<3,float> Follower::getPos() { return position; }
 
-Vec3 Follower::getVel() { return velocity; }
+Vector<3,float> Follower::getVel() { return velocity; }
 
-void Follower::reset(Vec3 target) {
+void Follower::reset(Vector<3,float> target) {
     position = target;
-    velocity = Vec3(0,0,0);
+    velocity = Vector<3,float>(0,0,0);
 }

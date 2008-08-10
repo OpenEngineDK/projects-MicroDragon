@@ -1,22 +1,39 @@
 #ifndef _PARTICLE_H_
 #define _PARTICLE_H_
 
-#include "../../Common/Vec3.h"
+#include <Math/Vector.h>
+
+using OpenEngine::Math::Vector;
+
+class Island;
+namespace OpenEngine {
+  namespace Display {
+    class IViewingVolume;
+  }
+}
+
+using OpenEngine::Display::IViewingVolume;
 
 class Particle {
 public:
-    Particle(Vec3 position, Vec3 velocity, double size, double lifeTime, double randomValue);
+  Particle(Island* island, IViewingVolume* vv, Vector<3,float> position,
+	   Vector<3,float> velocity, double size, double lifeTime, 
+	   double randomValue);
     virtual ~Particle();
-    void addExternalForce( Vec3 force );
-    void addExternalImpulse( Vec3 impulse );
-    Vec3 getPosition();
-    Vec3 getVelocity();
+    void addExternalForce( Vector<3,float> force );
+    void addExternalImpulse( Vector<3,float> impulse );
+    Vector<3,float> getPosition();
+    Vector<3,float> getVelocity();
     bool isDead();
     virtual void update( double timeDelta );
 	
     virtual void draw();
+    bool IsCloserToCamera(Particle* p);
+    float DistanceToCamera();
 
 protected:
+    Island* island;
+    IViewingVolume* vv;
     bool dead;
     double size;
     double lifeTimeLeft;
@@ -26,11 +43,11 @@ protected:
     // Vehicle model:
     virtual void updatePhysics( double timeDelta );
     double mass, max_force, max_speed;
-    Vec3 position, velocity, forward, up, left;
+    Vector<3,float> position, velocity, forward, up, left;
   
     // Additional physics:
-    Vec3 external_force_accumulated;
-    Vec3 external_impulse_accumulated;
+    Vector<3,float> external_force_accumulated;
+    Vector<3,float> external_impulse_accumulated;
 };
 
 #endif

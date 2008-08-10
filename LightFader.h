@@ -10,6 +10,7 @@
 #ifndef _LIGHT_FADER_H_
 #define _LIGHT_FADER_H_
 
+// inherits from
 #include <Core/IModule.h>
 #include <Scene/LightNode.h>
 

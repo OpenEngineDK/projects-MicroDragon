@@ -7,27 +7,27 @@
 // See the GNU General Public License for more details (see LICENSE). 
 //--------------------------------------------------------------------
 
-#include "Common/Vec3.h"
-
 // Class header
 #include "GameFactory.h"
 #include "LightFader.h"
 
-#include "Modules/InputGrabber/InputGrabber.h"
 #include "Modules/Island/Island.h"
-#include "Modules/OscSurface/OscSurface.h"
-#include "Modules/Intro/Intro.h"
 #include "Modules/Target/Target.h"
-#include "Modules/Boid/BoidsSystem.h"
-#include "Modules/Particle/ParticleSystem.h"
-#include "Modules/Dragon/Dragon.h"
 #include "Modules/InputGrabber/InputGrabber.h"
+#include "Modules/Intro/Intro.h"
+#include "Modules/OscSurface/OscSurface.h"
+#include "Modules/Dragon/Dragon.h"
+#include "Modules/Particle/ParticleSystem.h"
+#include "Modules/Boid/BoidsSystem.h"
+
+#include "KeyHandler.h"
 
 // OpenEngine library
-#include <Display/Viewport.h>
-#include <Display/ViewingVolume.h>
+#include <Display/Camera.h>
 #include <Display/SDLFrame.h>
 #include <Devices/SDLInput.h>
+#include <Display/Viewport.h>
+#include <Display/ViewingVolume.h>
 #include <Renderers/IRenderNode.h>
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
@@ -35,14 +35,13 @@
 #include <Resources/DirectoryManager.h>
 #include <Resources/TGAResource.h>
 #include <Resources/OBJResource.h>
+#include <Scene/ISceneNode.h>
 #include <Scene/SceneNode.h>
 #include <Scene/PointLightNode.h>
 #include <Scene/TransformationNode.h>
 #include <Utils/Statistics.h>
 #include <Meta/OpenGL.h>
-#include <Utils/MoveHandler.h>
 #include <Utils/QuitHandler.h>
-#include "KeyHandler.h"
 
 #include <Scene/VertexArrayTransformer.cpp>
 #include <Scene/DisplayListTransformer.h>
@@ -65,20 +64,15 @@ GameFactory::GameFactory() {
     // Create a frame and viewport.
     this->frame = new SDLFrame(800, 600, 32);
 
-    // Main viewport
-    Viewport* viewport = new Viewport(*frame);
-
-    // Bind the camera to the viewport
+    // Setup camera
     camera = new Camera( *(new ViewingVolume()) );
-    camera->SetPosition(Vector<3,float>(0,40,100));
-    camera->LookAt(Vector<3,float>(0,0,0));
-    viewport->SetViewingVolume(camera);
     camera->SetFar(2500);
     camera->SetNear(0.1);
 
-    // Create a renderer.
-    renderer = new Renderer();
-    
+    // Main viewport
+    Viewport* viewport = new Viewport(*frame);
+    viewport->SetViewingVolume(camera);
+
     // Add a rendering view to the renderer
     renderer = new Renderer();
     renderer->initialize.Attach(*(new TextureLoader()));
@@ -130,8 +124,6 @@ public:
     }
     else
       timeSpend += deltaTime;
-
-
   }
   
   void Apply(IRenderingView* rv) {
@@ -168,7 +160,9 @@ public:
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glDepthMask(GL_FALSE);
       glDisable(GL_LIGHTING);
+
       VisitSubNodes(*rv);
+
       glEnable(GL_LIGHTING);
       glDisable(GL_BLEND);
       glDepthMask(GL_TRUE);
@@ -193,7 +187,6 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
     // Set scene lighting
     float pFade = 1.4;
 
-
     PointLightNode* light1 = new PointLightNode();
     light1->ambient = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
     light1->diffuse = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
@@ -209,7 +202,6 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
     LightFader* light1Fader = new LightFader(*light1, *to1, light1, fadetime);
     engine.AddModule(*light1Fader);
 
-
     PointLightNode* light2 = new PointLightNode();
     light2->ambient = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
     light2->diffuse = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
@@ -224,70 +216,58 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
     to2->specular = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
     LightFader* light2Fader = new LightFader(*light2, *to2, light2, fadetime);
     engine.AddModule(*light2Fader);
-
-
     
     // Bind the quit handler (the keyboard module needs to work for
     // the handler to actually quit).
     QuitHandler* quit_h = new QuitHandler();
     quit_h->BindToEventSystem();
 
-    KeyHandler* key_h = new KeyHandler();
-    key_h->BindToEventSystem();
-    engine.AddModule(*key_h);
-
-    // Register movement handler to be able to move the camera
-    MoveHandler* move = new MoveHandler(*camera);
-    move->BindToEventSystem();
-    engine.AddModule(*move);
 
     // set the resources directory
     string resources = "projects/DragonPanic/data/";
     DirectoryManager::AppendPath(resources);
-    logger.info << "Resource directory: " << resources << logger.end;
 
     ResourceManager<IModelResource>::AddPlugin(new OBJPlugin());
     ResourceManager<ITextureResource>::AddPlugin(new TGAPlugin());
 
-
-    InputGrabber* inputgrabber = InputGrabber::getInstance(camera);
-    engine.AddModule(*inputgrabber);
-    //scene = inputgrabber;
-
-
-    // GLLight module missing
-    Intro* intro = Intro::getInstance();
-    scene->AddNode(intro);
-    engine.AddModule(*intro);
-
-    Island* island = Island::getInstance();
+    Island* island = new Island();
     scene->AddNode(island);
 
-    Target* target = Target::getInstance();
+    Target* target = new Target(island);
     scene->AddNode(target);
     engine.AddModule(*target);
-
-    Dragon* dragon = Dragon::getInstance();
-    scene->AddNode(dragon);
-    engine.AddModule(*dragon);
-
-    // Boids have transparent shadows and must be second last
-    BoidsSystem* boids = BoidsSystem::getInstance();
-    scene->AddNode(boids);
-    engine.AddModule(*boids);
-
 
     TransparencyNode* tpNode = new TransparencyNode();
     scene->AddNode(tpNode);
 
-    OscSurface* oscs = OscSurface::getInstance();
+    OscSurface* oscs = new OscSurface(island);
     tpNode->AddNode(oscs);
     engine.AddModule(*oscs);
 
-    // Particles are transparent and must be last
-    ParticleSystem* pat = ParticleSystem::getInstance();
+    InputGrabber* inputgrabber = new InputGrabber(camera,island,target);
+    engine.AddModule(*inputgrabber);
+
+    Intro* intro = new Intro(inputgrabber);
+    scene->AddNode(intro);
+    engine.AddModule(*intro);
+
+    //@todo: Boids have transparent shadows
+    BoidsSystem* boids = new BoidsSystem(island, oscs);
+    tpNode->AddNode(boids);
+    engine.AddModule(*boids);
+
+    ParticleSystem* pat = new ParticleSystem(island,camera,boids);
     tpNode->AddNode(pat);
     engine.AddModule(*pat);
+
+    Dragon* dragon = new Dragon(island,target,pat);
+    scene->AddNode(dragon);
+    engine.AddModule(*dragon);
+
+    KeyHandler* key_h = new KeyHandler(inputgrabber, intro, island, target,
+				       dragon, boids);
+    key_h->BindToEventSystem();
+    engine.AddModule(*key_h);
 
     engine.AddModule(*(new OpenEngine::Utils::Statistics(1000)));
 

@@ -1,31 +1,28 @@
 #include "BoidsSystem.h"
 
+#include "Boid.h"
+#include "../Island/Island.h"
+#include "../OscSurface/OscSurface.h"
+
 #include <Math/Math.h>
 #include <Logging/Logger.h>
 
 using OpenEngine::Math::PI;
 
-BoidsSystem* BoidsSystem::instance = NULL;
-
-BoidsSystem* BoidsSystem::getInstance()
-{
-    if( instance == NULL )
-        instance = new BoidsSystem();
-    return instance;
-}
-
-BoidsSystem::BoidsSystem() {
-  enabled = true;
+BoidsSystem::BoidsSystem(Island* island, OscSurface* oscsurface) {
+    this->island = island;
+    this->oscsurface = oscsurface;
+    enabled = true;
     numberOfRenderStates = 3;
     renderState = numberOfRenderStates-1;
     numberOfShownBoids = 0;
     disableLogic = false;
 }
 
-BoidsSystem::~BoidsSystem(){
+BoidsSystem::~BoidsSystem() {
 }
 
-void BoidsSystem::Initialize(){
+void BoidsSystem::Initialize() {
     numberOfShownBoids = numberOfBoids;
     alignment = 0.3;
     // Init objects
@@ -33,12 +30,16 @@ void BoidsSystem::Initialize(){
     for (int i=0; i<gridSize; i++) {
         for (int j=0; j<gridSize; j++) {
             float val = (i+gridSize*j)*1.0/numberOfBoids;
-            boids[i*gridSize+j] = new Boid(
-                                           Vec3(i*2-(gridSize-1),0,j*2-(gridSize-1)),
-                                           Vec3(0,0,1),
-                                           Vec3(0,0,0),
-                                           Vec3(sin(2*PI*(0.0/3+val))*0.5+0.5,sin(2*PI*(1.0/3+val))*0.5+0.5, 
-                                                sin(2*PI*(2.0/3+val))*0.5+0.5).normalize());
+            boids[i*gridSize+j] =
+	      new Boid(island,oscsurface,this,
+		       Vector<3,float>(i*2-(gridSize-1),0,
+				       j*2-(gridSize-1)),
+		       Vector<3,float>(0,0,1),
+		       Vector<3,float>(0,0,0),
+		       Vector<3,float>(sin(2*PI*(0.0/3+val))*0.5+0.5,
+				       sin(2*PI*(1.0/3+val))*0.5+0.5, 
+				       sin(2*PI*(2.0/3+val))*0.5+0.5)
+		       .GetNormalize());
         }
     }
 }
@@ -46,21 +47,20 @@ void BoidsSystem::Initialize(){
 void BoidsSystem::Deinitialize() {
 }
 
-void BoidsSystem::Process(const float deltaTime, const float percent) {
-  OnLogicEnter(deltaTime/1000.0);
-}
 
 bool BoidsSystem::IsTypeOf(const std::type_info& inf) {
     return (typeid(BoidsSystem) == inf);
 }
 
 void BoidsSystem::Apply(IRenderingView* rv) {
-  OnRenderEnter(0.0);
+    // Draw boids
+    for (unsigned int i=0; i<numberOfShownBoids; i++) {
+        boids[i]->draw();
+    }
 }
 
-
-void BoidsSystem::OnLogicEnter(float timeStep){
-  
+void BoidsSystem::Process(const float deltaTime, const float percent) {
+    float timeStep = deltaTime / 1000.0;
     if (disableLogic) return;
     
     for (unsigned int i=0; i<numberOfShownBoids; i++) {
@@ -73,25 +73,21 @@ void BoidsSystem::OnLogicEnter(float timeStep){
     }
 }
 
-void BoidsSystem::OnRenderEnter(float timeStep) {
-    // Draw boids
-    for (unsigned int i=0; i<numberOfShownBoids; i++) {
-        boids[i]->draw();
-    }
-}
-
-void BoidsSystem::HandleFire(Vec3 position, float strength) {
+void BoidsSystem::HandleFire(Vector<3,float> position, float strength) {
     for (int i=0; i<numberOfBoids; i++) {
         // Flee from fire
         boids[i]->HandleFire(position,strength);
     }
 }
 
-void BoidsSystem::HandleFireball(Vec3 position, float strength) {
+void BoidsSystem::HandleFireball(Vector<3,float> position, float strength) {
     for (int i=0; i<numberOfBoids; i++) {
         // Blow away from fireball
-        Vec3 dir = boids[i]->getPosition() - (position+Vec3(0,-5,0));
-        boids[i]->addExternalImpulse((dir.normalize())*strength*(1/max(3.0f,dir.getLength())));
+        Vector<3,float> dir = 
+	  boids[i]->getPosition() - (position+Vector<3,float>(0,-5,0));
+
+        boids[i]->addExternalImpulse((dir.GetNormalize())*strength*
+				     (1/std::max(3.0f,dir.GetLength())));
     }
 }
 
@@ -115,7 +111,9 @@ void BoidsSystem::DecAlignment() {
     logger.info << "Boids alignment: " << alignment << logger.end;
 }
 
-float BoidsSystem::getAlignment() { return alignment; }
+float BoidsSystem::getAlignment() { 
+  return alignment; 
+}
 
 void BoidsSystem::toggleRenderState() {
     logger.info << "BoidsSystem status: ";

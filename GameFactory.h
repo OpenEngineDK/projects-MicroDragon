@@ -13,8 +13,15 @@
 
 // Game engine interface
 #include <Core/IGameFactory.h>
-#include <Scene/ISceneNode.h>
-#include <Display/Camera.h>
+
+namespace OpenEngine {
+  namespace Display {
+    class Camera;
+  }
+  namespace Scene {
+    class ISceneNode;
+  }
+}
 
 // Namespaces
 using namespace OpenEngine::Core;

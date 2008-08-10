@@ -1,25 +1,53 @@
 #ifndef INPUT_GRABBER_H_
 #define INPUT_GRABBER_H_
 
-#include "../../Common/Vec3.h"
-#include "../../Common/Follower.h"
-#include "../Target/Target.h"
-#include <Display/Camera.h>
+// inherits from
+#include <Core/IModule.h>
+
+// using templates
+#include <Math/Vector.h>
+
+class Follower;
+class Island;
+class Target;
+
+namespace OpenEngine {
+  namespace Display {
+    class Camera;
+  }
+  namespace Renderers {
+    class IRenderingView;
+  }
+}
 
 using OpenEngine::Core::IModule;
 using OpenEngine::Display::Camera;
+using OpenEngine::Math::Vector;
+using OpenEngine::Renderers::IRenderingView;
 
 #define minMultiplier 0
 #define maxMultiplier 100
 #define damper 1.1
 
 class InputGrabber : public IModule {
-public:
-    static InputGrabber* getInstance();
-    static InputGrabber* getInstance(Camera* camera);
+private:
+    Vector<3,float> cameraDir;
+    Vector<3,float> cameraPos;
 
-    ~InputGrabber();
-    void OnLogicEnter(float timeStep);
+    Camera* camera;
+    Island* island;
+    Target* target;
+    Follower* focus;
+
+    float multiplier;
+    float timeFactor;
+    bool pauseTime;
+
+    void reset( float rotX, float rotY, float distance );
+
+public:
+    InputGrabber(Camera* camera, Island* island, Target* target);
+    virtual ~InputGrabber();
     void Initialize();
     void Deinitialize();
 
@@ -28,8 +56,7 @@ public:
     void Initialize(IRenderingView* rv);
 
     void printLocation();
-    virtual void reset();
-    Vec3 getTarget();
+    void reset();
     void moveTarget( float x, float z );
     void rotateViewRelative( float x, float y );
     void rotateViewAbsolute( float x, float y, float distance, float globalScale );
@@ -38,20 +65,10 @@ public:
     void zoom(float speed);
     void updateDistance( float distance);
     void scaleGlobal(float scale);
-  bool isTimePaused();
-  void togglePause();
+    bool isTimePaused();
+    void togglePause();
     float rotX, rotXI, rotY, rotYI, distance, distanceI, globalScale, globalScaleI;
-protected:
-    Follower* focus;
-    float multiplier;
-    float timeFactor;
-    Target* target;
-  bool pauseTime;
-private:
-    Camera* camera;
-    static InputGrabber* instance;
-    InputGrabber(Camera* camera);
-    void reset( float rotX, float rotY, float distance );
+    Vector<3,float> GetCameraDir();
 };
 
 #endif

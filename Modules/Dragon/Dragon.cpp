@@ -1,6 +1,16 @@
+// header file
 #include "Dragon.h"
 
+// from module
+#include "Tube.h"
+
+// from project
+#include "../../Common/Follower.h"
+
+#include <Meta/OpenGL.h>
+
 #include "../../Common/FaceListUtil.h"
+#include "../../Common/VectorExt.h"
 #include "../Island/Island.h"
 #include "../Target/Target.h"
 #include "../Particle/ParticleSystem.h"
@@ -8,6 +18,8 @@
 #include <Resources/IModelResource.h>
 #include <Resources/ResourceManager.h>
 #include <Renderers/OpenGL/TextureLoader.h>
+#include <Renderers/IRenderingView.h>
+#include <Scene/TransformationNode.h>
 #include <Math/Math.h>
 #include <Geometry/FaceSet.h>
 #include <Geometry/Face.h>
@@ -19,21 +31,15 @@ using namespace OpenEngine::Renderers::OpenGL;
 using OpenEngine::Math::PI;
 using OpenEngine::Math::Quaternion;
 
-Dragon* Dragon::instance = NULL;
-
-Dragon* Dragon::getInstance(){
-    if( instance == NULL )
-        instance = new Dragon();
-    return instance;
-}
-
-Dragon::Dragon() {
+Dragon::Dragon(Island* island, Target* target, ParticleSystem* particlesystem)
+  : island(island), target(target), particlesystem(particlesystem) {
     jawPos = 0.0f;
     enableTexture = enabled = true;
     numberOfRenderStates = 3;
     renderState = numberOfRenderStates-1;
     usingBreathWeapon = chargingFireball = false;
 
+    //@todo does this make a difference?
     /*
     glRotatef(-5,1,0,0);
 
@@ -76,7 +82,6 @@ Dragon::Dragon() {
     //FaceListUtil::Unitize(gNode->GetFaceSet());
     //FaceListUtil::OverrideSoftNormsWithHardNorm(gNode->GetFaceSet());
     jawNode->AddNode(jawRes->GetSceneNode());
-
 }
 
 Dragon::~Dragon(){
@@ -89,8 +94,8 @@ void Dragon::Initialize() {
     prevTime = 0.0;
     neckLength = 45-5;
     neck = new Tube( 2.5, 1.2, 1.0, 0.5, neckLength );
-    headFocus = new Follower(Target::getInstance()->getTarget());
-    headPos = new Follower(Target::getInstance()->getTarget());
+    headFocus = new Follower(target->getTarget());
+    headPos = new Follower(target->getTarget());
 
    ITextureResourcePtr neck = ResourceManager<ITextureResource>
      ::Create("Dragon/neck.tga");
@@ -143,68 +148,94 @@ void Dragon::Apply(IRenderingView* rv) {
 void Dragon::OnLogicEnter(float timeStep){
     double time = prevTime + timeStep;
 
-    float unitsFromTarget = 12; // 12
+    float unitsFromTarget = 12;
     float moveNeckBack = 5.0;
     float dragonLength = neckLength+moveNeckBack;
 
-    Vec3 startP = Vec3(30,-5,0);
-    Vec3 tempDir = Target::getInstance()->getTarget()-(startP*Vec3(1,0,1));
-    Vec3 attackDir = (
-                      tempDir*((tempDir.getLength()/(dragonLength)))
-                      +Vec3(0,-40,0)
-                      -tempDir.normalize()*pow(20.0/tempDir.getLength(),2)
-                      ).normalize();
-    Vec3 headTarget = Target::getInstance()->getTarget()-attackDir*(unitsFromTarget+sin(time*PI*0.5));
+    Vector<3,float> startP = Vector<3,float>(30,-5,0);
+    startP[1] = 0.0;
 
-    headFocus->update(Target::getInstance()->getTarget(),12,12,timeStep);
+    Vector<3,float> tempDir = target->getTarget()-(startP);
+
+    Vector<3,float> attackDir = (
+                      tempDir*((tempDir.GetLength()/(dragonLength)))
+                      +Vector<3,float>(0,-40,0)
+                      -tempDir.GetNormalize()*pow(20.0/tempDir.GetLength(),2)
+                      ).GetNormalize();
+
+    Vector<3,float> headTarget = target->
+      getTarget()-attackDir*(unitsFromTarget+sin(time*PI*0.5));
+
+    headFocus->update(target->getTarget(),12,12,timeStep);
     headPos->update(headTarget,5,5,timeStep);
 
-    Vec3 fireSourcePrev = fireSource;
+    Vector<3,float> fireSourcePrev = fireSource;
     fireSource = headPos->getPos();
-    if ((fireSource-startP).getLength()>dragonLength*0.8) {
-        fireSource = startP+((fireSource-startP).normalize()*dragonLength*0.8);
-    }
-    Vec3 fireSourceHeight    = Island::getInstance()->heightAt(fireSource);
-    Vec3 fireSourceMidHeight = Island::getInstance()->heightAt(fireSource*0.7+startP*0.3);
-    if (fireSource.y-fireSourceHeight.y<5) {
-        fireSource = fireSourceHeight+Vec3(0,5,0);
-    }
-    if (fireSource.y-fireSourceMidHeight.y<5) {
-        fireSource = Vec3(fireSource.x,fireSourceMidHeight.y+5,fireSource.z);
+
+    if ((fireSource-startP).GetLength()>dragonLength*0.8) {
+        fireSource = startP+
+	  ((fireSource-startP).GetNormalize()*dragonLength*0.8);
     }
 
-    fireDir = (headFocus->getPos()-fireSource).normalize();
+    Vector<3,float> fireSourceHeight    = island->heightAt(fireSource);
+
+    Vector<3,float> fireSourceMidHeight = island->
+      heightAt(fireSource*0.7+startP*0.3);
+
+    if (fireSource[1]-fireSourceHeight[1]<5) {
+        fireSource = fireSourceHeight+Vector<3,float>(0,5,0);
+    }
+
+    if (fireSource[1]-fireSourceMidHeight[1]<5) {
+        fireSource = Vector<3,float>(fireSource[0],
+				     fireSourceMidHeight[1]+5,
+				     fireSource[2]);
+    }
+
+    Vector<3,float> tmpDir(headFocus->getPos()-fireSource);
+    if(!tmpDir.IsZero())
+      fireDir = tmpDir.GetNormalize();
+
     fireSource = fireSource-fireDir*moveNeckBack;
-    fireSourceVel = (fireSource-fireSourcePrev)/timeStep;
+    if (timeStep > 0.000001)
+      fireSourceVel = (fireSource-fireSourcePrev)/timeStep;
 
-    neck->update(startP,Vec3(0.1,1,0),Vec3(1,0,0),fireSource,fireDir,fireSource-startP,true);
+    neck->update(startP,Vector<3,float>(0.1,1,0),Vector<3,float>(1,0,0),
+		 fireSource,fireDir,fireSource-startP,true);
 
     if (chargingFireball) jawPos = min(jawPos+timeStep*21,21.0f);
     else if (usingBreathWeapon) jawPos = min(jawPos+timeStep*120,21.0f);
     else jawPos -= timeStep*60;
     jawPos = max(0.0f,jawPos);
 
-    Vec3 jawRotateAxis = neck->getLinkX(Tube::links-1);
-    Vec3 newHeadDir = fireDir.rotateAround(jawRotateAxis,-jawPos/2/180*PI);
-    neck->update(startP,Vec3(0.1,1,0),Vec3(1,0,0),fireSource,newHeadDir,fireSource-startP,false);
-  
+    Vector<3,float> jawRotateAxis = neck->getLinkX(Tube::links-1);
+
+    Vector<3,float> newHeadDir = VectorExt::
+      RotateAround(fireDir,jawRotateAxis,-jawPos/2/180*PI);
+
+    neck->update(startP,
+		 Vector<3,float>(0.1,1,0),Vector<3,float>(1,0,0),
+		 fireSource,newHeadDir,fireSource-startP,false);
+
     // Create smoke from mouth while charging
     if (chargingFireball) {
         fireballCharge = min(fireballCharge+timeStep,1.0f);
-        ParticleSystem::getInstance()->CreateParticles(
+        particlesystem->CreateParticles(
             time, prevTime, 25*fireballCharge,
-            fireSource+fireDir*4.0+jawRotateAxis*0.75, jawRotateAxis*+5+fireDir*1+fireSourceVel/2, 3.0,
+            fireSource+fireDir*4.0+jawRotateAxis*0.75, 
+	    jawRotateAxis*+5+fireDir*1+fireSourceVel/2, 3.0,
             1.0+1.0*fireballCharge, 1.0
             );
-        ParticleSystem::getInstance()->CreateParticles(
+        particlesystem->CreateParticles(
             time, prevTime, 25*fireballCharge,
-            fireSource+fireDir*4.0-jawRotateAxis*0.75, jawRotateAxis*-5+fireDir*1+fireSourceVel/2, 3.0,
+            fireSource+fireDir*4.0-jawRotateAxis*0.75, 
+	    jawRotateAxis*-5+fireDir*1+fireSourceVel/2, 3.0,
             1.0+1.0*fireballCharge, 1.0
             );
     }
     // Create fireball
     else if (fireballCharge>0.1) {
-        ParticleSystem::getInstance()->
+        particlesystem->
 	  CreateFireball(fireSource+fireDir*5,
 			 (fireDir*75.0)+(fireSourceVel*0.5),
 			 2.0+fireballCharge*5.0);
@@ -213,9 +244,9 @@ void Dragon::OnLogicEnter(float timeStep){
     
     // Create breath weapon particles
     if (isUsingBreathWeapon()) {
-      Vec3 sourceVec = fireSource+fireDir*3;
-      Vec3 destinationVec = (fireDir*60.0)+(fireSourceVel*0.5);
-      ParticleSystem::getInstance()->
+      Vector<3,float> sourceVec = fireSource+fireDir*3;
+      Vector<3,float> destinationVec = (fireDir*60.0)+(fireSourceVel*0.5);
+      particlesystem->
 	CreateParticles(time, prevTime, 100,
 			sourceVec , destinationVec,
 			7.0, 2.0, 2.0);
@@ -249,10 +280,11 @@ void Dragon::toggleRenderState(){
 }
 
 bool Dragon::isUsingBreathWeapon(){
-    return usingBreathWeapon;
+   return usingBreathWeapon;
 }
 
 void Dragon::useBreathWeapon( bool input ) {
+    target->SetActive(input);
     usingBreathWeapon = input;
 }
 

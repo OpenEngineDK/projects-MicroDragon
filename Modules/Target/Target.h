@@ -1,22 +1,30 @@
 #ifndef _TARGET_H_
 #define _TARGET_H_
 
-#include "../../Common/Vec3.h"
+// using templates
+#include <Math/Vector.h>
+
+// inherits from
 #include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
 
+class Island;
+
 using OpenEngine::Core::IModule;
+using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 
 class Target : public IModule, public IRenderNode {
 private:
-  Target();
-  static Target* instance;
-  Vec3 target;
+  bool active;
+  Vector<3,float> target;
+  Island* island;
 public:
-  static Target* getInstance();
+  Target(Island* island);
   ~Target();
+
+  void SetActive(bool active);
 
   void Initialize();
   void Deinitialize();
@@ -25,9 +33,9 @@ public:
 
   virtual void Apply(IRenderingView* rv);
   
-  Vec3 getTarget();
+  Vector<3,float> getTarget();
   void setTarget(float x, float y, float z);
-  void setTarget( Vec3 v );
+  void setTarget( Vector<3,float> v );
   void printTarget();
 };
 

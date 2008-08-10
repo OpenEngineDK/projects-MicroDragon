@@ -1,49 +1,63 @@
 #ifndef _BOID_H_
 #define _BOID_H_
 
-//#include "../../setup.h"
-#include "../../Common/Vec3.h"
+//include templated classes only
+#include <Math/Vector.h>
+
+using OpenEngine::Math::Vector;
+
+class BoidsSystem;
+class Island;
+class OscSurface;
+class ParticleSystem;
 
 class Boid {
 public:
-    Boid(Vec3 position, Vec3 forward, Vec3 velocity, Vec3 color);
+    Boid(Island* island, OscSurface* oscsurface, BoidsSystem* boidssystem, 
+	 Vector<3,float> position, Vector<3,float> forward,
+	 Vector<3,float> velocity, Vector<3,float> color);
     ~Boid();
-    void addDesiredVelocity( Vec3 steering, double weight );
-    void addSteering( Vec3 steering, double weight );
-    void addExternalForce( Vec3 force );
-    void addExternalImpulse( Vec3 impulse );
+    void addDesiredVelocity( Vector<3,float> steering, double weight );
+    void addSteering( Vector<3,float> steering, double weight );
+    void addExternalForce( Vector<3,float> force );
+    void addExternalImpulse( Vector<3,float> impulse );
     void handleBoid( Boid* boid );
-    void HandleFire(Vec3 firePosition, float fireStrength);
-    void gotoTarget( Vec3 target, double radius, double weight, bool squared );
-    Vec3 getPosition();
-    Vec3 getVelocity();
+    void HandleFire(Vector<3,float> firePosition, float fireStrength);
+    void gotoTarget( Vector<3,float> target, double radius, double weight, bool squared );
+    Vector<3,float> getPosition();
+    Vector<3,float> getVelocity();
     void update( double timeDelta );
 	
     void draw( );
 
 private:
-    Vec3 color;
+    ParticleSystem* particlesystem;
+    BoidsSystem* boidssystem;
+    OscSurface* oscsurface;
+    Island* island;
+
+    Vector<3,float> color;
     bool airborn;
 
     void draw2(  bool shadow );
   
     // Steering:
     void updateSteering( double timeDelta );
-    Vec3 steering_accumulated;
-    Vec3 steering_force;
+    Vector<3,float> steering_accumulated;
+    Vector<3,float> steering_force;
   
     // Vehicle model:
     void updatePhysics( double timeDelta );
     double mass, max_force, max_speed;
-    Vec3 position, velocity, forward, up, left;
+    Vector<3,float> position, velocity, forward, up, left;
   
     // Additional physics:
-    Vec3 external_force_accumulated;
-    Vec3 external_impulse_accumulated;
+    Vector<3,float> external_force_accumulated;
+    Vector<3,float> external_impulse_accumulated;
   
     // Locomotion
     void updateLocomotion( double timeDelta );
-    Vec3 getUprightVector();
+    Vector<3,float> getUprightVector();
     double running, walkCycle;
   
     // Effects

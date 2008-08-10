@@ -13,15 +13,17 @@ SET( PROJECT_SOURCES
   Common/utilities.cpp
   Common/OpenGLUtil.cpp
   Common/FaceListUtil.cpp
-  Common/Vec3.cpp
   Common/random.cpp
   Common/Follower.cpp
 
   Modules/Island/Island.cpp
-  Modules/OscSurface/OscSurface.cpp
-  Modules/Intro/Intro.cpp
+  Modules/Island/HeightMap.cpp
+
   Modules/Target/Target.cpp
+  Modules/OscSurface/OscSurface.cpp
+
   Modules/InputGrabber/InputGrabber.cpp
+  Modules/Intro/Intro.cpp
 
   Modules/Boid/Boid.cpp
   Modules/Boid/BoidsSystem.cpp
@@ -29,7 +31,7 @@ SET( PROJECT_SOURCES
   Modules/Particle/ParticleSystem.cpp
   Modules/Particle/Particle.cpp
   Modules/Particle/FireBall.cpp
-
+  
   Modules/Dragon/Dragon.cpp
   Modules/Dragon/Tube.cpp
 )
@@ -58,6 +60,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   # Extension dependencies
   Extensions_GenericHandlers
   Extensions_OBJResource
+  Extensions_RAWResource
   Extensions_TGAResource
   Extensions_SDL
 )

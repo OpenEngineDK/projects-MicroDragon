@@ -1,14 +1,25 @@
 #ifndef _BOIDS_SYSTEM_H_
 #define _BOIDS_SYSTEM_H_
 
-#include "../../Common/Vec3.h"
-#include "Boid.h"
-
+//inherits from
+#include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
-#include <Renderers/IRenderingView.h>
-#include <Resources/IModelResource.h>
+
+//templated classes
+#include <Math/Vector.h>
+
+//forward reference
+class Boid;
+class Island;
+class OscSurface;
+namespace OpenEngine {
+    namespace Renderers {
+        class IRenderingView;
+    }
+}
 
 using OpenEngine::Core::IModule;
+using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 
@@ -17,7 +28,7 @@ using OpenEngine::Renderers::IRenderingView;
 class BoidsSystem : public IModule, public IRenderNode {
 public:
   bool enabled;
-    static BoidsSystem* getInstance();
+    BoidsSystem(Island* island, OscSurface* oscsurface);
     ~BoidsSystem();
     void toggleRenderState();
 
@@ -29,10 +40,8 @@ public:
 
     virtual void Apply(IRenderingView* rv);
   
-    void OnLogicEnter(float timeStep);
-    void OnRenderEnter(float timeStep);
-    void HandleFire(Vec3 position, float strength);
-    void HandleFireball(Vec3 position, float strength);
+    void HandleFire(Vector<3,float> position, float strength);
+    void HandleFireball(Vector<3,float> position, float strength);
     void IncNumberOfShownBoids();
     void DecNumberOfShownBoids();
     void IncAlignment();
@@ -40,10 +49,11 @@ public:
     float getAlignment();
 
 private:
+    Island* island;
+    OscSurface* oscsurface;
+
     unsigned int numberOfShownBoids;
     float alignment;
-    BoidsSystem();
-    static BoidsSystem* instance;
     Boid* boids[numberOfBoids];
 
     bool disableLogic;

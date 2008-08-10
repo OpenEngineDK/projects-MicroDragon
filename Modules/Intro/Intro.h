@@ -1,41 +1,41 @@
 #ifndef _INTRO_H_
 #define _INTRO_H_
 
-//#include "../InputGrabber.h"
-//#include "../../setup.h"
-//#include "../../Common/gltga.h"
-//#include "../../Common/glm.h"
-#include "../../Common/Vec3.h"
-#include <Core/IModule.h>
+// inherits from
 #include <Renderers/IRenderNode.h>
-#include <Renderers/IRenderingView.h>
-#include <Resources/IModelResource.h>
-#include <Meta/OpenGL.h>
-#include <Scene/GeometryNode.h>
-#include <Scene/TransformationNode.h>
+#include <Core/IModule.h>
+
+// using templates
+#include <Math/Vector.h>
+
+// typedefs
+#include <string>
+
+//forward reference
+class Boid;
+class InputGrabber;
+namespace OpenEngine {
+    namespace Renderers {
+        class IRenderingView;
+    }
+    namespace Scene {
+        class TransformationNode;
+    }
+}
 
 using OpenEngine::Core::IModule;
+using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
-using OpenEngine::Scene::GeometryNode;
 using OpenEngine::Scene::TransformationNode;
-
-#define GLM_POINTS   (1 << 0)       /* render with only vertices */
-#define GLM_FLAT     (1 << 1)       /* render with facet normals */
-#define GLM_SMOOTH   (1 << 2)       /* render with vertex normals */
-#define GLM_TEXTURE  (1 << 3)       /* render with texture coords */
-#define GLM_COLOR    (1 << 4)       /* render with colors */
-#define GLM_MATERIAL (1 << 5)       /* render with materials */
+using std::string;
 
 class Intro : public IModule, public IRenderNode {
 private:
-  Intro( /*InputGrabber* input*/ );
-  //InputGrabber* input;
-    static Intro* instance;
+    InputGrabber* inputgrabber;
     float blend;
-    //GLMmodel* creditModel;
 
-    Vec3 pos;
+    Vector<3,float> pos;
     float fadeoutTime; //in seconds
     float timepassed;
     bool fadeDone;
@@ -54,8 +54,7 @@ private:
     TransformationNode* LoadIntoDisplaylist(string filename, int id);
 
 public:
-    static Intro* getInstance();
-    //static Intro* getInstance( InputGrabber* input );
+    Intro(InputGrabber* inputgrabber);
     ~Intro();
 
     bool isDone();
@@ -68,7 +67,6 @@ public:
     void Initialize(IRenderingView* rv);
 
     virtual void Apply(IRenderingView* rv);
-
 };
 
 #endif

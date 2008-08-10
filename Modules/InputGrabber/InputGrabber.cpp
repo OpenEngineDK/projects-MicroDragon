@@ -1,34 +1,26 @@
 #include "InputGrabber.h"
 
-#include "../Island/Island.h"
-#include "../../Common/utilities.h"
+// from project
+#include "../../Common/Follower.h"
 #include "../../Common/OpenGLUtil.h"
+#include "../../Common/VectorExt.h"
+#include "../../Common/utilities.h"
+#include "../Island/Island.h"
+#include "../Target/Target.h"
 
-#include <Math/Math.h>
+// from OpenEngine Core
+#include <Display/Camera.h>
 #include <Logging/Logger.h>
+#include <Math/Math.h>
+#include <Math/Quaternion.h>
+#include <Renderers/IRenderingView.h>
 
 using OpenEngine::Math::PI;
+using OpenEngine::Math::Quaternion;
 
-Vec3 cameraDir;
-Vec3 cameraPos;
-
-InputGrabber* InputGrabber::instance = NULL;
-
-InputGrabber* InputGrabber::getInstance() {
-    if( instance == NULL )
-      throw Exception("inputgrabber is null");
-    return instance;
-}
-
-InputGrabber* InputGrabber::getInstance(Camera* camera) {
-    if( instance == NULL )
-        instance = new InputGrabber(camera);
-    return instance;
-}
-
-InputGrabber::InputGrabber(Camera* camera) : camera(camera) {
+InputGrabber::InputGrabber(Camera* camera, Island* island, Target* target)
+  : camera(camera), island(island), target(target) {
     pauseTime = false;
-    target = NULL;
     focus = NULL;
     reset();
 }
@@ -39,7 +31,6 @@ InputGrabber::~InputGrabber() {
 }
 
 void InputGrabber::reset() {
-    target = Target::getInstance();
     target->setTarget(0,0,0);
     float rX = 11.5, rY = 0, d = 115;
     reset( rX, rY, d );
@@ -56,8 +47,8 @@ void InputGrabber::reset( float rotX, float rotY, float distance ) {
 
     if( focus != NULL )
         delete focus;
-    focus = new Follower(Vec3(0,0,0));
-    multiplier = 1;
+    focus = new Follower(Vector<3,float>(0,0,0));
+    multiplier = 3; //cpvc: 1
     timeFactor = 1;
 }
 
@@ -75,10 +66,6 @@ void InputGrabber::togglePause() {
     pauseTime = !pauseTime;
 }
 
-Vec3 InputGrabber::getTarget() {
-    return target->getTarget();
-}
-
 void InputGrabber::Initialize() {
     reset();
 }
@@ -86,15 +73,13 @@ void InputGrabber::Initialize() {
 void InputGrabber::Deinitialize() {
 }
 
-void InputGrabber::Process(const float deltaTime, const float percent) {
-  OnLogicEnter(deltaTime/1000.0);
-}
-
 bool InputGrabber::IsTypeOf(const std::type_info& inf) {
     return (typeid(InputGrabber) == inf);
 }
 
-void InputGrabber::OnLogicEnter(float timeStep) {
+void InputGrabber::Process(const float deltaTime, const float percent) {
+    float timeStep = deltaTime/1000.0;
+
     if (rotX>89.9) rotX = 89.9;
     if (rotX< -20) rotX =  -20;
     if (distance>500) distance = 500;
@@ -102,22 +87,36 @@ void InputGrabber::OnLogicEnter(float timeStep) {
     if (globalScale<1/distance) globalScale = 1/distance;
 
     // Initial camera setup
-    focus->update(getTarget(), 30.0/sqrt(distance), 40.0/sqrt(distance), timeStep );
-    Vec3 focusPos = focus->getPos();
-    focusPos = Island::getInstance()->heightAt(focusPos);
-    focusPos.y = max(focusPos.y+1.0f,1.0f);
-    cameraDir = Vec3(0,0,1).rotateAround(Vec3(1,0,0),-(rotX)/180.0*PI).rotateAround(Vec3(0,1,0),-rotY/180.0*PI);
+    focus->update(target->getTarget(), 30.0/sqrt(distance),
+		  40.0/sqrt(distance), timeStep );
+
+    Vector<3,float> focusPos = focus->getPos();
+    focusPos = island->heightAt(focusPos);
+    focusPos[1] = max(focusPos[1]+1.0f,1.0f);
+
+    cameraDir =  VectorExt::
+      RotateAround( VectorExt::
+		    RotateAround(Vector<3,float>(0,0,1), 
+				 Vector<3,float>(1,0,0),
+				 -(rotX)/180.0*PI),
+		    Vector<3,float>(0,1,0),
+		    -rotY/180.0*PI);
+
     cameraPos = (cameraDir*distance)+focusPos;
 
     // ClearSight code to move camera free of blocking landscape
     float rotAdjust = 0;
     for (int d=1; d<230; d++) {
         float sDist = (d+0.0)/200.0*distance;
-        Vec3 camPos = (cameraDir*sDist)+focusPos;
-        Vec3 camPosOnSurface = Island::getInstance()->heightAt(camPos)+Vec3(0,1,0)*(-sDist*0.2*0.7);
-        if ( camPos.y < camPosOnSurface.y ) {
-            float _rotAdjust = (camPos-focusPos).getAngle(camPosOnSurface-focusPos);
-            rotAdjust = max(rotAdjust,_rotAdjust);
+
+        Vector<3,float> camPos = (cameraDir*sDist)+focusPos;
+        Vector<3,float> camPosOnSurface = island->
+	  heightAt(camPos)+Vector<3,float>(0,1,0)*(-sDist*0.2*0.7);
+
+        if ( camPos[1] < camPosOnSurface[1] ) {
+	  float _rotAdjust = VectorExt::
+	    GetAngle( (camPos-focusPos),camPosOnSurface-focusPos);
+	  rotAdjust = max(rotAdjust,_rotAdjust);
         }
     }
     rotXI = rotXI+(rotX+rotAdjust-rotXI)*min(1.0f,timeStep*5);
@@ -126,8 +125,16 @@ void InputGrabber::OnLogicEnter(float timeStep) {
     globalScaleI = distanceI*pow(globalScale/globalScaleI,timeStep*5);
 
     // Final camera setup
-    focusPos = focusPos + Vec3(0,1,0)*distanceI*0.2;
-    cameraDir = Vec3(0,0,1).rotateAround(Vec3(1,0,0),-(rotXI)/180.0*PI).rotateAround(Vec3(0,1,0),-rotYI/180.0*PI);
+    focusPos = focusPos + Vector<3,float>(0,1,0)*distanceI*0.2;
+
+    cameraDir = VectorExt::
+      RotateAround(VectorExt::
+		   RotateAround(Vector<3,float>(0,0,1),
+				Vector<3,float>(1,0,0),
+				-(rotXI)/180.0*PI),
+		   Vector<3,float>(0,1,0),
+		   -rotYI/180.0*PI);
+
     cameraPos = (cameraDir*distanceI)+focusPos;
 
 
@@ -141,30 +148,14 @@ void InputGrabber::OnLogicEnter(float timeStep) {
 
     //logger.info << "rotXI: " << rotXI << " rotYI: " << rotYI << logger.end;
 
-    Vector<3,float> cPos(0.0,0.0,-distance);
-
-    // up and down
+    Quaternion<float> y(0.0, PI*(rotYI/180.0), 0.0);
     Quaternion<float> x(PI*((double)rotXI/(double)180.0),
 			Vector<3,float>(1.0,0.0,0.0));
-    cPos = x.RotateVector(cPos);
+    Vector<3,float> cPos =
+      (y*x).RotateVector( Vector<3,float>(0.0,0.0,-distance) );
 
-
-    Vector<3,float> yAxis(0.0,1.0,0.0);
-    //yAxis = x.RotateVector(yAxis);
-
-    // left and right
-    Quaternion<float> y(PI*((double)rotYI/(double)180.0),
-			yAxis);
-    cPos = y.RotateVector(cPos);
-
-    
     camera->SetPosition(cPos);
-    //camera->SetPosition(Vector<3,float>(cameraPos.x,cameraPos.y,cameraPos.z));
-
-
-    Vec3 t = Target::getInstance()->getTarget();
-    Vector<3,float> pos(t.x,t.y,t.z);
-    camera->LookAt(pos);
+    camera->LookAt(target->getTarget());
 }
 
 void InputGrabber::incMultiplier() {
@@ -195,7 +186,9 @@ void InputGrabber::scaleGlobal(float scale) {
 void InputGrabber::rotateViewRelative( float x, float y ) {
     x *= multiplier;
     y *= multiplier;
-    // Upward motion should make camera go upwards at once despite intelligent camera
+
+    // Upward motion should make camera go upwards
+    // at once despite intelligent camera
     if (x>0 && rotX<rotXI) { 
         rotX = rotXI;
     }
@@ -204,7 +197,8 @@ void InputGrabber::rotateViewRelative( float x, float y ) {
     rotY += y;
 }
 
-void InputGrabber::rotateViewAbsolute(float x, float y, float distance, float globalScale) {
+void InputGrabber::rotateViewAbsolute(float x, float y, 
+				      float distance, float globalScale) {
     rotX = customFmod(x+180,360)-180;
     rotY = customFmod(y-rotY+180,360)-180+rotY;
     this->distance = distance;
@@ -216,16 +210,18 @@ void InputGrabber::updateDistance( float distance ) {
 }
 
 void InputGrabber::moveTarget( float x, float z ) {
-    x *= multiplier;
-    z *= multiplier;
-    Vec3 screenZ = Vec3(-sin(rotY*PI/180.0),0,cos(rotY*PI/180.0));
-    Vec3 screenX = Vec3(0,1,0).getCross(screenZ);
-    Vec3 targetP = getTarget();
-
-    targetP = targetP + (screenX*x+screenZ*z)*sqrt(distance);
-    target->setTarget(targetP);
+    Vector<3,float> zDir = camera->GetPosition();
+    zDir[1] = 0.0;
+    if (!zDir.IsZero())
+      zDir.Normalize();
+    Vector<3,float> xDir = zDir % Vector<3,float>(0.0,-1.0,0.0);
+    target->setTarget( target->getTarget() + (xDir*x+zDir*z) * multiplier );
 }
 
 bool InputGrabber::isTimePaused() {
   return pauseTime;
+}
+
+Vector<3,float> InputGrabber::GetCameraDir() {
+  return cameraDir;
 }

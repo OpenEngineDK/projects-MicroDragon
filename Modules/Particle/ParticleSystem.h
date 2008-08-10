@@ -1,22 +1,39 @@
 #ifndef _PARTICLE_SYSTEM_H_
 #define _PARTICLE_SYSTEM_H_
 
-#include "Particle.h"
-
-#include "../../Common/Vec3.h"
-#include "../../Common/random.h"
-
+// inherits from
 #include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
-#include <Renderers/IRenderingView.h>
+
+// using templates
+#include <Math/Vector.h>
+
+// usnig typedef
+#include <vector>
+
+class BoidsSystem;
+class Island;
+class Particle;
+class RandomGenerator;
+namespace OpenEngine {
+  namespace Display {
+    class IViewingVolume;
+  }
+  namespace Renderers {
+    class IRenderingView;
+  }
+}
 
 using OpenEngine::Core::IModule;
+using OpenEngine::Display::IViewingVolume;
+using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
+using std::vector;
 
 class ParticleSystem : public IModule, public IRenderNode {
 public:
-    static ParticleSystem* getInstance();
+  ParticleSystem(Island* island, IViewingVolume* vv, BoidsSystem* boidssystem);
     ~ParticleSystem();
 
     void Initialize();
@@ -31,13 +48,15 @@ public:
     void OnRenderEnter(float timeStep);
 
     void CreateParticles(double time, double prevTime, float particlesPerSecond,
-                         Vec3 position, Vec3 velocity, float velocityRandomness,
+                         Vector<3,float> position, Vector<3,float> velocity,
+			 float velocityRandomness,
                          double size, double lifeTime);
-    void CreateFireball(Vec3 position, Vec3 velocity, float size);
+    void CreateFireball(Vector<3,float> position, Vector<3,float> velocity, float size);
 
-private:
-    ParticleSystem();
-    static ParticleSystem* instance;
+ private:
+    IViewingVolume* vv;
+    Island* island;
+    BoidsSystem* boidssystem;
     RandomGenerator* randObject;
     vector<Particle*> particles;
     vector<Particle*> tmpParticles;

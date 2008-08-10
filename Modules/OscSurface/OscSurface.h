@@ -1,19 +1,28 @@
 #ifndef _OSC_SURFACE_H_
 #define _OSC_SURFACE_H_
 
+// using templates
+#include <Math/Vector.h>
+
+// inherits from
 #include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
-#include <Renderers/IRenderingView.h>
-#include "../../Common/Vec3.h"
 
-using OpenEngine::Renderers::IRenderNode;
+class Island;
+namespace OpenEngine {
+    namespace Renderers {
+        class IRenderingView;
+    }
+}
+
 using OpenEngine::Core::IModule;
+using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Math::Vector;
 
 class OscSurface : public IModule, public IRenderNode {
 private:
-  OscSurface();
-  static OscSurface* instance;
+  Island* island;
 
   float   *z_norm;
   double runningTime;
@@ -27,11 +36,11 @@ private:
   double  dt;  // integration time step
   float   taux2, tauy2, tauxy2;
 
-  Vec3 translate;
+  Vector<3,float> translate;
   float scale;
 
 public:
-  static OscSurface* getInstance();
+  OscSurface(Island* island);
   ~OscSurface();
   void Initialize();
   void Deinitialize();

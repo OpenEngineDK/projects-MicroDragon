@@ -1,46 +1,64 @@
 #include "Particle.h"
+
+#include "../InputGrabber/InputGrabber.h"
 #include "../Island/Island.h"
 #include "../../Common/OpenGLUtil.h"
+#include "../../Common/VectorExt.h"
 
 #include <Math/Math.h>
+#include <Math/Matrix.h>
+#include <Math/Quaternion.h>
+#include <Display/IViewingVolume.h>
 
 using OpenEngine::Math::PI;
+using OpenEngine::Math::Matrix;
+using OpenEngine::Math::Quaternion;
 
-extern Vec3 cameraDir;
 extern unsigned int textures[10];
 
-Particle::Particle(Vec3 position, Vec3 velocity, double size, double lifeTime, double randomValue) {
+Particle::Particle(Island* island, IViewingVolume* vv, Vector<3,float> position, Vector<3,float> velocity, double size, double lifeTime, double randomValue) {
+    this->island = island;
+    this->vv = vv;
     this->position = position;
-    this->forward = forward.normalize();
+    if (!forward.IsZero())
+      forward.Normalize();
+    this->forward = forward;
     this->velocity = velocity;
     this->size = size;
     this->randomValue = randomValue;
     lifeTimeTotal = lifeTime;
     lifeTimeLeft = lifeTime;
 
-    up = Vec3(0,1,0);
-    left = up.getCross(forward);
+    up = Vector<3,float>(0,1,0);
+    left = up%(forward);
     mass = 1.0;
     max_force = 10.0;
     max_speed = 5.0;
-    external_force_accumulated = Vec3(0,0,0);
-    external_impulse_accumulated = Vec3(0,0,0);
+    external_force_accumulated = Vector<3,float>(0,0,0);
+    external_impulse_accumulated = Vector<3,float>(0,0,0);
     dead = false;
 }
 
 Particle::~Particle(){
 }
 
-Vec3 Particle::getPosition() { return position; }
-Vec3 Particle::getVelocity() { return velocity; }
+Vector<3,float> Particle::getPosition() { 
+  return position; 
+}
 
-bool Particle::isDead() { return dead; }
+Vector<3,float> Particle::getVelocity() { 
+  return velocity; 
+}
 
-void Particle::addExternalForce( Vec3 force ) {
+bool Particle::isDead() { 
+  return dead;
+}
+
+void Particle::addExternalForce( Vector<3,float> force ) {
     external_force_accumulated = external_force_accumulated + force;
 }
 
-void Particle::addExternalImpulse( Vec3 impulse ) {
+void Particle::addExternalImpulse( Vector<3,float> impulse ) {
     external_impulse_accumulated = external_impulse_accumulated + impulse;
 }
 
@@ -52,39 +70,53 @@ void Particle::update( double timeDelta ) {
 
 void Particle::updatePhysics( double timeDelta ) {
     // Add external force
-    Vec3 external_acceleration = external_force_accumulated*(1/mass)*timeDelta;
-    external_force_accumulated = Vec3(0,0,0);
-    velocity = (velocity+external_acceleration);
+    Vector<3,float> external_acceleration = 
+      external_force_accumulated*(1/mass)*timeDelta;
+    velocity += external_acceleration;
+
+    external_force_accumulated = Vector<3,float>(0,0,0);
 
     // Add external impulse
-    Vec3 external_impulse = external_impulse_accumulated*(1/mass);
-    external_impulse_accumulated = Vec3(0,0,0);
-    velocity = (velocity+external_impulse);
+    Vector<3,float> external_impulse = external_impulse_accumulated*(1/mass);
+    external_impulse_accumulated = Vector<3,float>(0,0,0);
+    velocity += external_impulse;
 
     // Update
-    position = position+(velocity*timeDelta);
+    position += velocity * timeDelta;
 	
-    if (position.y<Island::getInstance()->heightAt(position).y-0.1) {
-        velocity = Vec3(randomValue*2-1,randomValue*2-1,randomValue*2-1)*3;
-        position = Island::getInstance()->heightAt(position);
+    if (position[1]<island->heightAt(position)[1]-0.1) {
+        velocity = Vector<3,float>(randomValue*2-1,randomValue*2-1,
+				   randomValue*2-1)*3;
+        position = island->heightAt(position);
     }
 }
 
-void Particle::draw( ) {
+bool Particle::IsCloserToCamera(Particle* p) {
+  return ( this->DistanceToCamera() < p->DistanceToCamera() );
+}
+
+float Particle::DistanceToCamera() {
+  return (vv->GetPosition() - this->position).GetLength();
+}
+
+void Particle::draw() {
     if (dead) return;
 
-    forward = cameraDir;
-    left = (Vec3(0,1,0).getCross(forward)).normalize().rotateAround(forward,2*PI*randomValue*3);
-    up = (forward.getCross(left)).normalize();
+    glPushMatrix();
 
-    glPushMatrix(); // Head
-    float matrix[] = {
-        left.x    ,left.y    ,left.z    ,0,
-        up.x      ,up.y      ,up.z      ,0,
-        forward.x ,forward.y ,forward.z ,0,
-        position.x,position.y,position.z,1};
-    glMultMatrixf(matrix);
-  
+    Quaternion<float> direction = vv->GetDirection().GetInverse();
+    Matrix<4,4,float> m = direction.GetMatrix().GetExpanded();
+    Matrix<4,4,float> t;
+    // write the position information
+    t(3,0) = position.Get(0);
+    t(3,1) = position.Get(1);
+    t(3,2) = position.Get(2);
+    Matrix<4,4,float> matrix = m * t;
+
+    float f[16] = {0};
+    matrix.ToArray(f);
+    glMultMatrixf(f);
+   
     double life = lifeTimeLeft/lifeTimeTotal;
     double life2 = pow(life,2.0);
   
@@ -98,7 +130,7 @@ void Particle::draw( ) {
 
     glTexCoord2f(1.0f, 1.0f);
     glNormal3f(  1,  1,  1 );
-	glVertex3f(  1,  1,  0 );
+    glVertex3f(  1,  1,  0 );
 
     glTexCoord2f(1.0f, 0.0f);
     glNormal3f(  1, -1,  1 );
