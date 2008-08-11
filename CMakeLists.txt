@@ -18,6 +18,7 @@ SET( PROJECT_SOURCES
 
   Modules/Island/Island.cpp
   Modules/Island/HeightMap.cpp
+  Modules/Island/Tree.cpp
 
   Modules/Target/Target.cpp
   Modules/OscSurface/OscSurface.cpp

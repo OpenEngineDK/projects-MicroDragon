@@ -4,6 +4,7 @@
 
 #include <Core/Exceptions.h>
 #include <Geometry/FaceSet.h>
+#include <Renderers/IRenderingView.h>
 #include <Resources/ITextureResource.h>
 #include <Scene/GeometryNode.h>
 
@@ -14,31 +15,37 @@ using std::max;
 
 HeightMap::HeightMap(ITextureResourcePtr heightMap,
 		     ITextureResourcePtr texture,
-		     float scale, float heightRatio) {
+		     float scale, float heightRatio, int stepSize) {
 
     this->scale = scale;
     HEIGHT_RATIO = heightRatio;
+    IMAGE_SIZE = heightMap->GetWidth();
+    // @todo: GetHeight()
+    STEP_SIZE = stepSize;
+    MAP_SIZE = IMAGE_SIZE/STEP_SIZE;
+
 
     heightArray =
       new unsigned char[(IMAGE_SIZE/STEP_SIZE)*(IMAGE_SIZE/STEP_SIZE)];
     normalArray =
       new Vector<3,float>[(IMAGE_SIZE/STEP_SIZE)*(IMAGE_SIZE/STEP_SIZE)];
 
+    // @todo: move translate to island
     translate = Vector<3,float>(-150,-3.75,-150);
 
     if (heightMap->GetDepth() != 8)
       throw Exception("can only generate heightmap from 8bit textures");
 
-    CalcHeightArray( heightMap );
-    CalcNormalArray();
+    CalculateHeightArray( heightMap );
+    CalculateNormalArray();
 
     geometry = ConstructGeometry(texture);
 
-    //this->AddNode(geometry);
+    this->AddNode(geometry);
 }
 
-GeometryNode* HeightMap::GetGeometryNode() {
-  return geometry;
+void HeightMap::Apply(IRenderingView* rv) {
+    VisitSubNodes(*rv);
 }
 
 HeightMap::~HeightMap() {
@@ -103,7 +110,7 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
     return new GeometryNode(faces);
 }
 
-void HeightMap::CalcHeightArray(ITextureResourcePtr hMap) {
+void HeightMap::CalculateHeightArray(ITextureResourcePtr hMap) {
   int width = hMap->GetWidth();
   int height = hMap->GetHeight();
   unsigned char* data = hMap->GetData();
@@ -116,7 +123,7 @@ void HeightMap::CalcHeightArray(ITextureResourcePtr hMap) {
     }
 }
 
-void HeightMap::CalcNormalArray() {
+void HeightMap::CalculateNormalArray() {
     for ( int X = 0; X < MAP_SIZE; X++ )
         for ( int Y = 0; Y < MAP_SIZE; Y++ ) {
             normalArray[X+(Y*MAP_SIZE)] = 

@@ -16,22 +16,25 @@ namespace OpenEngine {
     namespace Renderers {
         class IRenderingView;
     }
+    namespace Scene {
+      class TransformationNode;
+    }
 }
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Scene::TransformationNode;
 using namespace std;
 
 class Island : public IRenderNode {
 private:
     HeightMap* heightMap;
-    Vector<3,float>** treePositions;
+    TransformationNode* trees;
 
     bool enabled; //original inherited from MTree - Module
     bool bRender; /* Polygon Flag Set To TRUE By Default */
 
-    void drawTrees( Vector<3,float> pos );
     int numberOfTrees;
     bool renderTrees;
     bool enableTexture;
