@@ -13,6 +13,7 @@ darcs /extensions/OpenGLRenderer  http://openengine.dk/code/extensions/OpenGLRen
 darcs /extensions/GenericHandlers http://openengine.dk/code/extensions/GenericHandlers
 darcs /extensions/OBJResource http://openengine.dk/code/extensions/OBJResource
 darcs /extensions/TGAResource http://openengine.dk/code/extensions/TGAResource
+darcs /extensions/RAWResource http://openengine.dk/code/extensions/RAWResource
 
 # windows libraries
 win32 /libraries http://openengine.dk/data/libraries/boost-win32.zip
