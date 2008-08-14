@@ -232,12 +232,14 @@ void Dragon::OnLogicEnter(float timeStep){
     neck->update(startP,
 		 Vector<3,float>(0.1,1,0),Vector<3,float>(1,0,0),
 		 fireSource,newHeadDir,fireSource-startP,false);
-
+    
+	bluelines.push_back( new Line( fireSource,( fireSource + newHeadDir )*2.0 ) );
+	bluelines.push_back( new Line( fireSource,( fireSource + (fireSource-startP) )*2.0 ) );
+	
     for(int i=0; i< Tube::links; i++) {
-      redlines.push_back( new Line( neck->getLinkPosition(i),( neck->getLinkPosition(i)+neck->getLinkX(i) )*10.0 ) );
-      greenlines.push_back( new Line( neck->getLinkPosition(i),( neck->getLinkPosition(i)+neck->getLinkY(i) )* 10.0 ) );
-      bluelines.push_back( new Line( neck->getLinkPosition(i), (neck->getLinkPosition(i)+neck->getLinkZ(i) )* 10.0 ) );
-
+      redlines.push_back( new Line( neck->getLinkPosition(i),( neck->getLinkPosition(i)+neck->getLinkX(i)*5 ) ) );
+      greenlines.push_back( new Line( neck->getLinkPosition(i),( neck->getLinkPosition(i)+neck->getLinkY(i)*5 ) ) );
+      bluelines.push_back( new Line( neck->getLinkPosition(i), (neck->getLinkPosition(i)+neck->getLinkZ(i)*5 ) ) );
     }
     /*
     bluelines.push_back( new Line(startP,startP+Vector<3,float>(1,0,0)) );

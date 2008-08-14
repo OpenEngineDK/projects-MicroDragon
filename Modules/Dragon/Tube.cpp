@@ -197,11 +197,12 @@ void Tube::update(Vector<3,float> pointA, Vector<3,float> dirA,
     
     // Calculate current y vector, but without the twisting:
     if ((linkZ[c]-linkZ[c-1]).GetLength()>0) {
-      linkY[c] = VectorExt::
+      /*linkY[c] = VectorExt::
 	RotateAround((linkY[c-1].GetNormalize()),
 		     linkZ[c-1]%(linkZ[c]),
 		     acos(linkZ[c]*(linkZ[c-1]))
-		     );
+		     );*/
+		linkY[c] = linkZ[c] % (linkY[c-1]%linkZ[c]);
     } else {
       linkY[c] = linkY[c-1];
     }
