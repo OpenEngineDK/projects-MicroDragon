@@ -24,6 +24,7 @@
 
 // OpenEngine library
 #include <Display/Camera.h>
+#include <Display/Frustum.h>
 #include <Display/SDLFrame.h>
 #include <Devices/SDLInput.h>
 #include <Display/Viewport.h>
@@ -66,12 +67,13 @@ GameFactory::GameFactory() {
 
     // Setup camera
     camera = new Camera( *(new ViewingVolume()) );
-    camera->SetFar(2500);
-    camera->SetNear(0.1);
+    Frustum* frustum = new Frustum(*camera);
+    frustum->SetFar(2500);
+    frustum->SetNear(0.1);
 
     // Main viewport
     Viewport* viewport = new Viewport(*frame);
-    viewport->SetViewingVolume(camera);
+    viewport->SetViewingVolume(frustum);
 
     // Add a rendering view to the renderer
     renderer = new Renderer();
@@ -260,6 +262,7 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
     tpNode->AddNode(pat);
     engine.AddModule(*pat);
 
+    // %todo replace island with target
     Dragon* dragon = new Dragon(island,target,pat);
     scene->AddNode(dragon);
     engine.AddModule(*dragon);

@@ -9,6 +9,8 @@
 
 #include <Math/Math.h>
 #include <iostream>
+
+#include <Logging/Logger.h>
 #include <Renderers/IRenderingView.h>
 #include <Resources/DirectoryManager.h>
 #include <Resources/ITextureResource.h>
@@ -23,10 +25,7 @@ using OpenEngine::Resources::ITextureResourcePtr;
 using OpenEngine::Resources::ResourceManager;
 
 Island::Island() {
-    bRender = true;
-    enabled = true;
-    renderTrees = true;
-    enableTexture = true;
+    bRender = enabled = renderTrees = enableTexture = true;
     numberOfRenderStates = 5;
     renderState = numberOfRenderStates-1;
 
@@ -54,18 +53,27 @@ Island::Island() {
 				0,
 				zz+fmod(cos((double)(xx+1000*zz))*100000,10));
             pos = heightMap->HeightAt(pos);
-            if (
-                heightMap->NormalAt(Vector<3,float>(xx   ,0,zz   ))[1]>0.8 &&
-                heightMap->NormalAt(Vector<3,float>(xx+10,0,zz   ))[1]>0.8 &&
-                heightMap->NormalAt(Vector<3,float>(xx   ,0,zz+10))[1]>0.8 &&
-                heightMap->NormalAt(Vector<3,float>(xx+10,0,zz+10))[1]>0.8 &&
-                pos[1]>2 &&
-                (xx*xx+zz*zz)>50*50
-                ) {
+
+	    // only place tree in lanscape where slope is less than maxSlope
+	    float maxSlope = 0.8;
+            if (heightMap->
+		NormalAt(Vector<3,float>(xx,0,zz))[1]>maxSlope &&
+                
+		heightMap->
+		NormalAt(Vector<3,float>(xx+10,0,zz))[1]>maxSlope &&
+
+                heightMap->
+		NormalAt(Vector<3,float>(xx,0,zz+10))[1]>maxSlope &&
+                
+		heightMap->
+		NormalAt(Vector<3,float>(xx+10,0,zz+10))[1]>maxSlope &&
+
+                pos[1]>2 && (xx*xx+zz*zz)>50*50) {
 	      trees->AddNode(new Tree(pos));
 	      numberOfTrees++;
             }
         }
+    logger.info << "number of trees: " << numberOfTrees << logger.end;
 }
 
 Island::~Island() {
