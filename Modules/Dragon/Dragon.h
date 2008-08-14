@@ -8,6 +8,10 @@
 #include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
 
+#include <Geometry/Line.h>
+
+#include <list>
+
 class Follower;
 class Island;
 class ParticleSystem;
@@ -16,6 +20,9 @@ class Tube;
 namespace OpenEngine {
     namespace Scene {
         class TransformationNode;
+    }
+    namespace Geometry {
+      class Line;
     }
 }
 
@@ -32,11 +39,18 @@ using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Scene::TransformationNode;
 
+using OpenEngine::Geometry::Line;
+using std::list;
+
 const static int HEAD_DISPLAY_ID = 10;
 const static int JAW_DISPLAY_ID  = 11;
 
 class Dragon : public IModule, public IRenderNode {
 public:
+  list<Line*> redlines;
+  list<Line*> bluelines;
+  list<Line*> greenlines;
+
   bool enabled;
 
   Dragon(Island* island, Target* target, ParticleSystem* particlesystem);

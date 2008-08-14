@@ -41,8 +41,8 @@ private:
     float linkT[links];
     Vector<3,float> linkX[links];
     Vector<3,float> linkY[links];
-    Vector<3,float> linkZ[links];
-    Vector<3,float> linkP[links];
+    Vector<3,float> linkZ[links]; // z axiz for local coordinate system
+    Vector<3,float> linkP[links]; // origin for coordinate system
     float linkM[links][16];
 
     Vector<3,float> spline(float s);

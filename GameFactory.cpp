@@ -30,6 +30,7 @@
 #include <Display/Viewport.h>
 #include <Display/ViewingVolume.h>
 #include <Renderers/IRenderNode.h>
+#include <Renderers/OpenGL/LightRenderer.h>
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
 #include <Resources/ResourceManager.h>
@@ -84,6 +85,8 @@ GameFactory::GameFactory() {
 
     DisplayListTransformer* dlt = new DisplayListTransformer(rv);
     renderer->initialize.Attach(*dlt);
+
+    renderer->preProcess.Attach( *(new LightRenderer()) );
 }
 
 /**
