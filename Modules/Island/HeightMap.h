@@ -33,6 +33,7 @@ class HeightMap : public IRenderNode {
 private:
     float scale;
     Vector<3,float> translate;
+    unsigned int height, width, size;
     int IMAGE_SIZE; /* Size Of Our .RAW Height Map */
     int STEP_SIZE; /* Width And Height Of Each Quad */
     int MAP_SIZE;
@@ -41,13 +42,13 @@ private:
     unsigned char* heightArray;
     Vector<3,float>* normalArray; /* Holds The Normal Map Data */
 
-    Vector<3,float> Point(int X, int Z);
-    Vector<3,float> Normal(int X, int Z);
-    Vector<3,float> Color(int X, int Z);
+    inline Vector<3,float> Point(int X, int Z);
+    inline Vector<3,float> Normal(int X, int Z);
+    inline Vector<3,float> Color(int X, int Z);
     GeometryNode* ConstructGeometry(ITextureResourcePtr texture);
     void CalculateHeightArray(ITextureResourcePtr hMap);
     void CalculateNormalArray();
-    float Height(int X, int Z);
+    inline float Height(int X, int Z);
 
 public:
     HeightMap(ITextureResourcePtr heightMap, ITextureResourcePtr texture,
@@ -55,8 +56,8 @@ public:
     virtual ~HeightMap();
 
     virtual void Apply(IRenderingView* rv);
-
-    float HeightAt(float x, float z);
+    
+    inline float HeightAt(float x, float z);
     Vector<3,float> HeightAt(Vector<3,float> p);
     Vector<3,float> NormalAt(Vector<3,float> p);
 };

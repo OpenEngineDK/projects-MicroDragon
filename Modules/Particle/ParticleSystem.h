@@ -12,7 +12,7 @@
 #include <vector>
 
 class BoidsSystem;
-class Island;
+class HeightMap;
 class Particle;
 class RandomGenerator;
 namespace OpenEngine {
@@ -33,7 +33,7 @@ using std::vector;
 
 class ParticleSystem : public IModule, public IRenderNode {
 public:
-  ParticleSystem(Island* island, IViewingVolume* vv, BoidsSystem* boidssystem);
+  ParticleSystem(HeightMap* heightMap, IViewingVolume* vv, BoidsSystem* boidssystem);
     ~ParticleSystem();
 
     void Initialize();
@@ -55,7 +55,7 @@ public:
 
  private:
     IViewingVolume* vv;
-    Island* island;
+    HeightMap* heightMap;
     BoidsSystem* boidssystem;
     RandomGenerator* randObject;
     vector<Particle*> particles;

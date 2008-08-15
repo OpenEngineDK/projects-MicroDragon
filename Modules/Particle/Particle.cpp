@@ -1,7 +1,7 @@
 #include "Particle.h"
 
 #include "../InputGrabber/InputGrabber.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 #include "../../Common/OpenGLUtil.h"
 #include "../../Common/VectorExt.h"
 
@@ -16,8 +16,8 @@ using OpenEngine::Math::Quaternion;
 
 extern unsigned int textures[10];
 
-Particle::Particle(Island* island, IViewingVolume* vv, Vector<3,float> position, Vector<3,float> velocity, double size, double lifeTime, double randomValue) {
-    this->island = island;
+Particle::Particle(HeightMap* heightMap, IViewingVolume* vv, Vector<3,float> position, Vector<3,float> velocity, double size, double lifeTime, double randomValue) {
+    this->heightMap = heightMap;
     this->vv = vv;
     this->position = position;
     if (!forward.IsZero())
@@ -84,10 +84,10 @@ void Particle::updatePhysics( double timeDelta ) {
     // Update
     position += velocity * timeDelta;
 	
-    if (position[1]<island->heightAt(position)[1]-0.1) {
+    if (position[1]<heightMap->HeightAt(position)[1]-0.1) {
         velocity = Vector<3,float>(randomValue*2-1,randomValue*2-1,
 				   randomValue*2-1)*3;
-        position = island->heightAt(position);
+        position = heightMap->HeightAt(position);
     }
 }
 

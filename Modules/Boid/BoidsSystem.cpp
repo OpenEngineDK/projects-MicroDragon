@@ -1,7 +1,7 @@
 #include "BoidsSystem.h"
 
 #include "Boid.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
 
 #include <Math/Math.h>
@@ -9,8 +9,8 @@
 
 using OpenEngine::Math::PI;
 
-BoidsSystem::BoidsSystem(Island* island, OscSurface* oscsurface) {
-    this->island = island;
+BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface) {
+    this->heightMap = heightMap;
     this->oscsurface = oscsurface;
     enabled = true;
     numberOfRenderStates = 3;
@@ -31,7 +31,7 @@ void BoidsSystem::Initialize() {
         for (int j=0; j<gridSize; j++) {
             float val = (i+gridSize*j)*1.0/numberOfBoids;
             boids[i*gridSize+j] =
-	      new Boid(island,oscsurface,this,
+	      new Boid(heightMap,oscsurface,this,
 		       Vector<3,float>(i*2-(gridSize-1),0,
 				       j*2-(gridSize-1)),
 		       Vector<3,float>(0,0,1),

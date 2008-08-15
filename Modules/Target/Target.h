@@ -8,7 +8,7 @@
 #include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
 
-class Island;
+class HeightMap;
 
 using OpenEngine::Core::IModule;
 using OpenEngine::Math::Vector;
@@ -19,9 +19,9 @@ class Target : public IModule, public IRenderNode {
 private:
   bool active;
   Vector<3,float> target;
-  Island* island;
+  HeightMap* heightMap;
 public:
-  Target(Island* island);
+  Target(HeightMap* heightMap);
   ~Target();
 
   void SetActive(bool active);

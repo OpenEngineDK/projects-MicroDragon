@@ -11,7 +11,7 @@
 
 #include "../../Common/FaceListUtil.h"
 #include "../../Common/VectorExt.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 #include "../Target/Target.h"
 #include "../Particle/ParticleSystem.h"
 
@@ -33,8 +33,8 @@ using namespace OpenEngine::Renderers::OpenGL;
 using OpenEngine::Math::PI;
 using OpenEngine::Math::Quaternion;
 
-Dragon::Dragon(Island* island, Target* target, ParticleSystem* particlesystem)
-  : island(island), target(target), particlesystem(particlesystem) {
+Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesystem)
+  : heightMap(heightMap), target(target), particlesystem(particlesystem) {
     jawPos = 0.0f;
     enableTexture = enabled = true;
     numberOfRenderStates = 3;
@@ -48,6 +48,8 @@ Dragon::Dragon(Island* island, Target* target, ParticleSystem* particlesystem)
     glScalef(scale,scale,scale);
     glTranslatef(0.0,0.0,0.8);
     */
+
+    folder = "New-Dragon/";
 
     headNode = new TransformationNode();    
     this->AddNode(headNode);
@@ -72,21 +74,21 @@ Dragon::Dragon(Island* island, Target* target, ParticleSystem* particlesystem)
     jawAngleNode->AddNode(jawNode);
 
     IModelResourcePtr craniumRes = ResourceManager<IModelResource>::
-      Create("Dragon/dragon-head.obj");
+      Create(folder + "DragonHead.obj");
     craniumRes->Load();
     //FaceListUtil::Unitize(gNode->GetFaceSet());
     //FaceListUtil::OverrideSoftNormsWithHardNorm(gNode->GetFaceSet());
     craniumNode->AddNode(craniumRes->GetSceneNode());
 	
     IModelResourcePtr jawRes = ResourceManager<IModelResource>::
-      Create("Dragon/dragon-jaw.obj");
+      Create(folder + "DragonJaw.obj");
     jawRes->Load();
     //FaceListUtil::Unitize(gNode->GetFaceSet());
     //FaceListUtil::OverrideSoftNormsWithHardNorm(gNode->GetFaceSet());
     jawNode->AddNode(jawRes->GetSceneNode());
 }
 
-Dragon::~Dragon(){
+Dragon::~Dragon() {
 }
 
 void Dragon::Initialize() {
@@ -100,7 +102,7 @@ void Dragon::Initialize() {
     headPos = new Follower(target->getTarget());
 
    ITextureResourcePtr neck = ResourceManager<ITextureResource>
-     ::Create("Dragon/neck.tga");
+     ::Create(folder + "DragonNeckColor128x512.tga");
    neck->Load();
    TextureLoader::LoadTextureResource(neck);
    neckTextureID =  neck->GetID();
@@ -193,10 +195,10 @@ void Dragon::OnLogicEnter(float timeStep){
 	  ((fireSource-startP).GetNormalize()*dragonLength*0.8);
     }
 
-    Vector<3,float> fireSourceHeight    = island->heightAt(fireSource);
+    Vector<3,float> fireSourceHeight    = heightMap->HeightAt(fireSource);
 
-    Vector<3,float> fireSourceMidHeight = island->
-      heightAt(fireSource*0.7+startP*0.3);
+    Vector<3,float> fireSourceMidHeight = heightMap->
+      HeightAt(fireSource*0.7+startP*0.3);
 
     if (fireSource[1]-fireSourceHeight[1]<5) {
         fireSource = fireSourceHeight+Vector<3,float>(0,5,0);

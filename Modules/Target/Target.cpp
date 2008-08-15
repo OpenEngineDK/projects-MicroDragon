@@ -1,14 +1,14 @@
 #include "Target.h"
 
 #include "../../Common/OpenGLUtil.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 
 #include <Meta/OpenGL.h>
 #include <Logging/Logger.h>
 
 using namespace std;
 
-Target::Target(Island* island) : island(island) {
+Target::Target(HeightMap* heightMap) : heightMap(heightMap) {
     target = Vector<3,float>(0,0,0);
     active = false;
 }
@@ -23,7 +23,7 @@ void Target::Deinitialize() {
 }
 
 void Target::Process(const float deltaTime, const float percent) {
-  target = island->heightAt(target);
+  target = heightMap->HeightAt(target);
     target[1] = max(target[1]+1.0f,1.0f);
 }
 

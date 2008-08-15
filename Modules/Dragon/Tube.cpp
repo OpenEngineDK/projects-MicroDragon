@@ -49,14 +49,20 @@ float* Tube::getLinkMatrix(int linkIndex) {
   return linkM[linkIndex]; 
 }
 
-Vector<3,float> Tube::spline(float s) {
+Vector<3,float> Tube::spline(float s) { //bezier spline, with 4 control points
+  //s value from 0-1
+
     float t = 1-s;
+
     Vector<3,float> v01 = p1*t+p0*s;
     Vector<3,float> v12 = p0*t+p3*s;
     Vector<3,float> v23 = p3*t+p2*s;
+
     Vector<3,float> v012 = v01*t+v12*s;
     Vector<3,float> v123 = v12*t+v23*s;
-    return v012*t+v123*s;
+
+
+    return v012*t+v123*s; //returns a point on the spline
 }
 
 void Tube::update(Vector<3,float> pointA, Vector<3,float> dirA,

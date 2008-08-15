@@ -7,7 +7,7 @@
 
 // from same project
 #include "../InputGrabber/InputGrabber.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
 #include "../Particle/ParticleSystem.h"
 #include "../../Common/OpenGLUtil.h"
@@ -16,14 +16,16 @@
 
 // OpenEngine Core
 #include <Math/Math.h>
-
+#include <math.h>
 
 using OpenEngine::Math::PI;
+using std::min;
+using std::max;
 
-Boid::Boid(Island* island, OscSurface* oscsurface, BoidsSystem* boidssystem,
+Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssystem,
 	   Vector<3,float> position, Vector<3,float> forward,
 	   Vector<3,float> velocity, Vector<3,float> color ) {
-    this->island = island;
+    this->heightMap = heightMap;
     this->oscsurface = oscsurface;
     this->boidssystem = boidssystem;
 
@@ -136,7 +138,7 @@ void Boid::updatePhysics( double timeDelta ) {
   
     // Add steepness force and navigation
     if (!airborn) {
-      Vector<3,float> steepnessForce = island->normalAt(position);
+      Vector<3,float> steepnessForce = heightMap->NormalAt(position);
       steepnessForce[1] = 0.0; //cpvc *Vector<3,float>(1,0,1);
         if (steepnessForce.GetLength()>0.2) {
             steepnessForce = steepnessForce.GetNormalize()*pow(steepnessForce.GetLength(),3);
@@ -145,9 +147,9 @@ void Boid::updatePhysics( double timeDelta ) {
     }
     
     // Look ahead at landscape in front
-    float aheadAndRight = island->heightAt(position+forward*7-left*7)[1];
-    float aheadAndLeft  = island->heightAt(position+forward*7+left*7)[1];
-    float aheadStraight = island->heightAt(position+forward*7       )[1];
+    float aheadAndRight = heightMap->HeightAt(position+forward*7-left*7)[1];
+    float aheadAndLeft  = heightMap->HeightAt(position+forward*7+left*7)[1];
+    float aheadStraight = heightMap->HeightAt(position+forward*7       )[1];
     // Add lava repulsion (force away from areas lower than zero)
     if (aheadAndRight<0) addSteering(left*-1*-5,1.0);
     if (aheadAndLeft <0) addSteering(left   *-5,1.0);
@@ -174,9 +176,9 @@ void Boid::updatePhysics( double timeDelta ) {
     Vector<3,float> positionPrev = position;
     position = position+(velocity*timeDelta);
     
-    if (position[1]<island->heightAt(position)[1]+10.0*timeDelta) airborn = false; else airborn = true;
+    if (position[1]<heightMap->HeightAt(position)[1]+10.0*timeDelta) airborn = false; else airborn = true;
     
-    Vector<3,float> onGround = island->heightAt(position);
+    Vector<3,float> onGround = heightMap->HeightAt(position);
     if (position[1]<onGround[1]) {
         position = onGround;
     }
@@ -193,7 +195,7 @@ void Boid::updatePhysics( double timeDelta ) {
 }
 
 void Boid::updateLocomotion( double timeDelta ) {
-    Vector<3,float> normal = island->normalAt(position);
+    Vector<3,float> normal = heightMap->NormalAt(position);
     if (airborn && drowning) normal = Vector<3,float>(0,1,0);
 
     // Orientation
@@ -287,12 +289,12 @@ void Boid::draw( ) {
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glPushMatrix();
     glColor4f( 0.0, 0.0, 0.0, 0.3 );
-    Vector<3,float> n = island->normalAt(position);
+    Vector<3,float> n = heightMap->NormalAt(position);
     float matrix[] = {
         1, -n[0], 0,0,
         0,    1, 0,0,
         0, -n[2], 1,0,
-        position[0],island->heightAt(position)[1]+0.1,position[2],1};
+        position[0],heightMap->HeightAt(position)[1]+0.1,position[2],1};
     glMultMatrixf(matrix);
     glScalef( 1.0, 0.0, 1.0 );
     draw2(true);

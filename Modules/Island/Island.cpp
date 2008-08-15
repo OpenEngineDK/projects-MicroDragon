@@ -15,31 +15,18 @@
 #include <Resources/DirectoryManager.h>
 #include <Resources/ITextureResource.h>
 #include <Resources/ResourceManager.h>
-#include <Resources/RAWResource.h>
 #include <Scene/TransformationNode.h>
 
-using OpenEngine::Resources::RAWResource;
 using OpenEngine::Resources::DirectoryManager;
 using OpenEngine::Resources::ITextureResource;
 using OpenEngine::Resources::ITextureResourcePtr;
 using OpenEngine::Resources::ResourceManager;
 
-Island::Island() {
+Island::Island(HeightMap* heightMap) : heightMap(heightMap) {
     bRender = enabled = renderTrees = enableTexture = true;
     numberOfRenderStates = 5;
     renderState = numberOfRenderStates-1;
 
-    //init HeightMap
-    string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
-    ITextureResourcePtr hMap = 
-      ITextureResourcePtr(new RAWResource(filename, 1024, 1024, 8));
-    hMap->Load();
-        
-    ITextureResourcePtr texture =
-      ResourceManager<ITextureResource>::Create("Island/ground.tga");
-
-    heightMap = new HeightMap(hMap, texture, 300.0, 0.25, 16);
-    hMap->Unload();
     this->AddNode(heightMap);
 
     trees = new TransformationNode();
@@ -54,21 +41,23 @@ Island::Island() {
 				zz+fmod(cos((double)(xx+1000*zz))*100000,10));
             pos = heightMap->HeightAt(pos);
 
-	    // only place tree in lanscape where slope is less than maxSlope
-	    float maxSlope = 0.8;
+	    // only place tree in lanscape where slope is less than maxY
+	    float maxY = 0.8; // max value of normal y coordinate
             if (heightMap->
-		NormalAt(Vector<3,float>(xx,0,zz))[1]>maxSlope &&
+		NormalAt(Vector<3,float>(xx,0,zz))[1]>maxY &&
                 
 		heightMap->
-		NormalAt(Vector<3,float>(xx+10,0,zz))[1]>maxSlope &&
+		NormalAt(Vector<3,float>(xx+10,0,zz))[1]>maxY &&
 
                 heightMap->
-		NormalAt(Vector<3,float>(xx,0,zz+10))[1]>maxSlope &&
+		NormalAt(Vector<3,float>(xx,0,zz+10))[1]>maxY &&
                 
 		heightMap->
-		NormalAt(Vector<3,float>(xx+10,0,zz+10))[1]>maxSlope &&
+		NormalAt(Vector<3,float>(xx+10,0,zz+10))[1]>maxY &&
 
-                pos[1]>2 && (xx*xx+zz*zz)>50*50) {
+                pos[1]>2 && // no trees below waterline (lava)
+		
+		(xx*xx+zz*zz)>50*50) { //no trees closer than 50 from center
 	      trees->AddNode(new Tree(pos));
 	      numberOfTrees++;
             }
@@ -114,16 +103,3 @@ void Island::toggleRenderState(){
     renderState++;
     renderState %= numberOfRenderStates;
 }
-
-Vector<3,float> Island::normalAt(Vector<3,float> p) {
-  return heightMap->NormalAt(p);
-}
-
-float Island::heightAt(float x, float z) {
-  return heightMap->HeightAt(x,z);
-}
-
-Vector<3,float> Island::heightAt(Vector<3,float> p) {
-  return heightMap->HeightAt(p);
-}
-

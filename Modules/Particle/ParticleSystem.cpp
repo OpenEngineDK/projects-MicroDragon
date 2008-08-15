@@ -2,7 +2,7 @@
 #include "FireBall.h"
 
 #include "../Boid/BoidsSystem.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 //#include "../Dragon/Dragon.h"
 //#include "../../Common/gltga.h"
 
@@ -25,9 +25,9 @@ using namespace std;
 unsigned int textures[10];
 int textureIndex;
 
-ParticleSystem::ParticleSystem(Island* island, IViewingVolume* vv,
+ParticleSystem::ParticleSystem(HeightMap* heightMap, IViewingVolume* vv,
 			       BoidsSystem* boidssystem) {
-  this->island = island;
+  this->heightMap = heightMap;
   this->vv = vv;
   this->boidssystem = boidssystem;
 }
@@ -106,7 +106,7 @@ void ParticleSystem::CreateParticles(double time, double prevTime,
                                  );
         Vector<3,float> pos = position;
         if (endI-startI>1) pos = pos-velocity*2/2*(time-prevTime);
-        Particle* p = new Particle(island,vv,
+        Particle* p = new Particle(heightMap,vv,
                                    pos,
                                    velocity+(randomVector*velocityRandomness),
                                    size,
@@ -158,7 +158,7 @@ void ParticleSystem::CreateFireball(Vector<3,float> position, Vector<3,float> ve
                              randObject->ran_uniform_0to1()-0.5,
                              randObject->ran_uniform_0to1()-0.5
                              );
-    FireBall* p = new FireBall( island, vv, boidssystem, this, position, velocity, size, 2.0, randObject->ran_uniform_0to1()*1.0 );
+    FireBall* p = new FireBall( heightMap, vv, boidssystem, this, position, velocity, size, 2.0, randObject->ran_uniform_0to1()*1.0 );
     particles.push_back(p);
 }
 

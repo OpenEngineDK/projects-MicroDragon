@@ -5,7 +5,7 @@
 #include "../../Common/OpenGLUtil.h"
 #include "../../Common/VectorExt.h"
 #include "../../Common/utilities.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 #include "../Target/Target.h"
 
 // from OpenEngine Core
@@ -15,11 +15,15 @@
 #include <Math/Quaternion.h>
 #include <Renderers/IRenderingView.h>
 
+#include <math.h>
+
 using OpenEngine::Math::PI;
 using OpenEngine::Math::Quaternion;
+using std::min;
+using std::max;
 
-InputGrabber::InputGrabber(Camera* camera, Island* island, Target* target)
-  : camera(camera), island(island), target(target) {
+InputGrabber::InputGrabber(Camera* camera, HeightMap* heightMap, Target* target)
+  : camera(camera), heightMap(heightMap), target(target) {
     pauseTime = false;
     focus = NULL;
     reset();
@@ -91,7 +95,7 @@ void InputGrabber::Process(const float deltaTime, const float percent) {
 		  40.0/sqrt(distance), timeStep );
 
     Vector<3,float> focusPos = focus->getPos();
-    focusPos = island->heightAt(focusPos);
+    focusPos = heightMap->HeightAt(focusPos);
     focusPos[1] = max(focusPos[1]+1.0f,1.0f);
 
     cameraDir =  VectorExt::
@@ -110,8 +114,8 @@ void InputGrabber::Process(const float deltaTime, const float percent) {
         float sDist = (d+0.0)/200.0*distance;
 
         Vector<3,float> camPos = (cameraDir*sDist)+focusPos;
-        Vector<3,float> camPosOnSurface = island->
-	  heightAt(camPos)+Vector<3,float>(0,1,0)*(-sDist*0.2*0.7);
+        Vector<3,float> camPosOnSurface = heightMap->
+	  HeightAt(camPos)+Vector<3,float>(0,1,0)*(-sDist*0.2*0.7);
 
         if ( camPos[1] < camPosOnSurface[1] ) {
 	  float _rotAdjust = VectorExt::

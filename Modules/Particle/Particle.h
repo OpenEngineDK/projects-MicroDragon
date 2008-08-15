@@ -5,7 +5,7 @@
 
 using OpenEngine::Math::Vector;
 
-class Island;
+class HeightMap;
 namespace OpenEngine {
   namespace Display {
     class IViewingVolume;
@@ -16,7 +16,7 @@ using OpenEngine::Display::IViewingVolume;
 
 class Particle {
 public:
-  Particle(Island* island, IViewingVolume* vv, Vector<3,float> position,
+  Particle(HeightMap* heightMap, IViewingVolume* vv, Vector<3,float> position,
 	   Vector<3,float> velocity, double size, double lifeTime, 
 	   double randomValue);
     virtual ~Particle();
@@ -32,7 +32,7 @@ public:
     float DistanceToCamera();
 
 protected:
-    Island* island;
+    HeightMap* heightMap;
     IViewingVolume* vv;
     bool dead;
     double size;

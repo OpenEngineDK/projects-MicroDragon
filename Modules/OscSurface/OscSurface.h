@@ -8,7 +8,7 @@
 #include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
 
-class Island;
+class HeightMap;
 namespace OpenEngine {
     namespace Renderers {
         class IRenderingView;
@@ -22,7 +22,7 @@ using OpenEngine::Math::Vector;
 
 class OscSurface : public IModule, public IRenderNode {
 private:
-  Island* island;
+  HeightMap* heightMap;
 
   float   *z_norm;
   double runningTime;
@@ -40,7 +40,7 @@ private:
   float scale;
 
 public:
-  OscSurface(Island* island);
+  OscSurface(HeightMap* heightMap);
   ~OscSurface();
   void Initialize();
   void Deinitialize();

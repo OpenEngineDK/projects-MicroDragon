@@ -1,7 +1,7 @@
 #include "OscSurface.h"
 
 #include "../../Common/utilities.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 
 #include <Core/Exceptions.h>
 #include <Logging/Logger.h>
@@ -14,7 +14,7 @@
 using OpenEngine::Core::Exception;
 using OpenEngine::Utils::Convert;
 
-OscSurface::OscSurface(Island* island) : island(island) {
+OscSurface::OscSurface(HeightMap* heightMap) : heightMap(heightMap) {
     M = 80;
     N = 80;
     aspect = 1.0;
@@ -113,7 +113,7 @@ void OscSurface::preFrame( double time ) {
                     - zOld[i*N+j];
 
                 // Block waves where there is solid land
-                if (island->heightAt(i*scale/(M-1)+translate[0],j*scale/(N-1)+translate[2])>0)
+                if (heightMap->HeightAt(i*scale/(M-1)+translate[0],j*scale/(N-1)+translate[2])>0)
                     zNew[i*N+j] = 0;
             }
 

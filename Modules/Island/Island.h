@@ -41,17 +41,12 @@ private:
     int renderState, numberOfRenderStates;
 
 public:
-    Island();
+    Island(HeightMap* heightMap);
     ~Island();
 
     virtual void Apply(IRenderingView* rv);
 
     void toggleRenderState();
-
-    //temp
-    Vector<3,float> normalAt(Vector<3,float> p);
-    float heightAt(float x, float z);
-    Vector<3,float> heightAt(Vector<3,float> p);
 };
 
 #endif

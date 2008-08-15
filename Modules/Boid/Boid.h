@@ -7,13 +7,13 @@
 using OpenEngine::Math::Vector;
 
 class BoidsSystem;
-class Island;
+class HeightMap;
 class OscSurface;
 class ParticleSystem;
 
 class Boid {
 public:
-    Boid(Island* island, OscSurface* oscsurface, BoidsSystem* boidssystem, 
+    Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssystem, 
 	 Vector<3,float> position, Vector<3,float> forward,
 	 Vector<3,float> velocity, Vector<3,float> color);
     ~Boid();
@@ -34,17 +34,19 @@ private:
     ParticleSystem* particlesystem;
     BoidsSystem* boidssystem;
     OscSurface* oscsurface;
-    Island* island;
+    HeightMap* heightMap;
 
     Vector<3,float> color;
     bool airborn;
 
     void draw2(  bool shadow );
+
+    // accumulated variables. to accumulate force for all boids before applying it
   
     // Steering:
     void updateSteering( double timeDelta );
-    Vector<3,float> steering_accumulated;
-    Vector<3,float> steering_force;
+    Vector<3,float> steering_accumulated; // the directions the boids would like to go
+    Vector<3,float> steering_force; // the direction they have strength to go 
   
     // Vehicle model:
     void updatePhysics( double timeDelta );
@@ -52,7 +54,10 @@ private:
     Vector<3,float> position, velocity, forward, up, left;
   
     // Additional physics:
+
+    // how they are affected by other boids
     Vector<3,float> external_force_accumulated;
+    // explotions
     Vector<3,float> external_impulse_accumulated;
   
     // Locomotion

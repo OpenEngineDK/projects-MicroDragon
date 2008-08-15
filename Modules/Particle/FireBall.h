@@ -9,7 +9,7 @@ class ParticleSystem;
 
 class FireBall: public Particle {
 public:
-  FireBall(Island* island, IViewingVolume* vv, BoidsSystem* boidssystem,
+  FireBall(HeightMap* heightMap, IViewingVolume* vv, BoidsSystem* boidssystem,
 	   ParticleSystem* particlesystem, Vector<3,float> position,
 	   Vector<3,float> velocity, double size, double lifeTime, 
 	   double randomValue);

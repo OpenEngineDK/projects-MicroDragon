@@ -10,7 +10,7 @@
 
 //forward reference
 class Boid;
-class Island;
+class HeightMap;
 class OscSurface;
 namespace OpenEngine {
     namespace Renderers {
@@ -28,7 +28,7 @@ using OpenEngine::Renderers::IRenderingView;
 class BoidsSystem : public IModule, public IRenderNode {
 public:
   bool enabled;
-    BoidsSystem(Island* island, OscSurface* oscsurface);
+    BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface);
     ~BoidsSystem();
     void toggleRenderState();
 
@@ -49,7 +49,7 @@ public:
     float getAlignment();
 
 private:
-    Island* island;
+    HeightMap* heightMap;
     OscSurface* oscsurface;
 
     unsigned int numberOfShownBoids;

@@ -12,6 +12,7 @@
 #include "LightFader.h"
 
 #include "Modules/Island/Island.h"
+#include "Modules/Island/HeightMap.h"
 #include "Modules/Target/Target.h"
 #include "Modules/InputGrabber/InputGrabber.h"
 #include "Modules/Intro/Intro.h"
@@ -45,6 +46,8 @@
 #include <Meta/OpenGL.h>
 #include <Utils/QuitHandler.h>
 
+#include <Resources/RAWResource.h>
+
 #include <Scene/VertexArrayTransformer.cpp>
 #include <Scene/DisplayListTransformer.h>
 
@@ -54,6 +57,8 @@
 using namespace OpenEngine::Devices;
 using namespace OpenEngine::Utils;
 using namespace OpenEngine::Renderers::OpenGL;
+
+using OpenEngine::Resources::RAWResource;
 
 /**
  * Factory constructor.
@@ -235,21 +240,33 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
     ResourceManager<IModelResource>::AddPlugin(new OBJPlugin());
     ResourceManager<ITextureResource>::AddPlugin(new TGAPlugin());
 
-    Island* island = new Island();
-    scene->AddNode(island);
+    //init HeightMap
+    string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
+    ITextureResourcePtr hMap = 
+      ITextureResourcePtr(new RAWResource(filename, 1024, 1024, 8));
+    hMap->Load();
+        
+    ITextureResourcePtr texture =
+      ResourceManager<ITextureResource>::Create("Island/ground.tga");
 
-    Target* target = new Target(island);
+    HeightMap* heightMap = new HeightMap(hMap, texture, 300.0, 0.25, 16);
+
+    Island* island = new Island(heightMap);
+    scene->AddNode(island);
+    hMap->Unload();
+
+    Target* target = new Target(heightMap);
     scene->AddNode(target);
     engine.AddModule(*target);
 
     TransparencyNode* tpNode = new TransparencyNode();
     scene->AddNode(tpNode);
 
-    OscSurface* oscs = new OscSurface(island);
+    OscSurface* oscs = new OscSurface(heightMap);
     tpNode->AddNode(oscs);
     engine.AddModule(*oscs);
 
-    InputGrabber* inputgrabber = new InputGrabber(camera,island,target);
+    InputGrabber* inputgrabber = new InputGrabber(camera,heightMap,target);
     engine.AddModule(*inputgrabber);
 
     Intro* intro = new Intro(inputgrabber);
@@ -257,16 +274,16 @@ bool GameFactory::SetupEngine(IGameEngine& engine) {
     engine.AddModule(*intro);
 
     //@todo: Boids have transparent shadows
-    BoidsSystem* boids = new BoidsSystem(island, oscs);
+    BoidsSystem* boids = new BoidsSystem(heightMap, oscs);
     tpNode->AddNode(boids);
     engine.AddModule(*boids);
 
-    ParticleSystem* pat = new ParticleSystem(island,camera,boids);
+    ParticleSystem* pat = new ParticleSystem(heightMap,camera,boids);
     tpNode->AddNode(pat);
     engine.AddModule(*pat);
 
     // %todo replace island with target
-    Dragon* dragon = new Dragon(island,target,pat);
+    Dragon* dragon = new Dragon(heightMap,target,pat);
     scene->AddNode(dragon);
     engine.AddModule(*dragon);
 

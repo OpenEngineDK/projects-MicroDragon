@@ -8,12 +8,12 @@
 #include <Core/IModule.h>
 #include <Renderers/IRenderNode.h>
 
-#include <Geometry/Line.h>
+#include <string>
 
 #include <list>
 
 class Follower;
-class Island;
+class HeightMap;
 class ParticleSystem;
 class Target;
 class Tube;
@@ -41,19 +41,16 @@ using OpenEngine::Scene::TransformationNode;
 
 using OpenEngine::Geometry::Line;
 using std::list;
+using std::string;
 
 const static int HEAD_DISPLAY_ID = 10;
 const static int JAW_DISPLAY_ID  = 11;
 
 class Dragon : public IModule, public IRenderNode {
 public:
-  list<Line*> redlines;
-  list<Line*> bluelines;
-  list<Line*> greenlines;
-
   bool enabled;
 
-  Dragon(Island* island, Target* target, ParticleSystem* particlesystem);
+  Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesystem);
     ~Dragon();
     void toggleRenderState();
 
@@ -71,7 +68,7 @@ public:
     void useBreathWeapon( bool input );
     void chargeFireball( bool input );
 private:
-    Island* island;
+    HeightMap* heightMap;
     ParticleSystem* particlesystem;
     Target* target;
 
@@ -81,6 +78,12 @@ private:
     Tube* neck;
 
     unsigned int neckTextureID;
+
+    list<Line*> redlines;
+    list<Line*> bluelines;
+    list<Line*> greenlines;
+
+    string folder;
 
     double prevTime;
     float neckLength;

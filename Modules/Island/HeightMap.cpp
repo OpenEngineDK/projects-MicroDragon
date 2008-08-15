@@ -24,6 +24,9 @@ HeightMap::HeightMap(ITextureResourcePtr heightMap,
     STEP_SIZE = stepSize;
     MAP_SIZE = IMAGE_SIZE/STEP_SIZE;
 
+    width = texture->GetWidth() / STEP_SIZE;
+    height = texture->GetHeight() / STEP_SIZE;
+
 
     heightArray =
       new unsigned char[(IMAGE_SIZE/STEP_SIZE)*(IMAGE_SIZE/STEP_SIZE)];
@@ -133,9 +136,12 @@ void HeightMap::CalculateNormalArray() {
 }
 
 /* This Returns The Height From A Height Map Index */
-float HeightMap::Height(int X, int Z) {
-    int x = max(0,min(MAP_SIZE-1,X)); /* Error Check Our x Value */
-    int z = max(0,min(MAP_SIZE-1,Z)); /* Error Check Our y Value */
+float HeightMap::Height(int x, int z) {
+    x = max(0,min(MAP_SIZE-1,x)); // Error Check Our x Value
+    z = max(0,min(MAP_SIZE-1,z)); // Error Check Our y Value
+
+  //if( !((0 < x < width) && (0 < z < height)) ) return 0.0f;
+
     return heightArray[x + (z * MAP_SIZE)]/255.0f; /* Index Into Our Height Array And Return The Height */
 }
 
@@ -149,11 +155,21 @@ Vector<3,float> HeightMap::Point(int X, int Z) {
 float HeightMap::HeightAt(float x, float z) {
     float floatX = (x-translate[0])/scale*(MAP_SIZE-1);
     float floatZ = (z-translate[2])/scale*(MAP_SIZE-1);
+
+    float xDir = fmod(floatX,1.0f);
+    float zDir = fmod(floatZ,1.0f);
+
+    // takes the height at the four surrounding points 
+    // and makes an linear interpolation in both directions
     return (
-            Height(int(floatX)  ,int(floatZ)  )*(1-fmod(floatX,1.0f))*(1-fmod(floatZ,1.0f))+
-            Height(int(floatX)+1,int(floatZ)  )*(  fmod(floatX,1.0f))*(1-fmod(floatZ,1.0f))+
-            Height(int(floatX)  ,int(floatZ)+1)*(1-fmod(floatX,1.0f))*(  fmod(floatZ,1.0f))+
-            Height(int(floatX)+1,int(floatZ)+1)*(  fmod(floatX,1.0f))*(  fmod(floatZ,1.0f))
+            Height( ((int)floatX), (int)floatZ )*(1-xDir)*(1-zDir)+
+
+	    Height( ((int)floatX)+1, (int)floatZ )*xDir*(1-zDir)+
+
+	    Height( ((int)floatX), ((int)floatZ)+1)*(1-xDir)*zDir +
+
+	    Height( ((int)floatX)+1,((int)floatZ)+1 )*xDir*zDir
+
             )*HEIGHT_RATIO*scale+translate[1];
 }
 

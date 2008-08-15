@@ -1,5 +1,5 @@
 #include "FireBall.h"
-#include "../Island/Island.h"
+#include "../Island/HeightMap.h"
 #include "../../Common/OpenGLUtil.h"
 #include "../Boid/BoidsSystem.h"
 #include "ParticleSystem.h"
@@ -16,11 +16,11 @@ using OpenEngine::Math::Quaternion;
 
 extern unsigned int textures[10];
 
-FireBall::FireBall(Island* island, IViewingVolume* vv,
+FireBall::FireBall(HeightMap* heightMap, IViewingVolume* vv,
 		   BoidsSystem* boidssystem, ParticleSystem* particlesystem,
 		   Vector<3,float> position, Vector<3,float> velocity,
 		   double size, double lifeTime, double randomValue) 
-  : Particle(island, vv, position, velocity, size, lifeTime, randomValue) {
+  : Particle(heightMap, vv, position, velocity, size, lifeTime, randomValue) {
     this->boidssystem = boidssystem;
     this->particlesystem = particlesystem;
 }
@@ -42,8 +42,8 @@ void FireBall::updatePhysics( double timeDelta ) {
     // Update
     position = position+(velocity*timeDelta);
 	
-    if (position[1]<island->heightAt(position)[1]+1.0 && dead != true) {
-        position[1] = island->heightAt(position)[1]+1.0;
+    if (position[1]<heightMap->HeightAt(position)[1]+1.0 && dead != true) {
+        position[1] = heightMap->HeightAt(position)[1]+1.0;
         dead = true;
         boidssystem->HandleFireball(position,15*size);
         particlesystem->

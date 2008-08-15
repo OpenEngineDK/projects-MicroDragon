@@ -8,7 +8,7 @@
 #include <Math/Vector.h>
 
 class Follower;
-class Island;
+class HeightMap;
 class Target;
 
 namespace OpenEngine {
@@ -35,7 +35,8 @@ private:
     Vector<3,float> cameraPos;
 
     Camera* camera;
-    Island* island;
+    HeightMap* heightMap;
+
     Target* target;
     Follower* focus;
 
@@ -46,7 +47,7 @@ private:
     void reset( float rotX, float rotY, float distance );
 
 public:
-    InputGrabber(Camera* camera, Island* island, Target* target);
+    InputGrabber(Camera* camera, HeightMap* heightMap, Target* target);
     virtual ~InputGrabber();
     void Initialize();
     void Deinitialize();
