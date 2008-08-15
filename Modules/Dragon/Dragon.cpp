@@ -49,7 +49,7 @@ Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesys
     glTranslatef(0.0,0.0,0.8);
     */
 
-    folder = "New-Dragon/";
+    folder = "Dragon/";
 
     headNode = new TransformationNode();    
     this->AddNode(headNode);
