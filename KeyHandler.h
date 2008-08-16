@@ -11,7 +11,8 @@
 #define _KEY_HANDLER_H_
 
 // inherits from
-#include <Core/IModule.h>
+#include <Core/IListener.h>
+#include <Core/EngineEvents.h>
 
 class BoidsSystem;
 class Dragon;
@@ -46,7 +47,8 @@ using namespace OpenEngine::Scene;
 using namespace OpenEngine::Devices;
 using std::list;
 
-class KeyHandler : public IModule, public IListener<KeyboardEventArg> {
+class KeyHandler : public IListener<ProcessEventArg>,
+  public IListener<KeyboardEventArg> {
 private:
     InputGrabber* inputgrabber;
     Intro* intro;
@@ -69,12 +71,9 @@ public:
     void Handle(KeyboardEventArg arg);
     void HandleUp(Key key);
     void HandleDown(Key key);
-    void BindToEventSystem();
 
-    void Initialize();
-    void Deinitialize();
-    void Process(const float deltaTime, const float percent);
-    bool IsTypeOf(const std::type_info& inf);
+    void Handle(ProcessEventArg arg);
+
 };
 
 #endif // _KEY_HANDLER_H_

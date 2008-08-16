@@ -22,7 +22,12 @@ BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface) {
 BoidsSystem::~BoidsSystem() {
 }
 
-void BoidsSystem::Initialize() {
+void BoidsSystem::Handle(InitializeEventArg arg) {
+    timer.Start();
+    ResetBoids();
+}
+
+void BoidsSystem::ResetBoids() {
     numberOfShownBoids = numberOfBoids;
     alignment = 0.3;
     // Init objects
@@ -44,14 +49,6 @@ void BoidsSystem::Initialize() {
     }
 }
 
-void BoidsSystem::Deinitialize() {
-}
-
-
-bool BoidsSystem::IsTypeOf(const std::type_info& inf) {
-    return (typeid(BoidsSystem) == inf);
-}
-
 void BoidsSystem::Apply(IRenderingView* rv) {
     // Draw boids
     for (unsigned int i=0; i<numberOfShownBoids; i++) {
@@ -59,7 +56,10 @@ void BoidsSystem::Apply(IRenderingView* rv) {
     }
 }
 
-void BoidsSystem::Process(const float deltaTime, const float percent) {
+void BoidsSystem::Handle(ProcessEventArg arg) {
+    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    float deltaTime = ((float)dt)/1000.0;
+
     float timeStep = deltaTime / 1000.0;
     if (disableLogic) return;
     

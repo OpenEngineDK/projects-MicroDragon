@@ -3,13 +3,16 @@
 
 // inherits from
 #include <Renderers/IRenderNode.h>
-#include <Core/IModule.h>
+#include <Core/IListener.h>
+#include <Core/EngineEvents.h>
 
 // using templates
 #include <Math/Vector.h>
 
 // typedefs
 #include <string>
+
+#include <Utils/Timer.h>
 
 //forward reference
 class Boid;
@@ -23,17 +26,21 @@ namespace OpenEngine {
     }
 }
 
-using OpenEngine::Core::IModule;
+using OpenEngine::Core::IListener;
+using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Scene::TransformationNode;
+using OpenEngine::Utils::Timer;
 using std::string;
 
-class Intro : public IModule, public IRenderNode {
+class Intro : public IListener<ProcessEventArg>, public IRenderNode {
 private:
     InputGrabber* inputgrabber;
     float blend;
+
+    Timer timer;
 
     Vector<3,float> pos;
     float fadeoutTime; //in seconds
@@ -60,11 +67,7 @@ public:
     bool isDone();
     void disable();
 
-    void Initialize();
-    void Deinitialize();
-    void Process(const float deltaTime, const float percent);
-    bool IsTypeOf(const std::type_info& inf);
-    void Initialize(IRenderingView* rv);
+    void Handle(ProcessEventArg arg);
 
     virtual void Apply(IRenderingView* rv);
 };

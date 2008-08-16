@@ -19,11 +19,9 @@
 //#include "Modules/Particle/ParticleSystem.h"
 
 #include <Logging/Logger.h>
-#include <Core/IGameEngine.h>
 #include <Devices/IMouse.h>
 #include <Math/Vector.h>
 
-using OpenEngine::Core::IGameEngine;
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::TransformationNode;
 
@@ -61,24 +59,13 @@ void KeyHandler::Handle(KeyboardEventArg arg) {
     }
 }
 
-void KeyHandler::Initialize(){
-}
-
-void KeyHandler::Deinitialize() {
-}
-
-void KeyHandler::Process(const float deltaTime, const float percent) {
+void KeyHandler::Handle(ProcessEventArg arg) {
     list<Key>::iterator key;
     for(key=keysPressed.begin(); key != keysPressed.end(); ++key) {
       HandleDown(*key);
     }
-    //keysPressed.clear();
+    //keysPressed.clear(); //to disable repeatition when holding down a key
 }
-
-bool KeyHandler::IsTypeOf(const std::type_info& inf) {
-    return (typeid(KeyHandler) == inf);
-}
-
 
 void KeyHandler::HandleDown(Key key) {
 
@@ -141,7 +128,7 @@ void KeyHandler::HandleDown(Key key) {
       reset();
         break;
     case KEY_b:
-        boidssystem->Initialize();
+        boidssystem->ResetBoids();
         break;
     case KEY_t:
         boidssystem->DecAlignment();
@@ -231,8 +218,4 @@ void KeyHandler::HandleUp(Key key) {
     default:
         break;
     }
-}
-
-void KeyHandler::BindToEventSystem() {
-    IKeyboard::keyEvent.Attach(*this);
 }

@@ -16,19 +16,9 @@ Target::Target(HeightMap* heightMap) : heightMap(heightMap) {
 Target::~Target(){
 }
 
-void Target::Initialize(){
-}
-
-void Target::Deinitialize() {
-}
-
-void Target::Process(const float deltaTime, const float percent) {
+void Target::Handle(ProcessEventArg arg) {
   target = heightMap->HeightAt(target);
     target[1] = max(target[1]+1.0f,1.0f);
-}
-
-bool Target::IsTypeOf(const std::type_info& inf) {
-    return (typeid(Target) == inf);
 }
 
 void Target::Apply(IRenderingView* rv) {

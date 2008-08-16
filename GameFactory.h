@@ -11,15 +11,16 @@
 #ifndef _EXAMPLE_PROJECT_GAME_FACTORY_H_
 #define _EXAMPLE_PROJECT_GAME_FACTORY_H_
 
-// Game engine interface
-#include <Core/IGameFactory.h>
-
 namespace OpenEngine {
   namespace Display {
     class Camera;
+    class IFrame;
   }
   namespace Scene {
     class ISceneNode;
+  }
+  namespace Renderers {
+    class IRenderer;
   }
 }
 
@@ -28,15 +29,7 @@ using namespace OpenEngine::Core;
 using namespace OpenEngine::Display;
 using namespace OpenEngine::Renderers;
 
-/**
- * Game factory definition.
- *
- * The factory is implemented in GameFactory.cpp
- * Documentation on game factories can be found in Core/IGameFactory.h
- * 
- * @see IGameFactory
- */
-class GameFactory : public IGameFactory {
+class GameFactory {
 
 private:
     IFrame*      frame;         // member variable for the engine frame
@@ -45,7 +38,7 @@ private:
 
 public:
     GameFactory();
-    bool         SetupEngine(IGameEngine& engine);
+    bool         SetupEngine(Engine& engine);
     IFrame*      GetFrame();
     IRenderer*   GetRenderer();
 

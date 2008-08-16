@@ -18,7 +18,7 @@ void drawUVTriangleQuad(Vector<3,float> point[4], Vector<3,float> normal[4], flo
 
 void    draw_pyramid();
 
-double  wall_time();
+//double  wall_time();
 
 float   gaussPeak( float my_x, float my_y,
                    float sigma_x, float sigma_y,

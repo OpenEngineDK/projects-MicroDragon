@@ -2,10 +2,13 @@
 #define INPUT_GRABBER_H_
 
 // inherits from
-#include <Core/IModule.h>
+#include <Core/IListener.h>
+#include <Core/EngineEvents.h>
 
 // using templates
 #include <Math/Vector.h>
+
+#include <Utils/Timer.h>
 
 class Follower;
 class HeightMap;
@@ -20,16 +23,20 @@ namespace OpenEngine {
   }
 }
 
-using OpenEngine::Core::IModule;
+using OpenEngine::Core::IListener;
+using OpenEngine::Core::ProcessEventArg;
+using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Display::Camera;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Utils::Timer;
 
 #define minMultiplier 0
 #define maxMultiplier 100
 #define damper 1.1
 
-class InputGrabber : public IModule {
+class InputGrabber : public IListener<InitializeEventArg>,
+public IListener<ProcessEventArg> {
 private:
     Vector<3,float> cameraDir;
     Vector<3,float> cameraPos;
@@ -39,6 +46,8 @@ private:
 
     Target* target;
     Follower* focus;
+
+    Timer timer;
 
     float multiplier;
     float timeFactor;
@@ -52,9 +61,8 @@ public:
     void Initialize();
     void Deinitialize();
 
-    void Process(const float deltaTime, const float percent);
-    bool IsTypeOf(const std::type_info& inf);
-    void Initialize(IRenderingView* rv);
+    void Handle(InitializeEventArg arg);
+    void Handle(ProcessEventArg arg);
 
     void printLocation();
     void reset();

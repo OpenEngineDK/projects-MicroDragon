@@ -10,6 +10,8 @@ LightFader::LightFader(LightNode& from, LightNode& to, LightNode* lightNode, flo
   this->time = time;
   done = false;
   timeSpend = 0.0;
+
+  timer.Start();
 }
 
 LightFader::~LightFader(){
@@ -17,33 +19,24 @@ LightFader::~LightFader(){
   delete to;
 }
 
+void LightFader::Handle(ProcessEventArg arg) {
+    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    float deltaTime = ((float)dt)/1000.0;
+    if(done) return;
 
-void LightFader::Initialize() {
-}
+    if (timeSpend >= time) {
+        timeSpend = time;
+	done = true;
+    }
+    else
+        timeSpend += deltaTime;
 
-void LightFader::Deinitialize() {
-}
-
-void LightFader::Process(const float deltaTime, const float percent) {
-  if(done) return;
-
-  if (timeSpend >= time) {
-      timeSpend = time;
-      done = true;
-  }
-  else
-      timeSpend += deltaTime;
-
-  double pctDone = timeSpend/time;
-
-  lightNode->ambient =
-    from->ambient + (to->ambient - from->ambient) * pctDone;
-  lightNode->diffuse = 
-    from->diffuse + (to->diffuse - from->diffuse) * pctDone;
-  lightNode->specular =
-    from->specular + (to->specular - from->specular) * pctDone;
-}
-
-bool LightFader::IsTypeOf(const std::type_info& inf) {
-    return (typeid(LightFader) == inf);
+    double pctDone = timeSpend/time;
+    
+    lightNode->ambient =
+      from->ambient + (to->ambient - from->ambient) * pctDone;
+    lightNode->diffuse = 
+      from->diffuse + (to->diffuse - from->diffuse) * pctDone;
+    lightNode->specular =
+      from->specular + (to->specular - from->specular) * pctDone;
 }

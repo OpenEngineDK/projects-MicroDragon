@@ -6,19 +6,31 @@
 
 // inherits from
 #include <Core/IModule.h>
+#include <Core/EngineEvents.h>
 #include <Renderers/IRenderNode.h>
+
+#include <Utils/Timer.h>
 
 class HeightMap;
 namespace OpenEngine {
+    namespace Core {
+      class DeinitializeEventArg;
+      class InitializeEventArg;
+      class ProcessEventArg;
+    }
     namespace Renderers {
         class IRenderingView;
     }
 }
 
 using OpenEngine::Core::IModule;
+using OpenEngine::Core::ProcessEventArg;
+using OpenEngine::Core::InitializeEventArg;
+using OpenEngine::Core::DeinitializeEventArg;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Math::Vector;
+using OpenEngine::Utils::Timer;
 
 class OscSurface : public IModule, public IRenderNode {
 private:
@@ -39,13 +51,15 @@ private:
   Vector<3,float> translate;
   float scale;
 
+  Timer timer;
+
 public:
   OscSurface(HeightMap* heightMap);
   ~OscSurface();
-  void Initialize();
-  void Deinitialize();
-  void Process(const float deltaTime, const float percent);
-  bool IsTypeOf(const std::type_info& inf);
+
+  void Handle(InitializeEventArg arg);
+  void Handle(ProcessEventArg arg);
+  void Handle(DeinitializeEventArg arg);
 
   virtual void Apply(IRenderingView* rv);
   

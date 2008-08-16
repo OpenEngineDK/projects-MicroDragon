@@ -8,6 +8,7 @@
 #include <Meta/OpenGL.h>
 #include <Renderers/IRenderingView.h>
 #include <Utils/Convert.h>
+#include <Utils/Timer.h>
 
 #include <string>
 
@@ -30,7 +31,9 @@ OscSurface::OscSurface(HeightMap* heightMap) : heightMap(heightMap) {
 OscSurface::~OscSurface() {
 }
 
-void OscSurface::Initialize() {
+void OscSurface::Handle(InitializeEventArg arg) {
+    timer.Start();
+
     float *zInit;
 
     z_norm = (float *)malloc( M*N*3*sizeof(float) );
@@ -192,24 +195,21 @@ void OscSurface::OnRenderLeave(float timeSte) {
     glPopMatrix();
 }
 
-void OscSurface::Deinitialize() {
+void OscSurface::Handle(DeinitializeEventArg arg) {
     free( z_norm );
     free( zOld );
     free( zCur );
     free( zNew );
 }
 
-
-void OscSurface::Process(const float deltaTime, const float percent) {
-  OnLogicEnter(deltaTime/1000.0);
-}
-
-bool OscSurface::IsTypeOf(const std::type_info& inf) {
-    return (typeid(OscSurface) == inf);
+void OscSurface::Handle(ProcessEventArg arg) {
+    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    float deltaTime = ((float)dt)/1000.0;
+    OnLogicEnter(deltaTime/1000.0);
 }
 
 void OscSurface::Apply(IRenderingView* rv) {
-  OnRenderEnter(0.0);
-  VisitSubNodes(*rv);
-  OnRenderLeave(0.0);
+    OnRenderEnter(0.0);
+    VisitSubNodes(*rv);
+    OnRenderLeave(0.0);
 }

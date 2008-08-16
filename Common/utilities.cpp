@@ -91,8 +91,8 @@ void draw_pyramid() {
     glEnd();
 }
 
-double  wall_time() {
-  return Timer::GetTime();
+//double  wall_time() {
+//return Timer::GetTime();
   /*
 #if defined(_WIN32)
     return GetTickCount()/1000.0f;
@@ -105,7 +105,7 @@ double  wall_time() {
     return ( ts + tus/1000000.0 );
 #endif
   */
-}
+//}
 
 float  gaussPeak( float my_x, float my_y,
                   float sigma_x, float sigma_y,

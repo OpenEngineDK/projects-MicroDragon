@@ -5,11 +5,13 @@
 #include <Math/Vector.h>
 
 // inherits from
-#include <Core/IModule.h>
+#include <Core/IListener.h>
+#include <Core/EngineEvents.h>
 #include <Renderers/IRenderNode.h>
 
-#include <string>
+#include <Utils/Timer.h>
 
+#include <string>
 #include <list>
 
 class Follower;
@@ -33,11 +35,14 @@ namespace OpenEngine {
 #include <Scene/TransformationNode.h>
 */
 
-using OpenEngine::Core::IModule;
+using OpenEngine::Core::IListener;
+using OpenEngine::Core::InitializeEventArg;
+using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Scene::TransformationNode;
+using OpenEngine::Utils::Timer;
 
 using OpenEngine::Geometry::Line;
 using std::list;
@@ -46,7 +51,8 @@ using std::string;
 const static int HEAD_DISPLAY_ID = 10;
 const static int JAW_DISPLAY_ID  = 11;
 
-class Dragon : public IModule, public IRenderNode {
+class Dragon : public IListener<InitializeEventArg>,
+  public IListener<ProcessEventArg>, public IRenderNode {
 public:
   bool enabled;
 
@@ -54,11 +60,8 @@ public:
     ~Dragon();
     void toggleRenderState();
 
-    void Initialize();
-    void Deinitialize();
-    void Process(const float deltaTime, const float percent);
-    bool IsTypeOf(const std::type_info& inf);
-    void Initialize(IRenderingView* rv);
+    void Handle(InitializeEventArg arg);
+    void Handle(ProcessEventArg arg);
 
     virtual void Apply(IRenderingView* rv);
   
@@ -68,6 +71,8 @@ public:
     void useBreathWeapon( bool input );
     void chargeFireball( bool input );
 private:
+    Timer timer;
+
     HeightMap* heightMap;
     ParticleSystem* particlesystem;
     Target* target;

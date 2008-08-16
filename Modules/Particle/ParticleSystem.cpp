@@ -30,15 +30,16 @@ ParticleSystem::ParticleSystem(HeightMap* heightMap, IViewingVolume* vv,
   this->heightMap = heightMap;
   this->vv = vv;
   this->boidssystem = boidssystem;
+  randObject = new RandomGenerator();
+  textureIndex = 0;
 }
 
 ParticleSystem::~ParticleSystem(){
+    delete randObject;
 }
 
-void ParticleSystem::Initialize(){
-    randObject = new RandomGenerator();
-
-    textureIndex = 0;
+void ParticleSystem::Handle(InitializeEventArg arg) {
+    timer.Start();
 
     ITextureResourcePtr tex1 = 
       ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
@@ -63,22 +64,6 @@ void ParticleSystem::Initialize(){
     textures[ textureIndex ] = tex3->GetID();
     tex3->Unload();
     textureIndex++;
-}
-
-void ParticleSystem::Deinitialize(){
-    delete randObject;
-}
-
-void ParticleSystem::Process(const float deltaTime, const float percent) {
-  OnLogicEnter(deltaTime/1000.0);
-}
-
-bool ParticleSystem::IsTypeOf(const std::type_info& inf) {
-    return (typeid(ParticleSystem) == inf);
-}
-
-void ParticleSystem::Apply(IRenderingView* rv) {
-  OnRenderEnter(0.0);
 }
 
 struct closerToCamera : public binary_function<Particle*, Particle*, bool> {
@@ -121,7 +106,11 @@ void ParticleSystem::CreateParticles(double time, double prevTime,
     }
 }
 
-void ParticleSystem::OnLogicEnter(float timeStep){
+void ParticleSystem::Handle(ProcessEventArg arg) {
+    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    float deltaTime = ((float)dt)/1000.0;
+    float timeStep = deltaTime/1000.0;
+
     // Insert all new particles from tmpParticles list into particles list
     for (vector<Particle*>::iterator i=tmpParticles.begin(); i!=tmpParticles.end(); ++i) {
         particles.push_back(*i);
@@ -162,7 +151,7 @@ void ParticleSystem::CreateFireball(Vector<3,float> position, Vector<3,float> ve
     particles.push_back(p);
 }
 
-void ParticleSystem::OnRenderEnter(float timeSte){
+void ParticleSystem::Apply(IRenderingView* rv) {
     // Sort particles for depth
     sort(particles.begin(),particles.end(),closerToCamera());
 
@@ -177,5 +166,4 @@ void ParticleSystem::OnRenderEnter(float timeSte){
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
-
 }

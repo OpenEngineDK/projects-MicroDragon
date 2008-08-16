@@ -89,9 +89,13 @@ Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesys
 }
 
 Dragon::~Dragon() {
+    delete headFocus;
+    delete headPos;
 }
 
-void Dragon::Initialize() {
+void Dragon::Handle(InitializeEventArg arg) {
+    timer.Start();
+
     usingBreathWeapon = false;
     chargingFireball = false;
     fireballCharge = 0.0;
@@ -106,19 +110,6 @@ void Dragon::Initialize() {
    neck->Load();
    TextureLoader::LoadTextureResource(neck);
    neckTextureID =  neck->GetID();
-}
-
-void Dragon::Deinitialize(){
-    delete headFocus;
-    delete headPos;
-}
-
-void Dragon::Process(const float deltaTime, const float percent) {
-    OnLogicEnter(deltaTime/1000.0);
-}
-
-bool Dragon::IsTypeOf(const std::type_info& inf) {
-    return (typeid(Dragon) == inf);
 }
 
 void Dragon::Apply(IRenderingView* rv) {
@@ -163,7 +154,11 @@ void Dragon::Apply(IRenderingView* rv) {
   glPopMatrix();
 }
 
-void Dragon::OnLogicEnter(float timeStep){
+void Dragon::Handle(ProcessEventArg arg) {
+    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    float deltaTime = ((float)dt)/1000.0;
+    float timeStep = deltaTime / 1000.0;
+
     double time = prevTime + timeStep;
 
     float unitsFromTarget = 12;

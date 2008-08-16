@@ -57,12 +57,14 @@ Intro::Intro(InputGrabber* inputgrabber) {
     cpvc = LoadIntoDisplaylist("Intro/text-cpvc.obj", CPVC_DISPLAY_ID);
     tic = LoadIntoDisplaylist("Intro/text-tic.obj", TIC_DISPLAY_ID);
     cea = LoadIntoDisplaylist("Intro/text-cea.obj", CEA_DISPLAY_ID);
+
+    timer.Start();
 }
 
 Intro::~Intro(){
 }
 
-
+/*
 void Intro::Initialize() {
     //@todo remove this, global texture loader should work now
 
@@ -70,6 +72,7 @@ void Intro::Initialize() {
     TextureLoader* tl = new TextureLoader();
     this->Accept(*tl);
 }
+*/
 
 TransformationNode* Intro::LoadIntoDisplaylist(string filename, int id) {
     IModelResourcePtr resource = ResourceManager<IModelResource>::
@@ -93,20 +96,15 @@ TransformationNode* Intro::LoadIntoDisplaylist(string filename, int id) {
         throw Exception("error loading resource: " + filename);
 }
 
-void Intro::Deinitialize() {
-}
-
-void Intro::Process(const float deltaTime, const float percent) {
+void Intro::Handle(ProcessEventArg arg) {
+    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    float deltaTime = ((float)dt)/1000.0;
     double timeStep = deltaTime/1000.0;
     if( startDelay > 0.0 ) {
         startDelay -= timeStep;
         return;
     }
     timepassed += timeStep;
-}
-
-bool Intro::IsTypeOf(const std::type_info& inf) {
-    return (typeid(Intro) == inf);
 }
 
 void Intro::Apply(IRenderingView* rv) {

@@ -6,7 +6,6 @@ SET( PROJECT_NAME "DragonPanic")
 SET( PROJECT_SOURCES
   # Add all the cpp source files here
   main.cpp
-  GameFactory.cpp
   KeyHandler.cpp
   LightFader.cpp
 

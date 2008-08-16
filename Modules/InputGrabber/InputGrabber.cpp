@@ -70,18 +70,14 @@ void InputGrabber::togglePause() {
     pauseTime = !pauseTime;
 }
 
-void InputGrabber::Initialize() {
+void InputGrabber::Handle(InitializeEventArg arg) {
+    timer.Start();
     reset();
 }
 
-void InputGrabber::Deinitialize() {
-}
-
-bool InputGrabber::IsTypeOf(const std::type_info& inf) {
-    return (typeid(InputGrabber) == inf);
-}
-
-void InputGrabber::Process(const float deltaTime, const float percent) {
+void InputGrabber::Handle(ProcessEventArg arg) {
+    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    float deltaTime = ((float)dt)/1000.0;
     float timeStep = deltaTime/1000.0;
 
     if (rotX>89.9) rotX = 89.9;

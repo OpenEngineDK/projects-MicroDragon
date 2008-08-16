@@ -11,13 +11,18 @@
 #define _LIGHT_FADER_H_
 
 // inherits from
-#include <Core/IModule.h>
+#include <Core/IListener.h>
+#include <Core/EngineEvents.h>
 #include <Scene/LightNode.h>
 
-using OpenEngine::Core::IModule;
-using OpenEngine::Scene::LightNode;
+#include <Utils/Timer.h>
 
-class LightFader : public IModule {
+using OpenEngine::Core::IListener;
+using OpenEngine::Core::ProcessEventArg;
+using OpenEngine::Scene::LightNode;
+using OpenEngine::Utils::Timer;
+
+class LightFader : public IListener<ProcessEventArg> {
 private:
     LightNode* from;
     LightNode* to;
@@ -25,14 +30,13 @@ private:
     float time, beginPct, endPct, timeSpend;
     bool done;
 
+    Timer timer;
+
 public:
     LightFader(LightNode& from, LightNode& to, LightNode* lightNode, float time);
     virtual ~LightFader();
 
-    virtual void Initialize();
-    virtual void Process(const float deltaTime, const float percent);
-    virtual void Deinitialize();
-    virtual bool IsTypeOf(const std::type_info& inf);
+    void Handle(ProcessEventArg arg);
 };
 
 

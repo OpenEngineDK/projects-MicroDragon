@@ -5,17 +5,18 @@
 #include <Math/Vector.h>
 
 // inherits from
-#include <Core/IModule.h>
+#include <Core/IListener.h>
+#include <Core/EngineEvents.h>
 #include <Renderers/IRenderNode.h>
 
 class HeightMap;
-
-using OpenEngine::Core::IModule;
+using OpenEngine::Core::IListener;
+using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 
-class Target : public IModule, public IRenderNode {
+class Target : public IListener<ProcessEventArg>, public IRenderNode {
 private:
   bool active;
   Vector<3,float> target;
@@ -25,12 +26,7 @@ public:
   ~Target();
 
   void SetActive(bool active);
-
-  void Initialize();
-  void Deinitialize();
-  void Process(const float deltaTime, const float percent);
-  bool IsTypeOf(const std::type_info& inf);
-
+  void Handle(ProcessEventArg arg);
   virtual void Apply(IRenderingView* rv);
   
   Vector<3,float> getTarget();
