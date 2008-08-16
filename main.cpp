@@ -74,6 +74,8 @@
 #include "Modules/Particle/ParticleSystem.h"
 #include "Modules/Boid/BoidsSystem.h"
 
+#include "HUD/DragonHUD.h"
+
 // Additional namespaces
 using namespace OpenEngine::Core;
 using namespace OpenEngine::Logging;
@@ -115,8 +117,9 @@ struct Config {
 // Forward declaration of the setup methods
 void SetupResources(Config&);
 void SetupDisplay(Config&);
-void SetupScene(Config&);
 void SetupRendering(Config&);
+void SetupScene(Config&);
+
 void SetupDebugging(Config&);
 
 int main(int argc, char** argv) {
@@ -221,6 +224,13 @@ void SetupRendering(Config& config) {
     config.engine.InitializeEvent().Attach(*config.renderer);
     config.engine.ProcessEvent().Attach(*config.renderer);
     config.engine.DeinitializeEvent().Attach(*config.renderer);
+
+    //HUD
+    DragonHUD* hud = new DragonHUD(*config.frame);
+    config.scene->AddNode(hud->GetLayerNode());
+    config.renderer->PreProcessEvent().Attach(*hud);
+
+
 }
 
 void SetupScene(Config& config) {
@@ -337,6 +347,7 @@ void SetupScene(Config& config) {
       new KeyHandler(inputgrabber, intro, island, target, dragon, boids);
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
+
 }
 
 void SetupDebugging(Config& config) {

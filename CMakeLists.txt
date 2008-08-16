@@ -34,6 +34,9 @@ SET( PROJECT_SOURCES
   
   Modules/Dragon/Dragon.cpp
   Modules/Dragon/Tube.cpp
+
+  HUD/DragonHUD.cpp
+  HUD/DragonText.cpp
 )
 
 # Include needed to use SDL under Mac OS X
@@ -63,4 +66,5 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_RAWResource
   Extensions_TGAResource
   Extensions_SDL
+  Extensions_OEGUI
 )
