@@ -20,7 +20,8 @@ using OpenEngine::Utils::Convert;
 using std::string;
 
 
-DragonHUD::DragonHUD(IFrame& frame): testval(0) {
+DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate)
+  : testval(0), gamestate(gamestate) {
     frameWidth = frame.GetWidth();
     frameHeight = frame.GetHeight();
 
@@ -58,8 +59,8 @@ DragonHUD::~DragonHUD() {}
 
 void DragonHUD::Handle(RenderingEventArg arg) {
     testval++;
-    time->SetString(Convert::ToString<int>(testval));
-    score->SetString(Convert::ToString<int>(testval));
+    time->SetString(Convert::ToString(gamestate.GetTimeLeft() ));
+    score->SetString(Convert::ToString(gamestate.GetScore() ));
     time->Draw();
     score->Draw();
 }

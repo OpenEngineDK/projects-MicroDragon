@@ -1,6 +1,8 @@
 #include "BoidsSystem.h"
 
 #include "Boid.h"
+#include "BoidSystemEvent.h"
+
 #include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
 
@@ -17,6 +19,7 @@ BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface) {
     renderState = numberOfRenderStates-1;
     numberOfShownBoids = 0;
     disableLogic = false;
+    aliveBoids = numberOfBoids;
 }
 
 BoidsSystem::~BoidsSystem() {
@@ -71,6 +74,22 @@ void BoidsSystem::Handle(ProcessEventArg arg) {
     for (unsigned int i=0; i<numberOfShownBoids; i++) {
         boids[i]->update(timeStep);
     }
+}
+
+void BoidsSystem::BoidDied(Boid& boid) {
+  if (aliveBoids <= 0) {
+    aliveBoids = 0;
+    return;
+  }
+  aliveBoids--;
+
+  Vector<3,float> position = boid.GetPosition();
+  BoidSystemEventArg arg = BoidSystemEventArg(BOID_DIED, position);
+  this->boidEvents.Notify(arg);
+}
+
+IEvent<BoidSystemEventArg>& BoidsSystem::BoidSystemEvent() {
+    return boidEvents;
 }
 
 void BoidsSystem::HandleFire(Vector<3,float> position, float strength) {

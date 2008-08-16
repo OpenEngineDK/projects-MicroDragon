@@ -30,6 +30,8 @@ public:
 	
     void draw( );
 
+    Vector<3,float> GetPosition();
+
 private:
     ParticleSystem* particlesystem;
     BoidsSystem* boidssystem;

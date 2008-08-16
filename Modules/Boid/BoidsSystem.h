@@ -4,6 +4,8 @@
 //inherits from
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
+#include <Core/IEvent.h>
+#include <Core/Event.h>
 #include <Renderers/IRenderNode.h>
 
 //templated classes
@@ -25,16 +27,21 @@ namespace OpenEngine {
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::ProcessEventArg;
+using OpenEngine::Core::IEvent;
+using OpenEngine::Core::Event;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Utils::Timer;
+
+struct BoidSystemEventArg;
 
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
 class BoidsSystem : public IListener<InitializeEventArg>,
   public IListener<ProcessEventArg>, public IRenderNode {
 public:
+  unsigned int aliveBoids;
   bool enabled;
     BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface);
     ~BoidsSystem();
@@ -55,7 +62,14 @@ public:
     void DecAlignment();
     float getAlignment();
 
+    void BoidDied(Boid& boid);
+    virtual IEvent<BoidSystemEventArg>& BoidSystemEvent();
+
 private:
+    // Event lists for the rendering phases.
+    Event<BoidSystemEventArg> boidEvents;
+
+
     HeightMap* heightMap;
     OscSurface* oscsurface;
 

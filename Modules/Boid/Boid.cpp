@@ -17,6 +17,7 @@
 // OpenEngine Core
 #include <Math/Math.h>
 #include <math.h>
+#include <Logging/Logger.h>
 
 using OpenEngine::Math::PI;
 using std::min;
@@ -254,8 +255,16 @@ void Boid::updateLocomotion( double timeDelta ) {
 			  position+up, velocity, 3.0, 1.0, 1.0);
       */
     }
-    if (life<=0) { dead = true; }
+    if (life<=0) {
+      if(dead==false)
+	boidssystem->BoidDied(*this);
+      dead = true; 
+    }
     if (life<-0.4) { burning = false; life = 0; }
+}
+
+Vector<3,float> Boid::GetPosition() {
+  return position;
 }
 
 Vector<3,float> Boid::getUprightVector() {

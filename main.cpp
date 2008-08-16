@@ -26,6 +26,7 @@
 // Rendering structures
 #include <Renderers/IRenderNode.h>
 // OpenGL rendering implementation
+#include <Renderers/OpenGL/LightRenderer.h>
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
 #include <Renderers/OpenGL/TextureLoader.h>
@@ -63,6 +64,7 @@
 #include "KeyHandler.h"
 #include "TransparentcyNode.h"
 #include "GLSettingsNode.h"
+#include "GameState.h"
 
 #include "Modules/Island/Island.h"
 #include "Modules/Island/HeightMap.h"
@@ -98,6 +100,7 @@ struct Config {
     IMouse*               mouse;
     IKeyboard*            keyboard;
     ISceneNode*           scene;
+    GameState*            gamestate;
     bool                  resourcesLoaded;
     Config(IEngine& engine)
         : engine(engine)
@@ -110,6 +113,7 @@ struct Config {
         , mouse(NULL)
         , keyboard(NULL)
         , scene(NULL)
+        , gamestate(NULL)
         , resourcesLoaded(false)
     {}
 };
@@ -198,6 +202,7 @@ void SetupDisplay(Config& config) {
 void SetupRendering(Config& config) {
     if (config.viewport == NULL ||
         config.renderer != NULL ||
+        config.gamestate == NULL ||
         config.scene == NULL)
         throw Exception("Setup renderer dependencies are not satisfied.");
 
@@ -214,6 +219,9 @@ void SetupRendering(Config& config) {
     config.renderer->InitializeEvent().Attach(*tl);
     config.renderer->InitializeEvent().Attach(*dlt);
 
+    config.renderer->PreProcessEvent()
+      .Attach( *(new LightRenderer()) );
+
     // Transform the scene to use vertex arrays
     VertexArrayTransformer vaT;
     vaT.Transform(*config.scene);
@@ -226,11 +234,9 @@ void SetupRendering(Config& config) {
     config.engine.DeinitializeEvent().Attach(*config.renderer);
 
     //HUD
-    DragonHUD* hud = new DragonHUD(*config.frame);
+    DragonHUD* hud = new DragonHUD(*config.frame, *config.gamestate);
     config.scene->AddNode(hud->GetLayerNode());
     config.renderer->PreProcessEvent().Attach(*hud);
-
-
 }
 
 void SetupScene(Config& config) {
@@ -239,7 +245,8 @@ void SetupScene(Config& config) {
         throw Exception("Setup scene dependencies are not satisfied.");
 
     // Create a root scene node
-    float fadetime = 3000.0;
+    float fadetime = 3000.0 * 3.5;
+
     GLSettingsNode* scene = new GLSettingsNode(fadetime);
     config.scene = scene;
     config.engine.ProcessEvent().Attach(*scene);
@@ -306,7 +313,8 @@ void SetupScene(Config& config) {
     config.engine.ProcessEvent().Attach(*oscs);
     config.engine.DeinitializeEvent().Attach(*oscs);
 
-    InputGrabber* inputgrabber = new InputGrabber(config.camera,heightMap,target);
+    InputGrabber* inputgrabber = 
+      new InputGrabber(config.camera,heightMap,target);
     config.engine.InitializeEvent().Attach(*inputgrabber);
     config.engine.ProcessEvent().Attach(*inputgrabber);
 
@@ -331,8 +339,9 @@ void SetupScene(Config& config) {
     config.engine.ProcessEvent().Attach(*dragon);
 
     // Create the mouse and keyboard input modules
-    config.keyboard = new SDLInput();
-    config.mouse = (IMouse*)config.keyboard;
+    SDLInput* input = new SDLInput();
+    config.keyboard = input;
+    config.mouse = input;
 
     // Bind the quit handler
     QuitHandler* quit_h = new QuitHandler(config.engine);
@@ -342,12 +351,15 @@ void SetupScene(Config& config) {
     config.engine.InitializeEvent().Attach(*config.mouse);
     config.engine.ProcessEvent().Attach(*config.mouse);
     config.engine.DeinitializeEvent().Attach(*config.mouse);
+    
+    // game state logic
+    config.gamestate = new GameState(5000);
+    boids->BoidSystemEvent().Attach(*config.gamestate);
 
     KeyHandler* key_h = 
       new KeyHandler(inputgrabber, intro, island, target, dragon, boids);
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
-
 }
 
 void SetupDebugging(Config& config) {

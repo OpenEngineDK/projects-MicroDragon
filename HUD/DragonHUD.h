@@ -11,6 +11,7 @@
 #define _TIMER_LAYER_H_
 
 #include "DragonText.h"
+#include "../GameState.h"
 
 #include <Display/Layer.h>
 #include <Display/TextSurface.h>
@@ -33,8 +34,9 @@ private:
     LayerNode* layerNode;
     int frameWidth, frameHeight;
     int testval;
+    GameState& gamestate;
 public:
-    DragonHUD(IFrame& frame);
+    DragonHUD(IFrame& frame, GameState& gamestate);
     virtual ~DragonHUD();
 
     void Handle(RenderingEventArg arg);
