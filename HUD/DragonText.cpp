@@ -48,7 +48,6 @@ void DragonText::Draw() {
         cairo_move_to(cr, 0,resource.GetHeight()+0.5*extents.y_bearing+shadowoffset);
     else {
 
-        logger.info <<  extents.width << logger.end;
         cairo_move_to(cr, resource.GetWidth() - extents.width-extents.x_bearing-shadowoffset, resource.GetHeight()+0.5*extents.y_bearing+shadowoffset);
     }
 
