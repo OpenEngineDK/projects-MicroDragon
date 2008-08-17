@@ -15,7 +15,7 @@
 
 // Display structures
 #include <Display/IFrame.h>
-#include <Display/Camera.h>
+#include <Display/FollowCamera.h>
 #include <Display/Frustum.h>
 #include <Display/InterpolatedViewingVolume.h>
 #include <Display/ViewingVolume.h>
@@ -54,7 +54,6 @@
 // Utilities and logger
 #include <Logging/Logger.h>
 #include <Logging/StreamLogger.h>
-#include <Utils/Statistics.h>
 #include <Utils/LayerStatistics.h> 
 
 // OERacer utility files
@@ -95,7 +94,7 @@ struct Config {
     IFrame*               frame;
     Viewport*             viewport;
     IViewingVolume*       viewingvolume;
-    Camera*               camera;
+    FollowCamera*         camera;
     Frustum*              frustum;
     IRenderer*            renderer;
     IMouse*               mouse;
@@ -121,10 +120,10 @@ struct Config {
 
 // Forward declaration of the setup methods
 void SetupResources(Config&);
+void SetupDevices(Config&);
 void SetupDisplay(Config&);
 void SetupRendering(Config&);
 void SetupScene(Config&);
-
 void SetupDebugging(Config&);
 
 int main(int argc, char** argv) {
@@ -151,6 +150,7 @@ int main(int argc, char** argv) {
     // Setup the engine
     SetupResources(config);
     SetupDisplay(config);
+    SetupDevices(config);
     SetupScene(config);
     SetupRendering(config);
     
@@ -188,22 +188,42 @@ void SetupDisplay(Config& config) {
         config.viewport      != NULL)
         throw Exception("Setup display dependencies are not satisfied.");
 
-    config.frame         = new SDLFrame(800, 600, 32);
+    config.frame         = new SDLFrame(1280, 1024, 32 /*, FRAME_FULLSCREEN*/ );
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
-    config.camera        = new Camera( *config.viewingvolume );
-    config.frustum       = new Frustum(*config.camera, 20, 3000);
+    config.camera        = new FollowCamera( *config.viewingvolume );
+    //config.frustum       = new Frustum(*config.camera, 20, 3000);
     config.viewport      = new Viewport(*config.frame);
-    config.viewport->SetViewingVolume(config.frustum);
+    config.viewport->SetViewingVolume(config.camera);
 
     config.engine.InitializeEvent().Attach(*config.frame);
     config.engine.ProcessEvent().Attach(*config.frame);
     config.engine.DeinitializeEvent().Attach(*config.frame);
 }
 
+void SetupDevices(Config& config) {
+    if (config.keyboard != NULL ||
+        config.mouse    != NULL)
+        throw Exception("Setup devices dependencies are not satisfied.");
+    // Create the mouse and keyboard input modules
+    SDLInput* input = new SDLInput();
+    config.keyboard = input;
+    config.mouse = input;
+
+    // Bind the quit handler
+    QuitHandler* quit_h = new QuitHandler(config.engine);
+    config.keyboard->KeyEvent().Attach(*quit_h);
+
+    // Bind to the engine for processing time
+    config.engine.InitializeEvent().Attach(*input);
+    config.engine.ProcessEvent().Attach(*input);
+    config.engine.DeinitializeEvent().Attach(*input);
+}
+
 void SetupRendering(Config& config) {
     if (config.viewport == NULL ||
         config.renderer != NULL ||
         config.gamestate == NULL ||
+        config.camera == NULL ||
         config.scene == NULL)
         throw Exception("Setup renderer dependencies are not satisfied.");
 
@@ -242,6 +262,8 @@ void SetupRendering(Config& config) {
 
 void SetupScene(Config& config) {
     if (config.scene  != NULL ||
+        config.mouse  == NULL ||
+        config.keyboard == NULL ||
         config.resourcesLoaded == false)
         throw Exception("Setup scene dependencies are not satisfied.");
 
@@ -301,8 +323,9 @@ void SetupScene(Config& config) {
     scene->AddNode(island);
     hMap->Unload();
 
-    Target* target = new Target(heightMap);
-    scene->AddNode(target);
+    Target* target = new Target(*heightMap);
+    TransformationNode* targetNode = &target->GetTargetNode();
+    scene->AddNode(targetNode);
     config.engine.ProcessEvent().Attach(*target);
 
     TransparencyNode* tpNode = new TransparencyNode();
@@ -314,14 +337,9 @@ void SetupScene(Config& config) {
     config.engine.ProcessEvent().Attach(*oscs);
     config.engine.DeinitializeEvent().Attach(*oscs);
 
-    InputGrabber* inputgrabber = 
-      new InputGrabber(config.camera,heightMap,target);
-    config.engine.InitializeEvent().Attach(*inputgrabber);
-    config.engine.ProcessEvent().Attach(*inputgrabber);
-
-    Intro* intro = new Intro(inputgrabber);
-    scene->AddNode(intro);
-    config.engine.ProcessEvent().Attach(*intro);
+    // Intro* intro = new Intro(inputgrabber);
+    // scene->AddNode(intro);
+    // config.engine.ProcessEvent().Attach(*intro);
 
     //@todo: Boids have transparent shadows
     BoidsSystem* boids = new BoidsSystem(heightMap, oscs);
@@ -342,28 +360,15 @@ void SetupScene(Config& config) {
     config.engine.InitializeEvent().Attach(*dragon);
     config.engine.ProcessEvent().Attach(*dragon);
 
-    // Create the mouse and keyboard input modules
-    SDLInput* input = new SDLInput();
-    config.keyboard = input;
-    config.mouse = input;
-
-    // Bind the quit handler
-    QuitHandler* quit_h = new QuitHandler(config.engine);
-    config.keyboard->KeyEvent().Attach(*quit_h);
-
-    // Bind to the engine for processing time
-    config.engine.InitializeEvent().Attach(*config.mouse);
-    config.engine.ProcessEvent().Attach(*config.mouse);
-    config.engine.DeinitializeEvent().Attach(*config.mouse);
     
     // game state logic
     config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
-    KeyHandler* key_h = 
-      new KeyHandler(inputgrabber, intro, island, target, dragon, boids);
+    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, island, dragon, boids);
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
+
 }
 
 void SetupDebugging(Config& config) {

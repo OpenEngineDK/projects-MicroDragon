@@ -8,32 +8,26 @@
 
 using namespace std;
 
-Target::Target(HeightMap* heightMap) : heightMap(heightMap) {
+Target::Target(HeightMap& heightMap)
+    : heightMap(heightMap) {
     target = Vector<3,float>(0,0,0);
     active = false;
+    rnode.SetTarget(this);
+    tnode.AddNode(&rnode);
 }
 
-Target::~Target(){
+Target::~Target() {
+
 }
 
 void Target::Handle(ProcessEventArg arg) {
-  target = heightMap->HeightAt(target);
+    target = heightMap.HeightAt(tnode.GetPosition());
+    tnode.SetPosition(target);
     target[1] = max(target[1]+1.0f,1.0f);
 }
 
-void Target::Apply(IRenderingView* rv) {
-    // Draw target
-    glPushMatrix();
-    glTranslatef( target[0], target[1], target[2]);
-    if (active) {
-        glColor3f( 0.8, 0.0, 0.0 );
-        OpenGLUtil::GLSolidCube( 0.5 );
-    }
-    else {
-        glColor3f( 0.0, 0.8, 0.0 );
-        OpenGLUtil::GLSolidCube( 0.4 );
-    }
-    glPopMatrix();
+TransformationNode& Target::GetTargetNode() {
+    return tnode;
 }
 
 void Target::SetActive(bool active) {
@@ -46,12 +40,34 @@ Vector<3,float> Target::getTarget(){
 
 void Target::setTarget(float x, float y, float z){
     setTarget(Vector<3,float>(x,y,z));
+    tnode.SetPosition(Vector<3,float>(x,y,z));
 }
 
 void Target::setTarget( Vector<3,float> v ){
     target = v;
+    tnode.SetPosition(v);
 }
 
 void Target::printTarget() {
   logger.info << target << logger.end;
+}
+
+
+
+Target::TargetRenderNode::TargetRenderNode() {
+
+}
+void Target::TargetRenderNode::SetTarget(Target* target) {
+    this->target = target;
+}
+void Target::TargetRenderNode::Apply(IRenderingView* rv) {
+    // Draw target
+    if (target->active) {
+        glColor3f( 0.8, 0.0, 0.0 );
+        OpenGLUtil::GLSolidCube( 0.5 );
+    }
+    else {
+        glColor3f( 0.0, 0.8, 0.0 );
+        OpenGLUtil::GLSolidCube( 0.4 );
+    }
 }

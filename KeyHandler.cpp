@@ -25,25 +25,32 @@
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::TransformationNode;
 
-KeyHandler::KeyHandler(InputGrabber* inputgrabber, Intro* intro,
-		       Island* island, Target* target, Dragon* dragon,
-		       BoidsSystem* boidssystem) {
-  this->inputgrabber = inputgrabber;
-  this->intro= intro;
+KeyHandler::KeyHandler(FollowCamera& camera,
+                       TransformationNode& target,
+                       Island* island,
+                       Dragon* dragon,
+                       BoidsSystem* boidssystem)
+    : camera(camera)
+    , target(target) {
+
   this->island = island;
-  this->target = target;
   this->dragon = dragon;
   this->boidssystem = boidssystem;
+
+  camera.Follow(&target);
+  camera.Move(-100,0,50);
+  camera.LookAt(0,target.GetPosition()[1],0);
+
   reset();
 }
 
 void KeyHandler::reset() {
-  inputgrabber->reset();
+    //inputgrabber->reset();
     //mousex_prev = mousey_prev = 0;
     rotChunkMouse = 0.05;
     moveChunkMouse = 0.0015;
-    rotChunkKeyboard = rotChunkMouse*200;
-    moveChunkKeyboard = moveChunkMouse*400;
+    rotChunkKeyboard = 0.2; //rotChunkMouse*200;
+    moveChunkKeyboard = 2; //moveChunkMouse*400;
     warping = false;
 }
 
@@ -95,16 +102,16 @@ void KeyHandler::HandleDown(Key key) {
         boidssystem->IncNumberOfShownBoids();
         break;
     case KEY_a:
-      inputgrabber->moveTarget( -1*moveChunkKeyboard, 0 );
+        target.Move(-1*moveChunkKeyboard, 0 , 0);
         break;
     case KEY_d:
-      inputgrabber->moveTarget( 1*moveChunkKeyboard, 0 );
+        target.Move(1*moveChunkKeyboard, 0 , 0);
         break;
     case KEY_w:
-      inputgrabber->moveTarget( 0, -1*moveChunkKeyboard );
+        target.Move(0, 0, -1*moveChunkKeyboard);
         break;
     case KEY_s:
-      inputgrabber->moveTarget( 0, 1*moveChunkKeyboard );
+        target.Move(0, 0, 1*moveChunkKeyboard);
         break;
 	/*
     case KEY_z:
@@ -115,10 +122,10 @@ void KeyHandler::HandleDown(Key key) {
         break;
 	*/
     case KEY_p:
-      inputgrabber->togglePause();
+        //inputgrabber->togglePause();
         break;
     case KEY_f:
-      inputgrabber->printLocation();
+        //inputgrabber->printLocation();
         break;
     case KEY_SPACE:
         if( !intro->isDone() )
@@ -144,63 +151,63 @@ void KeyHandler::HandleDown(Key key) {
         break;
 
 
-    case KEY_F1:
-      inputgrabber->rotateViewAbsolute( 30, 5, 50, 1.0 );
-        target->setTarget(0, 0, 0);
-        break;
-    case KEY_F2: // ved siden af hovedet
-      inputgrabber->rotateViewAbsolute( 25.8872, 257.27, 13.8784, 1.0 );
-        target->setTarget( -10.5859, 5.4856, -10.0325 );
-        break;
-    case KEY_F3:
-      inputgrabber->rotateViewAbsolute( 16.1391, 335, 500, 1.0 );
-        target->setTarget(-10.5859, 5.4856, -10.0325);
-        break;
-    case KEY_F4: // inde i munden
-      inputgrabber->rotateViewAbsolute( 54.4593, 266.533, 7.75, 1.0 );
-        target->setTarget( -2.77879, 3.63685, 0.168352);
-        break;
-    case KEY_F5: //Mellem bjergene
-      inputgrabber->rotateViewAbsolute( 340, 245.064, 68.548, 1.0 );
-        target->setTarget( 39.9721, 6.39716, -27.3046 );
-        break;
-    case KEY_F9:
-      inputgrabber->scaleGlobal( -0.05 );
-        break;
-    case KEY_F10:
-      inputgrabber->scaleGlobal( 0.05 );
-        break;
-    case KEY_F11:
-      //GLUTClock::getInstance()->decTimeFactor();
-        break;
-    case KEY_F12:
-      //GLUTClock::getInstance()->incTimeFactor();
-        break;
+//     case KEY_F1:
+//         //inputgrabber->rotateViewAbsolute( 30, 5, 50, 1.0 );
+//         target->setTarget(0, 0, 0);
+//         break;
+//     case KEY_F2: // ved siden af hovedet
+//         //inputgrabber->rotateViewAbsolute( 25.8872, 257.27, 13.8784, 1.0 );
+//         target->setTarget( -10.5859, 5.4856, -10.0325 );
+//         break;
+//     case KEY_F3:
+//         //inputgrabber->rotateViewAbsolute( 16.1391, 335, 500, 1.0 );
+//         target->setTarget(-10.5859, 5.4856, -10.0325);
+//         break;
+//     case KEY_F4: // inde i munden
+//         //inputgrabber->rotateViewAbsolute( 54.4593, 266.533, 7.75, 1.0 );
+//         target->setTarget( -2.77879, 3.63685, 0.168352);
+//         break;
+//     case KEY_F5: //Mellem bjergene
+//         //inputgrabber->rotateViewAbsolute( 340, 245.064, 68.548, 1.0 );
+//         target->setTarget( 39.9721, 6.39716, -27.3046 );
+//         break;
+//     case KEY_F9:
+//         //inputgrabber->scaleGlobal( -0.05 );
+//         break;
+//     case KEY_F10:
+//         //inputgrabber->scaleGlobal( 0.05 );
+//         break;
+//     case KEY_F11:
+//       //GLUTClock::getInstance()->decTimeFactor();
+//         break;
+//     case KEY_F12:
+//       //GLUTClock::getInstance()->incTimeFactor();
+//         break;
     case KEY_PAGEUP:
-      inputgrabber->zoom(0.05);
+        camera.Move(moveChunkKeyboard,0,0);
         break;
     case KEY_PAGEDOWN:
-      inputgrabber->zoom(-0.05);
+        camera.Move(-moveChunkKeyboard,0,0);
         break;
     case KEY_HOME:
-      inputgrabber->incMultiplier();
+        //inputgrabber->incMultiplier();
         break;
     case KEY_END:
-      inputgrabber->decMultiplier();
+        //inputgrabber->decMultiplier();
         break;
     case KEY_UP:
-        inputgrabber->
-	  rotateViewRelative( rotChunkKeyboard * -1, 0 );
+        camera.Move(0, 0, moveChunkKeyboard);
+        camera.LookAt(0,target.GetPosition()[1],0);
         break;
     case KEY_DOWN:
-      inputgrabber->rotateViewRelative( rotChunkKeyboard, 0 );
+        camera.Move(0, 0, -moveChunkKeyboard);
+        camera.LookAt(0,target.GetPosition()[1],0);
         break;
     case KEY_LEFT:
-        inputgrabber->
-	  rotateViewRelative( 0, rotChunkKeyboard * -1 );
+        target.Rotate(0, -rotChunkKeyboard, 0);
         break;
     case KEY_RIGHT:
-      inputgrabber->rotateViewRelative( 0, rotChunkKeyboard );
+        target.Rotate(0, rotChunkKeyboard, 0);
         break;
     default:
         break;

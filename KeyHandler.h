@@ -14,6 +14,15 @@
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
 
+#include <Display/FollowCamera.h>
+/*
+#include <Devices/IMouse.h>
+#include <Scene/TransformationNode.h>
+*/
+#include <Devices/IKeyboard.h>
+
+#include <list>
+
 class BoidsSystem;
 class Dragon;
 class InputGrabber;
@@ -32,14 +41,6 @@ namespace OpenEngine {
         class TransformationNode;
     }
 }
-/*
-#include <Display/Camera.h>
-#include <Devices/IMouse.h>
-#include <Scene/TransformationNode.h>
-*/
-#include <Devices/IKeyboard.h>
-
-#include <list>
 
 using namespace OpenEngine::Core;
 using namespace OpenEngine::Display;
@@ -50,12 +51,12 @@ using std::list;
 class KeyHandler : public IListener<ProcessEventArg>,
   public IListener<KeyboardEventArg> {
 private:
-    InputGrabber* inputgrabber;
     Intro* intro;
     Island* island;
-    Target* target;
     Dragon* dragon;
     BoidsSystem* boidssystem;
+    FollowCamera& camera;
+    TransformationNode& target;
 
     list<Key> keysPressed;
 
@@ -65,9 +66,13 @@ private:
     
     void reset();
 public:
-    KeyHandler(InputGrabber* inputgrabber, Intro* intro, Island* island,
-	       Target* target, Dragon* dragon, BoidsSystem* boidssystem);
+    KeyHandler(FollowCamera& camera,
+               TransformationNode& target,
+               Island* island,
+               Dragon* dragon,
+               BoidsSystem* boidssystem);
     ~KeyHandler();
+
     void Handle(KeyboardEventArg arg);
     void HandleUp(Key key);
     void HandleDown(Key key);
