@@ -4,6 +4,8 @@
 // inherits from
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
+#include <Core/IEvent.h>
+#include <Core/Event.h>
 #include <Renderers/IRenderNode.h>
 
 // using templates
@@ -30,12 +32,16 @@ namespace OpenEngine {
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::ProcessEventArg;
+using OpenEngine::Core::IEvent;
+using OpenEngine::Core::Event;
 using OpenEngine::Display::IViewingVolume;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Utils::Timer;
 using std::vector;
+
+struct ParticleSystemEventArg;
 
 class ParticleSystem : public IListener<InitializeEventArg>,
 public IListener<ProcessEventArg>, public IRenderNode {
@@ -54,7 +60,11 @@ public:
                          double size, double lifeTime);
     void CreateFireball(Vector<3,float> position, Vector<3,float> velocity, float size);
 
+    virtual IEvent<ParticleSystemEventArg>& ParticleSystemEvent();
+
  private:
+    Event<ParticleSystemEventArg> particleEvents;
+
     IViewingVolume* vv;
     HeightMap* heightMap;
     BoidsSystem* boidssystem;

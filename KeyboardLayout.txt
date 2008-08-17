@@ -1,0 +1,47 @@
+Keyboard layout
+---------------
+
+Dragon
+-----------------------------------------------------------
+  w,s,a,d   Move target
+  e         Breath weapon
+  q         Blast (Fireball)
+
+Camera
+-----------------------------------------------------------
+  arrows    Rotate camera
+  pg up     Zoom in
+  pg down   Zoom out
+  z,x       Rotate camera on the z axis (roll)
+  f         Print current camera state
+  F1-F5     Different viewpoints
+  F9        Increase global scale (panorama only)
+  F10       Decrease global scale (panorama only)
+
+Time
+-----------------------------------------------------------
+  F11       Decrease time factor (slow motion)
+  F12       Increase time factor (time lapse)
+  p         Pause on/off
+
+Render states
+-----------------------------------------------------------
+  1         Toggle state on BoidsSystem
+  2         Toggle state on Dragon
+  3         Toggle state on Island
+  4         Toggle state on OscSurface
+  5         Toggle state on Target
+  6         Toggle state on ParticleSystem (BreathWeapon)
+  8         Decrease number of boids rendered
+  9         Increase number of boids rendered
+
+General
+-----------------------------------------------------------
+  space     Skip intro credits
+  r         Reset
+  b         Reset boids
+  t         Decrease boids alignment (weak flocking)
+  y         Increase boids alignment (strong flocking)
+  home      Increase mouse/keyboard/wand sensitivity
+  end       Decrease mouse/keyboard/wand sensitivity
+  esc       Exit

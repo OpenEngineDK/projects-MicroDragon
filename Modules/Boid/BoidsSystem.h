@@ -35,11 +35,13 @@ using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Utils::Timer;
 
 struct BoidSystemEventArg;
+struct ParticleSystemEventArg;
 
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
 class BoidsSystem : public IListener<InitializeEventArg>,
-  public IListener<ProcessEventArg>, public IRenderNode {
+  public IListener<ProcessEventArg>, public IRenderNode, 
+public IListener<ParticleSystemEventArg> {
 public:
   unsigned int aliveBoids;
   bool enabled;
@@ -54,8 +56,8 @@ public:
 
     virtual void Apply(IRenderingView* rv);
   
+    void Handle(ParticleSystemEventArg arg);
     void HandleFire(Vector<3,float> position, float strength);
-    void HandleFireball(Vector<3,float> position, float strength);
     void IncNumberOfShownBoids();
     void DecNumberOfShownBoids();
     void IncAlignment();
@@ -66,7 +68,6 @@ public:
     virtual IEvent<BoidSystemEventArg>& BoidSystemEvent();
 
 private:
-    // Event lists for the rendering phases.
     Event<BoidSystemEventArg> boidEvents;
 
 

@@ -113,7 +113,7 @@ void Dragon::Handle(InitializeEventArg arg) {
 }
 
 void Dragon::Apply(IRenderingView* rv) {
-
+  /* debug lines
   list<Line*>::iterator i;
   for(i=bluelines.begin(); i != bluelines.end(); ++i)
     rv->GetRenderer()->DrawLine(*(*i), Vector<3,float>(0.0,0.0,1.0) , 1.5);
@@ -126,7 +126,7 @@ void Dragon::Apply(IRenderingView* rv) {
   for(i=greenlines.begin(); i != greenlines.end(); ++i)
     rv->GetRenderer()->DrawLine(*(*i), Vector<3,float>(0.0,1.0,0.0) , 1.5);
   greenlines.clear();
-
+  */
   if( enableTexture ) {
     glEnable( GL_TEXTURE_2D );
     glBindTexture(GL_TEXTURE_2D, neckTextureID);

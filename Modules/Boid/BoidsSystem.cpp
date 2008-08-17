@@ -2,6 +2,7 @@
 
 #include "Boid.h"
 #include "BoidSystemEvent.h"
+#include "../Particle/ParticleSystemEvents.h"
 
 #include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
@@ -99,7 +100,10 @@ void BoidsSystem::HandleFire(Vector<3,float> position, float strength) {
     }
 }
 
-void BoidsSystem::HandleFireball(Vector<3,float> position, float strength) {
+void BoidsSystem::Handle(ParticleSystemEventArg arg) {
+    Vector<3,float> position = arg.position;
+    float strength = arg.strength;
+
     for (int i=0; i<numberOfBoids; i++) {
         // Blow away from fireball
         Vector<3,float> dir = 

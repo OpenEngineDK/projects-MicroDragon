@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
     logger.info << logger.end;
 
     logger.info << "  for control information see: ";
-    logger.info << "Readme.txt in the project reposetory" << logger.end;
+    logger.info << "KeyboardLayout.txt in the project reposetory" << logger.end;
     logger.info << logger.end;
 
     // Create an engine and config object
@@ -332,6 +332,8 @@ void SetupScene(Config& config) {
     tpNode->AddNode(pat);
     config.engine.InitializeEvent().Attach(*pat);
     config.engine.ProcessEvent().Attach(*pat);
+
+    pat->ParticleSystemEvent().Attach(*boids);
 
     Dragon* dragon = new Dragon(heightMap,target,pat);
     scene->AddNode(dragon);

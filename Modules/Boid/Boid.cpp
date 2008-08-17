@@ -249,7 +249,7 @@ void Boid::updateLocomotion( double timeDelta ) {
         burning = true;
     }
     if (burning) {
-      /* cpvc
+      /* cpvc @todo: add fire to burning boids
       particlesystem->
 	  CreateParticles(prevTime+timeDelta, prevTime, 25,
 			  position+up, velocity, 3.0, 1.0, 1.0);

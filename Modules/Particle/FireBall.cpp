@@ -1,9 +1,13 @@
 #include "FireBall.h"
-#include "../Island/HeightMap.h"
-#include "../../Common/OpenGLUtil.h"
-#include "../Boid/BoidsSystem.h"
+
 #include "ParticleSystem.h"
+#include "ParticleSystemEvents.h"
+
+#include "../../Common/OpenGLUtil.h"
 #include "../../Common/VectorExt.h"
+
+#include "../Island/HeightMap.h"
+#include "../Boid/BoidsSystem.h"
 
 #include <Math/Math.h>
 #include <Math/Matrix.h>
@@ -30,7 +34,9 @@ FireBall::~FireBall() {
 
 void FireBall::updatePhysics( double timeDelta ) {
     // Add external force
-    Vector<3,float> external_acceleration = external_force_accumulated*(1/mass)*timeDelta;
+    Vector<3,float> external_acceleration = 
+      external_force_accumulated*(1/mass)*timeDelta;
+
     external_force_accumulated = Vector<3,float>(0,0,0);
     velocity = (velocity+external_acceleration);
 
@@ -45,7 +51,9 @@ void FireBall::updatePhysics( double timeDelta ) {
     if (position[1]<heightMap->HeightAt(position)[1]+1.0 && dead != true) {
         position[1] = heightMap->HeightAt(position)[1]+1.0;
         dead = true;
-        boidssystem->HandleFireball(position,15*size);
+
+	particlesystem->ParticleSystemEvent()
+	  .Notify( ParticleSystemEventArg(EXPLOTION, position,15*size) );
         particlesystem->
 	  CreateParticles(0.1, 0.0, 200*size,
 			  position+Vector<3,float>(0,0.5*size-1,0),
@@ -56,9 +64,6 @@ void FireBall::updatePhysics( double timeDelta ) {
 
 void FireBall::draw() {
     if (dead) return;
-
-   
-
 
     forward = vv->GetPosition(); // cpvc: inputgrabber->GetCameraDir();
   

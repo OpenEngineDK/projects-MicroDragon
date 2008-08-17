@@ -7,6 +7,7 @@
 //#include "../../Common/gltga.h"
 
 #include "Particle.h"
+#include "ParticleSystemEvents.h"
 #include "../../Common/random.h"
 
 #include <Display/IViewingVolume.h>
@@ -149,6 +150,10 @@ void ParticleSystem::CreateFireball(Vector<3,float> position, Vector<3,float> ve
                              );
     FireBall* p = new FireBall( heightMap, vv, boidssystem, this, position, velocity, size, 2.0, randObject->ran_uniform_0to1()*1.0 );
     particles.push_back(p);
+}
+
+IEvent<ParticleSystemEventArg>& ParticleSystem::ParticleSystemEvent() {
+    return particleEvents;
 }
 
 void ParticleSystem::Apply(IRenderingView* rv) {
