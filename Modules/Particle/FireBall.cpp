@@ -68,7 +68,7 @@ void FireBall::draw() {
     forward = vv->GetPosition(); // cpvc: inputgrabber->GetCameraDir();
   
     double life = lifeTimeLeft/lifeTimeTotal;
-    double life2 = pow(life,2.0);
+    //double life2 = pow(life,2.0);
 
     for (int i=0; i<5; i++) {
         float layer = (i+0.5f)/5.0f;

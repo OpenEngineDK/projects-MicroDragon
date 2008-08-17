@@ -65,6 +65,7 @@
 #include "TransparentcyNode.h"
 #include "GLSettingsNode.h"
 #include "GameState.h"
+#include "TimeModifier.h"
 
 #include "Modules/Island/Island.h"
 #include "Modules/Island/HeightMap.h"
@@ -311,6 +312,9 @@ void SetupScene(Config& config) {
     LightFader* light2Fader = new LightFader(*light2, *to2, light2, fadetime);
     config.engine.ProcessEvent().Attach(*light2Fader);
 
+    TimeModifier* timeModifier = new TimeModifier(config.engine.ProcessEvent(),1.00f);
+    //timeModifier->SetFactor(1.23);
+
     //init HeightMap
     string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
     ITextureResourcePtr hMap = 
@@ -334,10 +338,12 @@ void SetupScene(Config& config) {
     TransparencyNode* tpNode = new TransparencyNode();
     scene->AddNode(tpNode);
 
-    OscSurface* oscs = new OscSurface(heightMap);
+    //Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
+    Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
+    OscSurface* oscs = new OscSurface(heightMap,oscsColor);
     tpNode->AddNode(oscs);
     config.engine.InitializeEvent().Attach(*oscs);
-    config.engine.ProcessEvent().Attach(*oscs);
+    timeModifier->ProcessEvent().Attach(*oscs);
     config.engine.DeinitializeEvent().Attach(*oscs);
 
     // Intro* intro = new Intro(inputgrabber);
@@ -348,12 +354,12 @@ void SetupScene(Config& config) {
     BoidsSystem* boids = new BoidsSystem(heightMap, oscs);
     tpNode->AddNode(boids);
     config.engine.InitializeEvent().Attach(*boids);
-    config.engine.ProcessEvent().Attach(*boids);
+    timeModifier->ProcessEvent().Attach(*boids);
 
     ParticleSystem* pat = new ParticleSystem(heightMap,config.camera,boids);
     tpNode->AddNode(pat);
     config.engine.InitializeEvent().Attach(*pat);
-    config.engine.ProcessEvent().Attach(*pat);
+    timeModifier->ProcessEvent().Attach(*pat);
 
     pat->ParticleSystemEvent().Attach(*boids);
     boids->SetParticleSystem(pat);
@@ -368,7 +374,7 @@ void SetupScene(Config& config) {
     config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
-    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, island, dragon, boids);
+    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, island, dragon, boids, *timeModifier);
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
 

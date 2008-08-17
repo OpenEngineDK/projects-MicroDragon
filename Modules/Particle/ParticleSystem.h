@@ -14,8 +14,6 @@
 // usnig typedef
 #include <vector>
 
-#include <Utils/Timer.h>
-
 class BoidsSystem;
 class HeightMap;
 class Particle;
@@ -38,7 +36,6 @@ using OpenEngine::Display::IViewingVolume;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
-using OpenEngine::Utils::Timer;
 using std::vector;
 
 struct ParticleSystemEventArg;
@@ -71,8 +68,6 @@ public:
     RandomGenerator* randObject;
     vector<Particle*> particles;
     vector<Particle*> tmpParticles;
-
-    Timer timer;
 };
 
 #endif

@@ -14,7 +14,6 @@
 #include <Resources/ResourceManager.h>
 #include <Resources/IModelResource.h>
 #include <Scene/TransformationNode.h>
-#include <Utils/Timer.h>
 
 // from Extension OpenGLRenderer
 #include <Meta/OpenGL.h>
@@ -31,7 +30,6 @@ using OpenEngine::Renderers::IRenderer;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Math::PI;
 using OpenEngine::Math::Quaternion;
-using OpenEngine::Utils::Timer;
 
 // from extension OpenGLRenderer
 using OpenEngine::Renderers::OpenGL::Renderer;
@@ -57,8 +55,6 @@ Intro::Intro(InputGrabber* inputgrabber) {
     cpvc = LoadIntoDisplaylist("Intro/text-cpvc.obj", CPVC_DISPLAY_ID);
     tic = LoadIntoDisplaylist("Intro/text-tic.obj", TIC_DISPLAY_ID);
     cea = LoadIntoDisplaylist("Intro/text-cea.obj", CEA_DISPLAY_ID);
-
-    timer.Start();
 }
 
 Intro::~Intro(){
@@ -97,7 +93,7 @@ TransformationNode* Intro::LoadIntoDisplaylist(string filename, int id) {
 }
 
 void Intro::Handle(ProcessEventArg arg) {
-    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    unsigned int dt = arg.approx;
     float deltaTime = ((float)dt)/1000.0;
     double timeStep = deltaTime/1000.0;
     if( startDelay > 0.0 ) {

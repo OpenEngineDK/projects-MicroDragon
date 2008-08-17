@@ -52,9 +52,10 @@ private:
   float scale;
 
   Timer timer;
+  Vector<4,float> color;
 
 public:
-  OscSurface(HeightMap* heightMap);
+  OscSurface(HeightMap* heightMap, Vector<4,float> color);
   ~OscSurface();
 
   void Handle(InitializeEventArg arg);

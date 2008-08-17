@@ -40,8 +40,6 @@ ParticleSystem::~ParticleSystem(){
 }
 
 void ParticleSystem::Handle(InitializeEventArg arg) {
-    timer.Start();
-
     ITextureResourcePtr tex1 = 
       ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
     tex1->Load();
@@ -108,7 +106,7 @@ void ParticleSystem::CreateParticles(double time, double prevTime,
 }
 
 void ParticleSystem::Handle(ProcessEventArg arg) {
-    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    unsigned int dt = arg.approx;
     float deltaTime = ((float)dt)/1000.0;
     float timeStep = deltaTime/1000.0;
 

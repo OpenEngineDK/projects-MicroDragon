@@ -207,6 +207,8 @@ void Boid::updateLocomotion( double timeDelta ) {
         // Secondary rule: local left axis remains like it was before
         left = (up%(forward)).GetNormalize();
         forward = (left%(up)).GetNormalize();
+
+	//@todo add score events for flying boids
     }
     else if (dead) { // Being dead mode
         // Primary rule: local up axis approaches tangent to surface

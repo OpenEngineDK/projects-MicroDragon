@@ -94,8 +94,6 @@ Dragon::~Dragon() {
 }
 
 void Dragon::Handle(InitializeEventArg arg) {
-    timer.Start();
-
     usingBreathWeapon = false;
     chargingFireball = false;
     fireballCharge = 0.0;
@@ -155,7 +153,7 @@ void Dragon::Apply(IRenderingView* rv) {
 }
 
 void Dragon::Handle(ProcessEventArg arg) {
-    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    unsigned int dt = arg.approx;
     float deltaTime = ((float)dt)/1000.0;
     float timeStep = deltaTime / 1000.0;
 

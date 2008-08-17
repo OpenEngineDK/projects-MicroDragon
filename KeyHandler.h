@@ -10,6 +10,8 @@
 #ifndef _KEY_HANDLER_H_
 #define _KEY_HANDLER_H_
 
+#include "TimeModifier.h"
+
 // inherits from
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
@@ -60,8 +62,10 @@ private:
     BoidsSystem* boidssystem;
     FollowCamera& camera;
     TransformationNode& target;
+    TimeModifier& timeModifier;
 
     list<Key> keysPressed;
+    float timeFactor;
 
     float moveChunkMouse, rotChunkMouse, moveChunkKeyboard, rotChunkKeyboard;
     int mousex_prev, mousey_prev, mousex_orig, mousey_orig;
@@ -76,7 +80,8 @@ public:
                TransformationNode& target,
                Island* island,
                Dragon* dragon,
-               BoidsSystem* boidssystem);
+               BoidsSystem* boidssystem,
+	       TimeModifier& timeModifer);
     ~KeyHandler();
 
     void Handle(KeyboardEventArg arg);

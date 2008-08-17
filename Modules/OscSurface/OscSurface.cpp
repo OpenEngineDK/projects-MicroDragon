@@ -8,14 +8,13 @@
 #include <Meta/OpenGL.h>
 #include <Renderers/IRenderingView.h>
 #include <Utils/Convert.h>
-#include <Utils/Timer.h>
 
 #include <string>
 
 using OpenEngine::Core::Exception;
 using OpenEngine::Utils::Convert;
 
-OscSurface::OscSurface(HeightMap* heightMap) : heightMap(heightMap) {
+OscSurface::OscSurface(HeightMap* heightMap, Vector<4,float> color) : heightMap(heightMap), color(color) {
     M = 80;
     N = 80;
     aspect = 1.0;
@@ -32,8 +31,6 @@ OscSurface::~OscSurface() {
 }
 
 void OscSurface::Handle(InitializeEventArg arg) {
-    timer.Start();
-
     float *zInit;
 
     z_norm = (float *)malloc( M*N*3*sizeof(float) );
@@ -158,25 +155,26 @@ void OscSurface::OnRenderEnter(float timeSte) {
 
     // draw the surface:
     glPushMatrix();
-    glColor3f( 0.8, 0.25, 0.0 );
+    //glColor3f( 0.8, 0.25, 0.0 );
     glTranslatef( translate[0], translate[1], translate[2]);
     glScalef(scale,scale,scale);
 
-    glColor4f(0.8f,0.25f,0.0f,0.7f);
+    glColor4f(color[0],color[1],color[2],color[3]);
 
     glBegin( GL_TRIANGLES );
 
     for (int i=0; i<(M-1); i++)
         for (int j=0; j<(N-1); j++) {
-            int x, z, xz;
+	    int x=-1, z=-1, xz=-1;
             Vector<3,float> point[4];
             Vector<3,float> normal[4];
 
             for (int c=0; c<4; c++) {
                 if (c==0) { x = i;   z = j;   }
-                if (c==1) { x = i+1; z = j;   }
-                if (c==2) { x = i+1; z = j+1; }
-                if (c==3) { x = i;   z = j+1; }
+                else if (c==1) { x = i+1; z = j;   }
+                else if (c==2) { x = i+1; z = j+1; }
+                else if (c==3) { x = i;   z = j+1; }
+		else throw Exception("unknown index");
                 xz = x*N+z;
                 point[c] = Vector<3,float>(x*hx, zCur[xz]*15.0/120, z*hz);
                 normal[c] = Vector<3,float>(z_norm[xz*3+0], 1.0f, z_norm[xz*3+1]);
@@ -203,7 +201,7 @@ void OscSurface::Handle(DeinitializeEventArg arg) {
 }
 
 void OscSurface::Handle(ProcessEventArg arg) {
-    unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
+    unsigned int dt = arg.approx;
     float deltaTime = ((float)dt)/1000.0;
     OnLogicEnter(deltaTime/1000.0);
 }

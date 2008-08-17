@@ -9,8 +9,6 @@
 #include <Core/EngineEvents.h>
 #include <Renderers/IRenderNode.h>
 
-#include <Utils/Timer.h>
-
 #include <string>
 #include <list>
 
@@ -42,7 +40,6 @@ using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Scene::TransformationNode;
-using OpenEngine::Utils::Timer;
 
 using OpenEngine::Geometry::Line;
 using std::list;
@@ -71,11 +68,9 @@ public:
     void useBreathWeapon( bool input );
     void chargeFireball( bool input );
 private:
-    Timer timer;
-
     HeightMap* heightMap;
-    ParticleSystem* particlesystem;
     Target* target;
+    ParticleSystem* particlesystem;
 
     TransformationNode* headNode;
     TransformationNode* jawAngleNode;

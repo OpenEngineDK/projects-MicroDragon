@@ -12,8 +12,6 @@
 // typedefs
 #include <string>
 
-#include <Utils/Timer.h>
-
 //forward reference
 class Boid;
 class InputGrabber;
@@ -32,15 +30,12 @@ using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Scene::TransformationNode;
-using OpenEngine::Utils::Timer;
 using std::string;
 
 class Intro : public IListener<ProcessEventArg>, public IRenderNode {
 private:
     InputGrabber* inputgrabber;
     float blend;
-
-    Timer timer;
 
     Vector<3,float> pos;
     float fadeoutTime; //in seconds

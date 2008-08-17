@@ -30,10 +30,13 @@ KeyHandler::KeyHandler(FollowCamera& camera,
                        TransformationNode& target,
                        Island* island,
                        Dragon* dragon,
-                       BoidsSystem* boidssystem)
+                       BoidsSystem* boidssystem,
+		       TimeModifier& timeModifier)
     : camera(camera)
     , target(target)
+    , timeModifier(timeModifier) 
     ,up(0),down(0),left(0),right(0) {
+
 
   this->island = island;
   this->dragon = dragon;
@@ -42,6 +45,7 @@ KeyHandler::KeyHandler(FollowCamera& camera,
   camera.Follow(&target);
   camera.Move(-100,0,50);
   camera.LookAt(0,target.GetPosition()[1],0);
+  timeFactor = 1.0;
 
   reset();
 }
@@ -163,8 +167,8 @@ void KeyHandler::HandleDown(Key key) {
         //inputgrabber->printLocation();
         break;
     case KEY_SPACE:
-        if( !intro->isDone() )
-            intro->disable();
+//      if( !intro->isDone() )
+//          intro->disable();
         break;
     case KEY_r:
       reset();
@@ -212,12 +216,18 @@ void KeyHandler::HandleDown(Key key) {
 //     case KEY_F10:
 //         //inputgrabber->scaleGlobal( 0.05 );
 //         break;
-//     case KEY_F11:
-//       //GLUTClock::getInstance()->decTimeFactor();
-//         break;
-//     case KEY_F12:
-//       //GLUTClock::getInstance()->incTimeFactor();
-//         break;
+    case KEY_n: //KEY_F11
+         timeFactor -= 0.1;
+	 if (timeFactor < 0.0) timeFactor = 0.0;
+         timeModifier.SetFactor(timeFactor);
+	 logger.info << "time factor: " << timeFactor << logger.end;
+         break;
+     case KEY_m: //KEY_F12
+         timeFactor += 0.1;
+	 if (timeFactor > 100.0) timeFactor = 100.0;
+         timeModifier.SetFactor(timeFactor);
+	 logger.info << "time factor: " << timeFactor << logger.end;
+         break;
     case KEY_PAGEUP:
         camera.Move(moveChunkKeyboard,0,0);
         break;
