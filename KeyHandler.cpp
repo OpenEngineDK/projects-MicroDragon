@@ -37,7 +37,8 @@ KeyHandler::KeyHandler(FollowCamera& camera,
     , target(target)
     , hmap(hmap)
     , timeModifier(timeModifier) 
-    ,up(0),down(0),left(0),right(0) {
+    , up(0),down(0),left(0),right(0)
+    , cam_up(0),cam_down(0),cam_left(0),cam_right(0) {
 
   this->island = island;
   this->dragon = dragon;
@@ -82,36 +83,33 @@ void KeyHandler::Handle(ProcessEventArg arg) {
 
     // handle joystick.
     
+    float move_factor = 2.5;
+
     if (up)
-	target.Move(0,0,-up);
+	MoveForward(up*move_factor);
     if (down)
-	target.Move(0,0,down);
+	MoveBack(down*move_factor);
     if (left)
-	target.Move(-left,0,0);
+	MoveLeft(left*move_factor);
     if (right)
-	target.Move(right,0,0);
+	MoveRight(right*move_factor);
 
     float zoom_factor = 3.0; 
 
     if (cam_up) {
-	camera.Move(cam_up*zoom_factor,0,0);
-	camera.LookAt(0,target.GetPosition()[1],0);
+	ZoomIn(cam_up*zoom_factor);
     }
     if (cam_down) {
-	camera.Move(-cam_down*zoom_factor,0,0);
-	camera.LookAt(0,target.GetPosition()[1],0);
+	ZoomOut(cam_down*zoom_factor);
     }
     float rot_factor = 0.1;
 
+    // Yeah, these ARE flippet...
     if (cam_left)
-        target.Rotate(0, -cam_left*rot_factor, 0);
+	RotateRight(cam_left*rot_factor);
 
     if (cam_right)
-        target.Rotate(0, cam_right*rot_factor, 0);
-
-
-
-
+	RotateLeft(cam_right*rot_factor);
 }
 
 void KeyHandler::HandleDown(Key key) {
@@ -348,7 +346,23 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
     case JBUTTON_SIX:
         boidssystem->IncAlignment();
         break;
-	
+    case JBUTTON_SEVEN:
+	if (arg.type == JoystickButtonEventArg::PRESS) {
+	    timeFactor -= 0.1;
+	    if (timeFactor < 0.0) timeFactor = 0.0;
+	    timeModifier.SetFactor(timeFactor);
+	    logger.info << "time factor: " << timeFactor << logger.end;
+	    break;
+	}
+    case JBUTTON_EIGHT:
+	if (arg.type == JoystickButtonEventArg::PRESS) {
+	    timeFactor += 0.1;
+	    if (timeFactor > 100.0) timeFactor = 100.0;
+	    timeModifier.SetFactor(timeFactor);
+	    logger.info << "time factor: " << timeFactor << logger.end;
+	    break;
+	}
+
     default:
 	break;
     }
@@ -358,7 +372,7 @@ void KeyHandler::Handle(JoystickAxisEventArg arg) {
 
     float max = 1 << 15;
     float thres1 = 0.1;
-    float thres2 = 0.1;
+    float thres2 = 0.15;
 
     up = (-arg.state.axisState[1])/max;
     if (up < thres1) up = 0.0;
@@ -381,5 +395,5 @@ void KeyHandler::Handle(JoystickAxisEventArg arg) {
     cam_right = (arg.state.axisState[2])/max;
     if (cam_right < thres2) cam_right = 0.0;
 
-    
+    //logger.info << cam_up << logger.end;
 }
