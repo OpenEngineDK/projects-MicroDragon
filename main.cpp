@@ -334,6 +334,7 @@ void SetupScene(Config& config) {
     config.engine.ProcessEvent().Attach(*pat);
 
     pat->ParticleSystemEvent().Attach(*boids);
+    boids->SetParticleSystem(pat);
 
     Dragon* dragon = new Dragon(heightMap,target,pat);
     scene->AddNode(dragon);

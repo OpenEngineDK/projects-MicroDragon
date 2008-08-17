@@ -17,6 +17,7 @@
 //forward reference
 class Boid;
 class HeightMap;
+class ParticleSystem;
 class OscSurface;
 namespace OpenEngine {
     namespace Renderers {
@@ -67,10 +68,12 @@ public:
     void BoidDied(Boid& boid);
     virtual IEvent<BoidSystemEventArg>& BoidSystemEvent();
 
+    void SetParticleSystem(ParticleSystem* particlesystem);
+    ParticleSystem* GetParticleSystem();
 private:
     Event<BoidSystemEventArg> boidEvents;
 
-
+    ParticleSystem* particlesystem;
     HeightMap* heightMap;
     OscSurface* oscsurface;
 

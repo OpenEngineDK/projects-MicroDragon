@@ -249,11 +249,11 @@ void Boid::updateLocomotion( double timeDelta ) {
         burning = true;
     }
     if (burning) {
-      /* cpvc @todo: add fire to burning boids
-      particlesystem->
+      ParticleSystem* particlesystem = boidssystem->GetParticleSystem();
+      if(particlesystem!=NULL)
+	particlesystem->
 	  CreateParticles(prevTime+timeDelta, prevTime, 25,
 			  position+up, velocity, 3.0, 1.0, 1.0);
-      */
     }
     if (life<=0) {
       if(dead==false)

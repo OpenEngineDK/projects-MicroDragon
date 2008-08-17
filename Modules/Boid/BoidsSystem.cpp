@@ -3,6 +3,7 @@
 #include "Boid.h"
 #include "BoidSystemEvent.h"
 #include "../Particle/ParticleSystemEvents.h"
+#include "../Particle/ParticleSystem.h"
 
 #include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
@@ -21,6 +22,7 @@ BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface) {
     numberOfShownBoids = 0;
     disableLogic = false;
     aliveBoids = numberOfBoids;
+    particlesystem = NULL;
 }
 
 BoidsSystem::~BoidsSystem() {
@@ -112,6 +114,14 @@ void BoidsSystem::Handle(ParticleSystemEventArg arg) {
         boids[i]->addExternalImpulse((dir.GetNormalize())*strength*
 				     (1/std::max(3.0f,dir.GetLength())));
     }
+}
+
+void BoidsSystem::SetParticleSystem(ParticleSystem* particlesystem) {
+  this->particlesystem = particlesystem;
+}
+
+ParticleSystem* BoidsSystem::GetParticleSystem() {
+  return particlesystem;
 }
 
 void BoidsSystem::IncNumberOfShownBoids() {
