@@ -374,7 +374,7 @@ void SetupScene(Config& config) {
     config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
-    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, island, dragon, boids, *timeModifier);
+    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier);
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
 

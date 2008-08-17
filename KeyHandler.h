@@ -26,6 +26,8 @@
 
 #include <list>
 
+#include "Modules/Island/HeightMap.h"
+
 class BoidsSystem;
 class Dragon;
 class InputGrabber;
@@ -62,6 +64,7 @@ private:
     BoidsSystem* boidssystem;
     FollowCamera& camera;
     TransformationNode& target;
+    HeightMap& hmap;
     TimeModifier& timeModifier;
 
     list<Key> keysPressed;
@@ -75,13 +78,16 @@ private:
     float cam_up,cam_down,cam_left,cam_right;
     
     void reset();
+    void CheckCameraCollision();
+
 public:
     KeyHandler(FollowCamera& camera,
                TransformationNode& target,
+               HeightMap& hmap,
                Island* island,
                Dragon* dragon,
                BoidsSystem* boidssystem,
-	       TimeModifier& timeModifer);
+               TimeModifier& timeModifer);
     ~KeyHandler();
 
     void Handle(KeyboardEventArg arg);
@@ -91,6 +97,13 @@ public:
     void Handle(ProcessEventArg arg);
     void Handle(JoystickAxisEventArg arg);
     void Handle(JoystickButtonEventArg arg);
+
+    void RotateUp(float d);
+    void RotateDown(float d);
+    void RotateRight(float d);
+    void RotateLeft(float d);
+    void ZoomIn(float d);
+    void ZoomOut(float d);
 
 };
 

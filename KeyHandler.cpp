@@ -28,15 +28,16 @@ using OpenEngine::Scene::TransformationNode;
 
 KeyHandler::KeyHandler(FollowCamera& camera,
                        TransformationNode& target,
+                       HeightMap& hmap,
                        Island* island,
                        Dragon* dragon,
                        BoidsSystem* boidssystem,
-		       TimeModifier& timeModifier)
+                       TimeModifier& timeModifier)
     : camera(camera)
     , target(target)
+    , hmap(hmap)
     , timeModifier(timeModifier) 
     ,up(0),down(0),left(0),right(0) {
-
 
   this->island = island;
   this->dragon = dragon;
@@ -229,10 +230,10 @@ void KeyHandler::HandleDown(Key key) {
 	 logger.info << "time factor: " << timeFactor << logger.end;
          break;
     case KEY_PAGEUP:
-        camera.Move(moveChunkKeyboard,0,0);
+        ZoomIn(moveChunkKeyboard);
         break;
     case KEY_PAGEDOWN:
-        camera.Move(-moveChunkKeyboard,0,0);
+        ZoomOut(moveChunkKeyboard);
         break;
     case KEY_HOME:
         //inputgrabber->incMultiplier();
@@ -241,21 +242,64 @@ void KeyHandler::HandleDown(Key key) {
         //inputgrabber->decMultiplier();
         break;
     case KEY_UP:
-        camera.Move(0, 0, moveChunkKeyboard);
-        camera.LookAt(0,target.GetPosition()[1],0);
+        RotateUp(moveChunkKeyboard);
         break;
     case KEY_DOWN:
-        camera.Move(0, 0, -moveChunkKeyboard);
-        camera.LookAt(0,target.GetPosition()[1],0);
+        RotateDown(moveChunkKeyboard);
         break;
     case KEY_LEFT:
-        target.Rotate(0, -rotChunkKeyboard, 0);
+        RotateLeft(rotChunkKeyboard);
         break;
     case KEY_RIGHT:
-        target.Rotate(0, rotChunkKeyboard, 0);
+        RotateRight(rotChunkKeyboard);
         break;
     default:
         break;
+    }
+    CheckCameraCollision();
+}
+
+void KeyHandler::RotateUp(float d) {
+    // check that the camera does not roll over the top
+    if (0.95f < camera.GetDirection().RotateVector(Vector<3,float>(0,0,1))[1]) return;
+    camera.Move(0, 0, d);
+    camera.LookAt(0,target.GetPosition()[1],0);    
+}
+void KeyHandler::RotateDown(float d) {
+    Vector<3,float> p = camera.GetPosition();
+    float h = hmap.HeightAt(p)[1];
+    if (h + 10 > p[1]) return;
+    camera.Move(0, 0, -d);
+    camera.LookAt(0,target.GetPosition()[1],0);
+}
+void KeyHandler::RotateRight(float d) {
+    target.Rotate(0, -d, 0);
+}
+void KeyHandler::RotateLeft(float d) {
+    target.Rotate(0, d, 0);
+}
+void KeyHandler::ZoomIn(float d) {
+    Vector<3,float> v(target.GetPosition() - camera.GetPosition());
+    if (v*v < 1000) return;
+    camera.Move(d,0,0);
+}
+void KeyHandler::ZoomOut(float d) {
+    Vector<3,float> v(target.GetPosition() - camera.GetPosition());
+    if (v*v > 10000) return;
+    camera.Move(-d,0,0);
+}
+
+
+
+void KeyHandler::CheckCameraCollision() {
+    // if the camera is under the height map move it up
+    Vector<3,float> t, c, p, r;
+    t = target.GetPosition();
+    p = camera.GetPosition();
+    float h = hmap.HeightAt(p)[1] + 10;
+    if (h > p[1]) {
+        camera.Move(0, 0, h - p[1]);
+        camera.LookAt(0,t[1],0);
     }
 }
 
