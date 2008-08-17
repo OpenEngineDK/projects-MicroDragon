@@ -26,14 +26,25 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate)
     frameHeight = frame.GetHeight();
 
     
-    int surfWidth = 512;
-    int surfHeight = 64;
-
     float downpadding = 0.02;
     float leftpadding = 0.02;
     float rightpadding = 0.02;
 
     int textsize = frameHeight*0.08;
+
+    int surfWidth = 512;
+    int surfHeight = textsize*2;
+
+    // scale texture height and width to nerest power of two
+    unsigned int two = 2;
+    while (surfHeight > two)
+        two = two << 1;
+    surfHeight = two;
+//     unsigned int widthPowerOfTwo = 0;
+//     while (movieWidth > (two<<widthPowerOfTwo))
+//         widthPowerOfTwo++;
+//     width = (two<<widthPowerOfTwo);
+
 
 
   CairoSurfaceResourcePtr timeRes = 
