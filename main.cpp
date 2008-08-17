@@ -379,8 +379,17 @@ void SetupDebugging(Config& config) {
         config.scene->AddNode(config.frustum->GetFrustumNode());
     }
 
-    // Add Statistics module
-    config.engine.ProcessEvent().Attach(*(new OpenEngine::Utils::Statistics(1000)));
+    // FPS layer with cairo
+    CairoSurfaceResourcePtr sr =
+      CairoSurfaceResourcePtr(new CairoSurfaceResource(CairoSurfaceResource::CreateCairoSurface(1000,100)));
+    TextSurface *ts = new TextSurface(*sr, string("Loading FPS"));
+    Layer layer(0,0);
+    layer.texr = sr;
+    LayerNode *ln = new LayerNode(1024, 768); 
+    ln->AddLayer(layer);
+    config.scene->AddNode(ln);
+    LayerStatistics* layerStat = new LayerStatistics(1000000, ts);
+    config.engine.ProcessEvent().Attach(*layerStat);
 
 }
 
