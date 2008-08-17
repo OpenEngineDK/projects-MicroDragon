@@ -14,6 +14,9 @@
 // usnig typedef
 #include <vector>
 
+// @todo: needs to be here for windows to compile
+#include "ParticleSystemEvents.h"
+
 class BoidsSystem;
 class HeightMap;
 class Particle;
@@ -37,8 +40,6 @@ using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using std::vector;
-
-struct ParticleSystemEventArg;
 
 class ParticleSystem : public IListener<InitializeEventArg>,
 public IListener<ProcessEventArg>, public IRenderNode {

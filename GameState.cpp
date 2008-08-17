@@ -1,7 +1,7 @@
 #include "GameState.h"
 
 #include "Modules/Boid/BoidsSystem.h"
-#include "Modules/Boid/BoidSystemEvent.h"
+#include "Modules/Boid/BoidSystemEvents.h"
 
 #include <Logging/Logger.h>
 

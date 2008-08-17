@@ -1,5 +1,9 @@
-#ifndef _BOID_SYSTEM_EVENT_
-#define _BOID_SYSTEM_EVENT_
+#ifndef _BOID_SYSTEM_EVENTS_
+#define _BOID_SYSTEM_EVENTS_
+
+#include <Math/Vector.h>
+
+using OpenEngine::Math::Vector;
 
 enum BoidEvent { BOID_DIED };
 

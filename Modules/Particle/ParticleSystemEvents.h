@@ -1,6 +1,10 @@
 #ifndef _PARTICLE_SYSTEM_EVENTS_
 #define _PARTICLE_SYSTEM_EVENTS_
 
+#include <Math/Vector.h>
+
+using OpenEngine::Math::Vector;
+
 enum ParticleEvent { EXPLOTION };
 
 struct ParticleSystemEventArg {

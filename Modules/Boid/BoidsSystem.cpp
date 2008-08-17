@@ -1,8 +1,6 @@
 #include "BoidsSystem.h"
 
 #include "Boid.h"
-#include "BoidSystemEvent.h"
-#include "../Particle/ParticleSystemEvents.h"
 #include "../Particle/ParticleSystem.h"
 
 #include "../Island/HeightMap.h"

@@ -14,6 +14,10 @@
 // non reference or pointer member variables
 #include <Utils/Timer.h>
 
+// @todo: needs to be here for windows to compile
+#include "BoidSystemEvents.h"
+#include "../Particle/ParticleSystemEvents.h"
+
 //forward reference
 class Boid;
 class HeightMap;
@@ -34,9 +38,6 @@ using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Utils::Timer;
-
-struct BoidSystemEventArg;
-struct ParticleSystemEventArg;
 
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
