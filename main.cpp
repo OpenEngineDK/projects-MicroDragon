@@ -355,7 +355,7 @@ void SetupScene(Config& config) {
     config.engine.DeinitializeEvent().Attach(*config.mouse);
     
     // game state logic
-    config.gamestate = new GameState(5000);
+    config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
     KeyHandler* key_h = 

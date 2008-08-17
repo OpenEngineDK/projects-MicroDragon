@@ -5,7 +5,7 @@
 
 #include <Logging/Logger.h>
 
-GameState::GameState(unsigned int duration) : duration(duration*1000) {
+GameState::GameState(unsigned int duration) : duration(duration) {
   timer.Start();
   numberOfDeadBoids = 0;
 }
@@ -22,7 +22,7 @@ void GameState::Handle(BoidSystemEventArg arg) {
 
 /** returns time in seconds */
 unsigned int GameState::GetTime() {
-  return timer.GetElapsedIntervals(1000);
+  return timer.GetElapsedIntervals(1000000);
 }
 
 /** returns time left in seconds */

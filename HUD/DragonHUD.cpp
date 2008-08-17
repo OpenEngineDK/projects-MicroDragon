@@ -29,9 +29,12 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate)
     int surfWidth = 512;
     int surfHeight = 64;
 
-    float downpadding = 0.01;
-    float leftpadding = 0.01;
-    float rightpadding = 0.1;
+    float downpadding = 0.02;
+    float leftpadding = 0.02;
+    float rightpadding = 0.02;
+
+    int textsize = frameHeight*0.08;
+
 
   CairoSurfaceResourcePtr timeRes = 
       CairoSurfaceResourcePtr(new CairoSurfaceResource(CairoSurfaceResource::CreateCairoSurface(surfWidth,surfHeight)));
@@ -39,13 +42,16 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate)
       CairoSurfaceResourcePtr(new CairoSurfaceResource(CairoSurfaceResource::CreateCairoSurface(surfWidth,surfHeight)));
 
 
-    time = new DragonText(*timeRes, string("0"));
-    score = new DragonText(*scoreRes, string("0"));
-
+    time = new DragonText(*timeRes, string(""));
+    time->SetAlignment(RIGHT);
+    time->SetTextSize(textsize);
+    score = new DragonText(*scoreRes, string(""));
+    score->SetTextSize(textsize);
+    
     int ypos = frameHeight - (downpadding*frameHeight) - surfHeight;
-   
-    Layer* timeLayer = new Layer(300,ypos);
-    Layer* scoreLayer = new Layer(24,ypos);
+
+    Layer* timeLayer = new Layer(frameWidth-frameWidth*rightpadding-surfWidth,ypos);
+    Layer* scoreLayer = new Layer(frameWidth*leftpadding,ypos);
 
     timeLayer->texr = timeRes;
     scoreLayer->texr = scoreRes;
@@ -58,8 +64,12 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate)
 DragonHUD::~DragonHUD() {}
 
 void DragonHUD::Handle(RenderingEventArg arg) {
-    testval++;
-    time->SetString(Convert::ToString(gamestate.GetTimeLeft() ));
+    char timestring[255];
+    int timeleft = gamestate.GetTimeLeft();
+    int min = timeleft / 60;
+    int sec =  timeleft - min*60;
+    sprintf(timestring, "%d:%.2d",min,sec);
+    time->SetString(Convert::ToString(timestring));
     score->SetString(Convert::ToString(gamestate.GetScore() ));
     time->Draw();
     score->Draw();
