@@ -362,7 +362,7 @@ void SetupScene(Config& config) {
     //Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
     Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
     OscSurface* oscs = new OscSurface(heightMap,oscsColor);
-    tpNode->AddNode(oscs);
+    //tpNode->AddNode(oscs); // Moved down!
     config.engine.InitializeEvent().Attach(*oscs);
     timeModifier->ProcessEvent().Attach(*oscs);
     config.engine.DeinitializeEvent().Attach(*oscs);
@@ -381,6 +381,8 @@ void SetupScene(Config& config) {
     tpNode->AddNode(pat);
 
     tpNode->AddNode(boids);
+
+    tpNode->AddNode(oscs);
 
     config.engine.InitializeEvent().Attach(*pat);
     timeModifier->ProcessEvent().Attach(*pat);
