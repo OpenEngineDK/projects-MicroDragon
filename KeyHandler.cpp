@@ -142,16 +142,16 @@ void KeyHandler::HandleDown(Key key) {
         boidssystem->IncNumberOfShownBoids();
         break;
     case KEY_a:
-        target.Move(-1*moveChunkKeyboard, 0 , 0);
+        MoveLeft(moveChunkKeyboard);
         break;
     case KEY_d:
-        target.Move(1*moveChunkKeyboard, 0 , 0);
+        MoveRight(moveChunkKeyboard);
         break;
     case KEY_w:
-        target.Move(0, 0, -1*moveChunkKeyboard);
+        MoveForward(moveChunkKeyboard);
         break;
     case KEY_s:
-        target.Move(0, 0, 1*moveChunkKeyboard);
+        MoveBack(moveChunkKeyboard);
         break;
 	/*
     case KEY_z:
@@ -259,6 +259,18 @@ void KeyHandler::HandleDown(Key key) {
     CheckCameraCollision();
 }
 
+void KeyHandler::MoveForward(float d) {
+    target.Move(0, 0, -d);
+}
+void KeyHandler::MoveBack(float d) {
+    target.Move(0, 0, d);
+}
+void KeyHandler::MoveLeft(float d) {
+    target.Move(-d, 0, 0);
+}
+void KeyHandler::MoveRight(float d) {
+    target.Move(d, 0, 0);
+}
 void KeyHandler::RotateUp(float d) {
     // check that the camera does not roll over the top
     if (0.95f < camera.GetDirection().RotateVector(Vector<3,float>(0,0,1))[1]) return;

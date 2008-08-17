@@ -98,6 +98,10 @@ public:
     void Handle(JoystickAxisEventArg arg);
     void Handle(JoystickButtonEventArg arg);
 
+    void MoveForward(float d);
+    void MoveBack(float d);
+    void MoveRight(float d);
+    void MoveLeft(float d);
     void RotateUp(float d);
     void RotateDown(float d);
     void RotateRight(float d);
