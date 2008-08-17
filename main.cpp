@@ -333,7 +333,8 @@ void SetupScene(Config& config) {
     LightFader* light2Fader = new LightFader(*light2, *to2, light2, fadetime);
     config.engine.ProcessEvent().Attach(*light2Fader);
 
-    TimeModifier* timeModifier = new TimeModifier(config.engine.ProcessEvent(),1.00f);
+    TimeModifier* timeModifier = 
+        new TimeModifier(config.engine.ProcessEvent(),1.00f);
     //timeModifier->SetFactor(1.23);
 
     //init HeightMap
@@ -400,7 +401,7 @@ void SetupScene(Config& config) {
     config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
-    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier);
+    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate);
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
 

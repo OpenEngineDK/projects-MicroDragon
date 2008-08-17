@@ -32,11 +32,13 @@ KeyHandler::KeyHandler(FollowCamera& camera,
                        Island* island,
                        Dragon* dragon,
                        BoidsSystem* boidssystem,
-                       TimeModifier& timeModifier)
+                       TimeModifier& timeModifier,
+                       GameState& gamestate)
     : camera(camera)
     , target(target)
     , hmap(hmap)
-    , timeModifier(timeModifier) 
+    , timeModifier(timeModifier)
+    , gamestate(gamestate)
     , up(0),down(0),left(0),right(0)
     , cam_up(0),cam_down(0),cam_left(0),cam_right(0) {
 
@@ -48,6 +50,7 @@ KeyHandler::KeyHandler(FollowCamera& camera,
   camera.Move(-100,0,50);
   camera.LookAt(0,target.GetPosition()[1],0);
   timeFactor = 1.0;
+  done = pause = false;
 
   reset();
 }
@@ -75,9 +78,11 @@ void KeyHandler::Handle(KeyboardEventArg arg) {
 }
 
 void KeyHandler::Handle(ProcessEventArg arg) {
+    if(gamestate.GetTimeLeft() <= 0) done = true;
+
     list<Key>::iterator key;
     for(key=keysPressed.begin(); key != keysPressed.end(); ++key) {
-      HandleDown(*key);
+        HandleDown(*key);
     }
     //keysPressed.clear(); //to disable repeatition when holding down a key
 
@@ -168,6 +173,11 @@ void KeyHandler::HandleDown(Key key) {
     case KEY_SPACE:
 //      if( !intro->isDone() )
 //          intro->disable();
+        if (pause)
+            timeModifier.SetFactor(timeFactor);
+        else
+            timeModifier.SetFactor(0.0);
+        pause != pause;
         break;
     case KEY_r:
       reset();
@@ -216,12 +226,14 @@ void KeyHandler::HandleDown(Key key) {
 //         //inputgrabber->scaleGlobal( 0.05 );
 //         break;
     case KEY_n: //KEY_F11
+         if (done) return;
          timeFactor -= 0.1;
 	 if (timeFactor < 0.0) timeFactor = 0.0;
          timeModifier.SetFactor(timeFactor);
 	 logger.info << "time factor: " << timeFactor << logger.end;
          break;
      case KEY_m: //KEY_F12
+         if (done) return;
          timeFactor += 0.1;
 	 if (timeFactor > 100.0) timeFactor = 100.0;
          timeModifier.SetFactor(timeFactor);
@@ -348,6 +360,7 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
         break;
     case JBUTTON_SEVEN:
 	if (arg.type == JoystickButtonEventArg::PRESS) {
+        if (done) return;
 	    timeFactor -= 0.1;
 	    if (timeFactor < 0.0) timeFactor = 0.0;
 	    timeModifier.SetFactor(timeFactor);
@@ -356,6 +369,7 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
 	}
     case JBUTTON_EIGHT:
 	if (arg.type == JoystickButtonEventArg::PRESS) {
+        if (done) return;
 	    timeFactor += 0.1;
 	    if (timeFactor > 100.0) timeFactor = 100.0;
 	    timeModifier.SetFactor(timeFactor);

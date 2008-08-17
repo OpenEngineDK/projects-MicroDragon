@@ -27,6 +27,7 @@
 #include <list>
 
 #include "Modules/Island/HeightMap.h"
+#include "GameState.h"
 
 class BoidsSystem;
 class Dragon;
@@ -66,6 +67,8 @@ private:
     TransformationNode& target;
     HeightMap& hmap;
     TimeModifier& timeModifier;
+    GameState& gamestate;
+    bool done, pause;
 
     list<Key> keysPressed;
     float timeFactor;
@@ -87,7 +90,8 @@ public:
                Island* island,
                Dragon* dragon,
                BoidsSystem* boidssystem,
-               TimeModifier& timeModifer);
+               TimeModifier& timeModifer,
+               GameState& gamestate);
     ~KeyHandler();
 
     void Handle(KeyboardEventArg arg);
