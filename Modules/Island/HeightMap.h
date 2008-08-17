@@ -57,7 +57,7 @@ public:
 
     virtual void Apply(IRenderingView* rv);
     
-    inline float HeightAt(float x, float z);
+    float HeightAt(float x, float z);
     Vector<3,float> HeightAt(Vector<3,float> p);
     Vector<3,float> NormalAt(Vector<3,float> p);
 };
