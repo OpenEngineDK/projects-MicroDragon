@@ -55,6 +55,7 @@
 #include <Logging/Logger.h>
 #include <Logging/StreamLogger.h>
 #include <Utils/Statistics.h>
+#include <Utils/LayerStatistics.h> 
 
 // OERacer utility files
 #include <Utils/QuitHandler.h>
