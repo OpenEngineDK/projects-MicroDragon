@@ -20,6 +20,7 @@
 #include <Scene/TransformationNode.h>
 */
 #include <Devices/IKeyboard.h>
+#include <Devices/IJoystick.h>
 
 #include <list>
 
@@ -49,7 +50,9 @@ using namespace OpenEngine::Devices;
 using std::list;
 
 class KeyHandler : public IListener<ProcessEventArg>,
-  public IListener<KeyboardEventArg> {
+		   public IListener<KeyboardEventArg>,
+		   public IListener<JoystickButtonEventArg>,
+		   public IListener<JoystickAxisEventArg> {
 private:
     Intro* intro;
     Island* island;
@@ -63,6 +66,9 @@ private:
     float moveChunkMouse, rotChunkMouse, moveChunkKeyboard, rotChunkKeyboard;
     int mousex_prev, mousey_prev, mousex_orig, mousey_orig;
     bool warping;
+
+    float up,down,left,right;
+    float cam_up,cam_down,cam_left,cam_right;
     
     void reset();
 public:
@@ -78,6 +84,8 @@ public:
     void HandleDown(Key key);
 
     void Handle(ProcessEventArg arg);
+    void Handle(JoystickAxisEventArg arg);
+    void Handle(JoystickButtonEventArg arg);
 
 };
 

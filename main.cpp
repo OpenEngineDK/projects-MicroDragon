@@ -99,6 +99,7 @@ struct Config {
     IRenderer*            renderer;
     IMouse*               mouse;
     IKeyboard*            keyboard;
+    IJoystick*            joystick;
     ISceneNode*           scene;
     GameState*            gamestate;
     bool                  resourcesLoaded;
@@ -112,6 +113,7 @@ struct Config {
         , renderer(NULL)
         , mouse(NULL)
         , keyboard(NULL)
+	, joystick(NULL)
         , scene(NULL)
         , gamestate(NULL)
         , resourcesLoaded(false)
@@ -188,7 +190,7 @@ void SetupDisplay(Config& config) {
         config.viewport      != NULL)
         throw Exception("Setup display dependencies are not satisfied.");
 
-    config.frame         = new SDLFrame(1280, 1024, 32 /*, FRAME_FULLSCREEN*/ );
+    config.frame         = new SDLFrame(1024, 768, 32 /*, FRAME_FULLSCREEN*/ );
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
     //config.frustum       = new Frustum(*config.camera, 20, 3000);
@@ -208,6 +210,7 @@ void SetupDevices(Config& config) {
     SDLInput* input = new SDLInput();
     config.keyboard = input;
     config.mouse = input;
+    config.joystick = input;
 
     // Bind the quit handler
     QuitHandler* quit_h = new QuitHandler(config.engine);
@@ -368,6 +371,9 @@ void SetupScene(Config& config) {
     KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, island, dragon, boids);
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
+
+    config.joystick->JoystickButtonEvent().Attach(*key_h);
+    config.joystick->JoystickAxisEvent().Attach(*key_h);
 
 }
 

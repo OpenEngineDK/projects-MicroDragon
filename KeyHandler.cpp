@@ -25,13 +25,15 @@
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::TransformationNode;
 
+
 KeyHandler::KeyHandler(FollowCamera& camera,
                        TransformationNode& target,
                        Island* island,
                        Dragon* dragon,
                        BoidsSystem* boidssystem)
     : camera(camera)
-    , target(target) {
+    , target(target)
+    ,up(0),down(0),left(0),right(0) {
 
   this->island = island;
   this->dragon = dragon;
@@ -72,6 +74,39 @@ void KeyHandler::Handle(ProcessEventArg arg) {
       HandleDown(*key);
     }
     //keysPressed.clear(); //to disable repeatition when holding down a key
+
+    // handle joystick.
+    
+    if (up)
+	target.Move(0,0,-up);
+    if (down)
+	target.Move(0,0,down);
+    if (left)
+	target.Move(-left,0,0);
+    if (right)
+	target.Move(right,0,0);
+
+    float zoom_factor = 3.0; 
+
+    if (cam_up) {
+	camera.Move(cam_up*zoom_factor,0,0);
+	camera.LookAt(0,target.GetPosition()[1],0);
+    }
+    if (cam_down) {
+	camera.Move(-cam_down*zoom_factor,0,0);
+	camera.LookAt(0,target.GetPosition()[1],0);
+    }
+    float rot_factor = 0.1;
+
+    if (cam_left)
+        target.Rotate(0, -cam_left*rot_factor, 0);
+
+    if (cam_right)
+        target.Rotate(0, cam_right*rot_factor, 0);
+
+
+
+
 }
 
 void KeyHandler::HandleDown(Key key) {
@@ -225,4 +260,60 @@ void KeyHandler::HandleUp(Key key) {
     default:
         break;
     }
+}
+
+void KeyHandler::Handle(JoystickButtonEventArg arg) {
+    switch (arg.button) {
+    case JBUTTON_TWO:
+	dragon->useBreathWeapon( arg.type == JoystickButtonEventArg::PRESS);
+	break;
+    case JBUTTON_THREE:
+	dragon->chargeFireball( arg.type == JoystickButtonEventArg::PRESS);
+	break;
+    case JBUTTON_NINE:
+	reset();
+        break;
+    case JBUTTON_TEN:
+        boidssystem->ResetBoids();
+        break;
+    case JBUTTON_FIVE:
+        boidssystem->DecAlignment();
+        break;
+    case JBUTTON_SIX:
+        boidssystem->IncAlignment();
+        break;
+	
+    default:
+	break;
+    }
+}
+
+void KeyHandler::Handle(JoystickAxisEventArg arg) {
+
+    float max = 1 << 15;
+    float thres1 = 0.1;
+    float thres2 = 0.1;
+
+    up = (-arg.state.axisState[1])/max;
+    if (up < thres1) up = 0.0;
+    down = (arg.state.axisState[1])/max;
+    if (down < thres1) down = 0.0;
+
+    left = (-arg.state.axisState[0])/max;
+    if (left < thres1) left = 0.0;
+    right = (arg.state.axisState[0])/max;
+    if (right < thres1) right = 0.0;
+
+    
+    cam_up = (-arg.state.axisState[3])/max;
+    if (cam_up < thres2) cam_up = 0.0;
+    cam_down = (arg.state.axisState[3])/max;
+    if (cam_down < thres2) cam_down = 0.0;
+    
+    cam_left = (-arg.state.axisState[2])/max;
+    if (cam_left < thres2) cam_left = 0.0;
+    cam_right = (arg.state.axisState[2])/max;
+    if (cam_right < thres2) cam_right = 0.0;
+
+    
 }
