@@ -373,12 +373,15 @@ void SetupScene(Config& config) {
 
     //@todo: Boids have transparent shadows
     BoidsSystem* boids = new BoidsSystem(heightMap, oscs,*config.soundsystem);
-    tpNode->AddNode(boids);
+    //tpNode->AddNode(boids); // moved down!
     config.engine.InitializeEvent().Attach(*boids);
     timeModifier->ProcessEvent().Attach(*boids);
 
     ParticleSystem* pat = new ParticleSystem(heightMap,config.camera,boids);
     tpNode->AddNode(pat);
+
+    tpNode->AddNode(boids);
+
     config.engine.InitializeEvent().Attach(*pat);
     timeModifier->ProcessEvent().Attach(*pat);
 
