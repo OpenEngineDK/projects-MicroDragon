@@ -28,6 +28,7 @@ SET( PROJECT_SOURCES
 
   Modules/Boid/Boid.cpp
   Modules/Boid/BoidsSystem.cpp
+  Modules/Boid/Voice.cpp
 
   Modules/Particle/ParticleSystem.cpp
   Modules/Particle/Particle.cpp
@@ -68,4 +69,8 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_TGAResource
   Extensions_SDL
   Extensions_OEGUI
+  Extensions_VorbisResource
+  Extensions_OpenALSoundSystem
+  Extensions_MusicPlayer
+
 )

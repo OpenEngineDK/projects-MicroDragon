@@ -14,6 +14,8 @@
 // non reference or pointer member variables
 #include <Utils/Timer.h>
 
+#include <Sound/ISoundSystem.h>
+
 // @todo: needs to be here for windows to compile
 #include "BoidSystemEvents.h"
 #include "../Particle/ParticleSystemEvents.h"
@@ -38,6 +40,7 @@ using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Utils::Timer;
+using OpenEngine::Sound::ISoundSystem;
 
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
@@ -47,7 +50,7 @@ public IListener<ParticleSystemEventArg> {
 public:
   unsigned int aliveBoids;
   bool enabled;
-    BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface);
+    BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem);
     ~BoidsSystem();
     void toggleRenderState();
 
@@ -77,6 +80,8 @@ private:
     ParticleSystem* particlesystem;
     HeightMap* heightMap;
     OscSurface* oscsurface;
+
+    ISoundSystem& soundsystem;
 
     Timer timer;
 

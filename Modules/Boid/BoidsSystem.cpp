@@ -11,7 +11,8 @@
 
 using OpenEngine::Math::PI;
 
-BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface) {
+BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem):
+    soundsystem(soundsystem) {
     this->heightMap = heightMap;
     this->oscsurface = oscsurface;
     enabled = true;
@@ -48,7 +49,7 @@ void BoidsSystem::ResetBoids() {
 		       Vector<3,float>(sin(2*PI*(0.0/3+val))*0.5+0.5,
 				       sin(2*PI*(1.0/3+val))*0.5+0.5, 
 				       sin(2*PI*(2.0/3+val))*0.5+0.5)
-		       .GetNormalize());
+                   .GetNormalize(), new Voice(soundsystem));
         }
     }
 }

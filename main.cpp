@@ -59,6 +59,11 @@
 // OERacer utility files
 #include <Utils/QuitHandler.h>
 
+// sound 
+#include <Sound/OpenALSoundSystem.h>
+#include <Sound/MusicPlayer.h>
+#include <Resources/VorbisResource.h>
+
 // from project
 #include "LightFader.h"
 #include "KeyHandler.h"
@@ -88,6 +93,7 @@ using namespace OpenEngine::Renderers::OpenGL;
 using namespace OpenEngine::Renderers;
 using namespace OpenEngine::Resources;
 using namespace OpenEngine::Utils;
+using namespace OpenEngine::Sound;
 
 // Configuration structure to pass around to the setup methods
 struct Config {
@@ -103,6 +109,8 @@ struct Config {
     IJoystick*            joystick;
     ISceneNode*           scene;
     GameState*            gamestate;
+    ISoundSystem*         soundsystem;
+    MusicPlayer*          musicplayer;
     bool                  resourcesLoaded;
     Config(IEngine& engine)
         : engine(engine)
@@ -114,9 +122,11 @@ struct Config {
         , renderer(NULL)
         , mouse(NULL)
         , keyboard(NULL)
-	, joystick(NULL)
+        , joystick(NULL)
         , scene(NULL)
         , gamestate(NULL)
+        , soundsystem(NULL)
+        , musicplayer(NULL)
         , resourcesLoaded(false)
     {}
 };
@@ -128,6 +138,7 @@ void SetupDisplay(Config&);
 void SetupRendering(Config&);
 void SetupScene(Config&);
 void SetupDebugging(Config&);
+void SetupSound(Config&);
 
 int main(int argc, char** argv) {
 
@@ -154,9 +165,10 @@ int main(int argc, char** argv) {
     SetupResources(config);
     SetupDisplay(config);
     SetupDevices(config);
+    SetupSound(config);
     SetupScene(config);
     SetupRendering(config);
-    
+
     // Possibly add some debugging stuff
     // SetupDebugging(config);
 
@@ -169,6 +181,14 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
+void SetupSound(Config& config) {
+    config.soundsystem = new OpenALSoundSystem(config.scene,config.camera);
+    config.musicplayer = new MusicPlayer(config.camera,config.soundsystem);
+    config.musicplayer->AddStereoBackGroundSound("Music/beak.ogg");
+    config.musicplayer->Play();
+    
+}
+
 void SetupResources(Config& config) {
     // set the resources directory
     // @todo we should check that this path exists
@@ -179,6 +199,7 @@ void SetupResources(Config& config) {
     // load resource plug-ins
     ResourceManager<IModelResource>::AddPlugin(new OBJPlugin());
     ResourceManager<ITextureResource>::AddPlugin(new TGAPlugin());
+    ResourceManager<ISoundResource>::AddPlugin(new VorbisResourcePlugin());
 
     config.resourcesLoaded = true;
 }
@@ -351,7 +372,7 @@ void SetupScene(Config& config) {
     // config.engine.ProcessEvent().Attach(*intro);
 
     //@todo: Boids have transparent shadows
-    BoidsSystem* boids = new BoidsSystem(heightMap, oscs);
+    BoidsSystem* boids = new BoidsSystem(heightMap, oscs,*config.soundsystem);
     tpNode->AddNode(boids);
     config.engine.InitializeEvent().Attach(*boids);
     timeModifier->ProcessEvent().Attach(*boids);

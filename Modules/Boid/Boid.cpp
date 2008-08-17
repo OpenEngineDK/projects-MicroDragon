@@ -24,11 +24,12 @@ using std::min;
 using std::max;
 
 Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssystem,
-	   Vector<3,float> position, Vector<3,float> forward,
-	   Vector<3,float> velocity, Vector<3,float> color ) {
+           Vector<3,float> position, Vector<3,float> forward,
+           Vector<3,float> velocity, Vector<3,float> color, Voice* voice) {
     this->heightMap = heightMap;
     this->oscsurface = oscsurface;
     this->boidssystem = boidssystem;
+    this->voice = voice;
 
     this->position = position;
     this->forward = forward.GetNormalize();
@@ -55,6 +56,7 @@ Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssyste
 }
 
 Boid::~Boid(){
+    delete voice;
 }
 
 Vector<3,float> Boid::getPosition() { return position; }
@@ -196,6 +198,8 @@ void Boid::updatePhysics( double timeDelta ) {
 }
 
 void Boid::updateLocomotion( double timeDelta ) {
+    voice->SetPosition(position);
+
     Vector<3,float> normal = heightMap->NormalAt(position);
     if (airborn && drowning) normal = Vector<3,float>(0,1,0);
 
@@ -248,7 +252,11 @@ void Boid::updateLocomotion( double timeDelta ) {
         burned = 0;
     }
     if (hot>1 && life>0) {
+        if (!burning) 
+            voice->Scream();
         burning = true;
+        
+        
     }
     if (burning) {
       ParticleSystem* particlesystem = boidssystem->GetParticleSystem();
