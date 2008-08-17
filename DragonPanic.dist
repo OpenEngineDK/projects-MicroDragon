@@ -21,6 +21,7 @@ darcs /extensions/OEGUI http://openengine.dk/code/extensions/OEGUI
 #sound
 darcs /extensions/OpenALSoundSystem http://openengine.dk/code/extensions/OpenALSoundSystem
 darcs /extensions/VorbisResource    http://openengine.dk/code/extensions/VorbisResource
+darcs /extensions/MusicPlayer       http://openengine.dk/code/extensions/MusicPlayer
 darcs /extensions/Shapes            http://openengine.dk/code/branches/Shapes
 
 # windows libraries
