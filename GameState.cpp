@@ -34,3 +34,8 @@ unsigned int GameState::GetTimeLeft() {
 unsigned int GameState::GetScore() {
   return numberOfDeadBoids;
 }
+
+void GameState::Reset() {
+    timer.Reset();
+    numberOfDeadBoids = 0;
+}

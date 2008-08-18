@@ -88,7 +88,6 @@ private:
 
     MusicPlayer& musicplayer;
 
-    void reset();
     void CheckCameraCollision();
 
 public:
@@ -110,6 +109,10 @@ public:
     void Handle(ProcessEventArg arg);
     void Handle(JoystickAxisEventArg arg);
     void Handle(JoystickButtonEventArg arg);
+
+    void ResetTarget();
+    void ResetCamera();
+    void ResetGame();
 
     void MoveForward(float d);
     void MoveBack(float d);

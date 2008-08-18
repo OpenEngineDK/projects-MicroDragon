@@ -50,23 +50,34 @@ KeyHandler::KeyHandler(FollowCamera& camera,
   this->boidssystem = boidssystem;
 
   camera.Follow(&target);
-  camera.Move(-100,0,50);
-  camera.LookAt(0,target.GetPosition()[1],0);
+
   timeFactor = 1.0;
   gainStep = 0.1;
   done = pause = false;
+  rotChunkMouse = 0.05;
+  moveChunkMouse = 0.0015;
+  rotChunkKeyboard = 0.2; //rotChunkMouse*200;
+  moveChunkKeyboard = 2; //moveChunkMouse*400;
+  warping = false;
 
-  reset();
+  ResetCamera();
+  ResetTarget();
 }
 
-void KeyHandler::reset() {
-    //inputgrabber->reset();
-    //mousex_prev = mousey_prev = 0;
-    rotChunkMouse = 0.05;
-    moveChunkMouse = 0.0015;
-    rotChunkKeyboard = 0.2; //rotChunkMouse*200;
-    moveChunkKeyboard = 2; //moveChunkMouse*400;
-    warping = false;
+void KeyHandler::ResetTarget() {
+    target.SetPosition(Vector<3,float>(0,0,0));
+}
+void KeyHandler::ResetCamera() {
+    camera.SetPosition(Vector<3,float>(0,50,100));
+    camera.LookAt(0,target.GetPosition()[1],0);
+}
+void KeyHandler::ResetGame() {
+    ResetTarget();
+    ResetCamera();
+    boidssystem->ResetBoids();
+    timeFactor = 1.0;
+    pause = false;
+    gamestate.Reset();
 }
 
 KeyHandler::~KeyHandler() {}
@@ -187,7 +198,8 @@ void KeyHandler::HandleDown(Key key) {
         pause = !pause;
         break;
     case KEY_r:
-      reset();
+        //reset();
+        ResetGame();
         break;
     case KEY_b:
         boidssystem->ResetBoids();
@@ -359,7 +371,7 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
 	dragon->chargeFireball( arg.type == JoystickButtonEventArg::PRESS);
 	break;
     case JBUTTON_NINE:
-	reset();
+        ResetGame();
         break;
     case JBUTTON_TEN:
         boidssystem->ResetBoids();

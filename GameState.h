@@ -27,6 +27,9 @@ class GameState : public IListener<ProcessEventArg>,
   unsigned int GetTime();
   unsigned int GetTimeLeft();
   unsigned int GetScore();
+
+  void Reset();
+
 };
 
 #endif // _GAME_STATE_
