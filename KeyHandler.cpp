@@ -78,7 +78,10 @@ void KeyHandler::Handle(KeyboardEventArg arg) {
 }
 
 void KeyHandler::Handle(ProcessEventArg arg) {
-    if(gamestate.GetTimeLeft() <= 0) done = true;
+    if(gamestate.GetTimeLeft() <= 0) {
+        done = true;
+        timeModifier.SetFactor(0.0);
+    }
 
     list<Key>::iterator key;
     for(key=keysPressed.begin(); key != keysPressed.end(); ++key) {
