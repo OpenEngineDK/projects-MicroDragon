@@ -35,6 +35,12 @@ unsigned int GameState::GetScore() {
   return numberOfDeadBoids;
 }
 
+void GameState::Pause() {
+    timer.Stop();
+}
+void GameState::Unpause() {
+    timer.Start();
+}
 void GameState::Reset() {
     timer.Reset();
     numberOfDeadBoids = 0;

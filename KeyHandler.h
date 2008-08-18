@@ -113,6 +113,7 @@ public:
     void ResetTarget();
     void ResetCamera();
     void ResetGame();
+    void TogglePauseGame();
 
     void MoveForward(float d);
     void MoveBack(float d);

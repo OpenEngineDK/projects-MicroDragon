@@ -76,8 +76,18 @@ void KeyHandler::ResetGame() {
     ResetCamera();
     boidssystem->ResetBoids();
     timeFactor = 1.0;
-    pause = false;
+    done = pause = false;
     gamestate.Reset();
+}
+void KeyHandler::TogglePauseGame() {
+    if (pause) {
+        timeModifier.SetFactor(timeFactor);
+        gamestate.Unpause();
+    } else {
+        timeModifier.SetFactor(0.0);
+        gamestate.Pause();
+    }
+    pause = !pause;
 }
 
 KeyHandler::~KeyHandler() {}
@@ -191,14 +201,9 @@ void KeyHandler::HandleDown(Key key) {
     case KEY_SPACE:
 //      if( !intro->isDone() )
 //          intro->disable();
-        if (pause)
-            timeModifier.SetFactor(timeFactor);
-        else
-            timeModifier.SetFactor(0.0);
-        pause = !pause;
+        TogglePauseGame();
         break;
     case KEY_r:
-        //reset();
         ResetGame();
         break;
     case KEY_b:
@@ -374,7 +379,7 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
         ResetGame();
         break;
     case JBUTTON_TEN:
-        boidssystem->ResetBoids();
+        TogglePauseGame();
         break;
     case JBUTTON_FIVE:
         boidssystem->DecAlignment();

@@ -29,6 +29,8 @@ class GameState : public IListener<ProcessEventArg>,
   unsigned int GetScore();
 
   void Reset();
+  void Pause();
+  void Unpause();
 
 };
 
