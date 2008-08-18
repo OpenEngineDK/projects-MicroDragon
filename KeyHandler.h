@@ -71,6 +71,7 @@ private:
     FollowCamera& camera;
     TransformationNode& target;
     HeightMap& hmap;
+    IMouse& mouse;
     TimeModifier& timeModifier;
     GameState& gamestate;
     bool done, pause;
@@ -94,6 +95,7 @@ public:
     KeyHandler(FollowCamera& camera,
                TransformationNode& target,
                HeightMap& hmap,
+               IMouse& mouse,
                Island* island,
                Dragon* dragon,
                BoidsSystem* boidssystem,

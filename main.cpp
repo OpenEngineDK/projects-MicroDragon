@@ -366,8 +366,8 @@ void SetupScene(Config& config) {
     TransparencyNode* tpNode = new TransparencyNode();
     scene->AddNode(tpNode);
 
-    //Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
-    Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
+    Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
+    //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
     OscSurface* oscs = new OscSurface(heightMap,oscsColor);
     //tpNode->AddNode(oscs); // Moved down!
     config.engine.InitializeEvent().Attach(*oscs);
@@ -407,7 +407,10 @@ void SetupScene(Config& config) {
     config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
-    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate, *config.musicplayer);
+    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap,
+                                       *config.mouse, island, dragon, boids, *timeModifier, *config.gamestate, *config.musicplayer);
+    //    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate);
+
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
 

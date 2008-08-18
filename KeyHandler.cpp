@@ -30,6 +30,7 @@ using OpenEngine::Scene::TransformationNode;
 KeyHandler::KeyHandler(FollowCamera& camera,
                        TransformationNode& target,
                        HeightMap& hmap,
+                       IMouse& mouse,
                        Island* island,
                        Dragon* dragon,
                        BoidsSystem* boidssystem,
@@ -39,8 +40,12 @@ KeyHandler::KeyHandler(FollowCamera& camera,
     : camera(camera)
     , target(target)
     , hmap(hmap)
-    , timeModifier(timeModifier)
+    , mouse(mouse)
+    , timeModifier(timeModifier) 
+
+      //    , timeModifier(timeModifier)
     , gamestate(gamestate)
+
     , up(0),down(0),left(0),right(0)
     , cam_up(0),cam_down(0),cam_left(0),cam_right(0)
     , musicplayer(musicplayer) {
@@ -103,6 +108,10 @@ void KeyHandler::Handle(KeyboardEventArg arg) {
 }
 
 void KeyHandler::Handle(ProcessEventArg arg) {
+
+    // @todo - this should be in a init handler
+    mouse.HideCursor();
+
     if(gamestate.GetTimeLeft() <= 0) {
         done = true;
         timeModifier.SetFactor(0.0);
@@ -143,6 +152,8 @@ void KeyHandler::Handle(ProcessEventArg arg) {
 
     if (cam_right)
 	RotateLeft(cam_right*rot_factor);
+
+    CheckCameraCollision();
 }
 
 void KeyHandler::HandleDown(Key key) {
@@ -295,7 +306,6 @@ void KeyHandler::HandleDown(Key key) {
     default:
         break;
     }
-    CheckCameraCollision();
 }
 
 void KeyHandler::MoveForward(float d) {
@@ -376,10 +386,12 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
 	dragon->chargeFireball( arg.type == JoystickButtonEventArg::PRESS);
 	break;
     case JBUTTON_NINE:
-        ResetGame();
+        if(arg.type == JoystickButtonEventArg::PRESS)
+            ResetGame();
         break;
     case JBUTTON_TEN:
-        TogglePauseGame();
+        if(arg.type == JoystickButtonEventArg::PRESS)
+            TogglePauseGame();
         break;
     case JBUTTON_FIVE:
         boidssystem->DecAlignment();
@@ -438,5 +450,4 @@ void KeyHandler::Handle(JoystickAxisEventArg arg) {
     cam_right = (arg.state.axisState[2])/max;
     if (cam_right < thres2) cam_right = 0.0;
 
-    //logger.info << cam_up << logger.end;
 }
