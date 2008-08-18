@@ -46,12 +46,17 @@ namespace OpenEngine {
     namespace Scene {
         class TransformationNode;
     }
+    namespace Sound {
+        class MusicPlayer;
+    }
 }
 
 using namespace OpenEngine::Core;
 using namespace OpenEngine::Display;
 using namespace OpenEngine::Scene;
 using namespace OpenEngine::Devices;
+using namespace OpenEngine::Sound;
+
 using std::list;
 
 class KeyHandler : public IListener<ProcessEventArg>,
@@ -72,6 +77,7 @@ private:
 
     list<Key> keysPressed;
     float timeFactor;
+    float gainStep;
 
     float moveChunkMouse, rotChunkMouse, moveChunkKeyboard, rotChunkKeyboard;
     int mousex_prev, mousey_prev, mousex_orig, mousey_orig;
@@ -79,7 +85,9 @@ private:
 
     float up,down,left,right;
     float cam_up,cam_down,cam_left,cam_right;
-    
+
+    MusicPlayer& musicplayer;
+
     void reset();
     void CheckCameraCollision();
 
@@ -91,7 +99,8 @@ public:
                Dragon* dragon,
                BoidsSystem* boidssystem,
                TimeModifier& timeModifer,
-               GameState& gamestate);
+               GameState& gamestate,
+               MusicPlayer& musicplayer);
     ~KeyHandler();
 
     void Handle(KeyboardEventArg arg);

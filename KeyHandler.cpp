@@ -21,6 +21,7 @@
 #include <Logging/Logger.h>
 #include <Devices/IMouse.h>
 #include <Math/Vector.h>
+#include <Sound/MusicPlayer.h>
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::TransformationNode;
@@ -33,14 +34,16 @@ KeyHandler::KeyHandler(FollowCamera& camera,
                        Dragon* dragon,
                        BoidsSystem* boidssystem,
                        TimeModifier& timeModifier,
-                       GameState& gamestate)
+                       GameState& gamestate,
+                       MusicPlayer& musicplayer)
     : camera(camera)
     , target(target)
     , hmap(hmap)
     , timeModifier(timeModifier)
     , gamestate(gamestate)
     , up(0),down(0),left(0),right(0)
-    , cam_up(0),cam_down(0),cam_left(0),cam_right(0) {
+    , cam_up(0),cam_down(0),cam_left(0),cam_right(0)
+    , musicplayer(musicplayer) {
 
   this->island = island;
   this->dragon = dragon;
@@ -50,6 +53,7 @@ KeyHandler::KeyHandler(FollowCamera& camera,
   camera.Move(-100,0,50);
   camera.LookAt(0,target.GetPosition()[1],0);
   timeFactor = 1.0;
+  gainStep = 0.1;
   done = pause = false;
 
   reset();
@@ -180,7 +184,7 @@ void KeyHandler::HandleDown(Key key) {
             timeModifier.SetFactor(timeFactor);
         else
             timeModifier.SetFactor(0.0);
-        pause != pause;
+        pause = !pause;
         break;
     case KEY_r:
       reset();
@@ -200,7 +204,12 @@ void KeyHandler::HandleDown(Key key) {
     case KEY_q:
         dragon->chargeFireball( true );
         break;
-
+    case KEY_COMMA:
+        musicplayer.SetGain(musicplayer.GetGain()-gainStep);
+        break;
+    case KEY_PERIOD:
+        musicplayer.SetGain(musicplayer.GetGain()+gainStep);
+        break;
 
 //     case KEY_F1:
 //         //inputgrabber->rotateViewAbsolute( 30, 5, 50, 1.0 );

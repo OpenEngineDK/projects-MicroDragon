@@ -185,6 +185,12 @@ void SetupSound(Config& config) {
     config.soundsystem = new OpenALSoundSystem(config.scene,config.camera);
     config.musicplayer = new MusicPlayer(config.camera,config.soundsystem);
     config.musicplayer->AddStereoBackGroundSound("Music/beak.ogg");
+    config.musicplayer->AddStereoBackGroundSound("Music/defibrilation.ogg");
+    config.musicplayer->AddStereoBackGroundSound("Music/glow.ogg");
+    config.musicplayer->AddStereoBackGroundSound("Music/trouble.ogg");
+    config.musicplayer->SetGain(0.3);
+    config.musicplayer->Shuffle();
+    config.musicplayer->Next();
     config.musicplayer->Play();
     
 }
@@ -401,7 +407,7 @@ void SetupScene(Config& config) {
     config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
-    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate);
+    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate, *config.musicplayer);
     config.engine.ProcessEvent().Attach(*key_h);
     config.keyboard->KeyEvent().Attach(*key_h);
 

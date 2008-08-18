@@ -18,6 +18,7 @@ Voice::Voice(ISoundSystem& soundsystem): soundsystem(soundsystem) {
     ISoundResourcePtr screamres;
     
     int i = int((rand()/(float)RAND_MAX)*5);
+    //logger.info << "rand: " << i << logger.end;
     string soundfile;
     switch(i) {
     case 0: soundfile = "SoundFX/vester-aargh.ogg"; break;
