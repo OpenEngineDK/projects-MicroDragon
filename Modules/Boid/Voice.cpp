@@ -17,7 +17,7 @@ using OpenEngine::Resources::ISoundResource;
 Voice::Voice(ISoundSystem& soundsystem): soundsystem(soundsystem) {
     ISoundResourcePtr screamres;
     
-    int i = int((rand()/(float)RAND_MAX)*5);
+    int i = int((rand()/(float)RAND_MAX)*6);
     //logger.info << "rand: " << i << logger.end;
     string soundfile;
     switch(i) {
