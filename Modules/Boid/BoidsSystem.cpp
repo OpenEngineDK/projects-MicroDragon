@@ -34,6 +34,7 @@ void BoidsSystem::Handle(InitializeEventArg arg) {
 
 void BoidsSystem::ResetBoids() {
     numberOfShownBoids = numberOfBoids;
+    aliveBoids = numberOfBoids;
     alignment = 0.3;
     // Init objects
     int gridSize = (int)sqrt((double)numberOfBoids);
