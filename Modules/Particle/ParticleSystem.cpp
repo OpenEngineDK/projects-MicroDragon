@@ -136,8 +136,16 @@ void ParticleSystem::Handle(ProcessEventArg arg) {
 
     // Delete dead particles
     for (vector<Particle*>::iterator i=particles.begin(); i!=particles.end(); ++i) {
-        if ((*i)->isDead()) { particles.erase(i); --i; }
+        if (!(*i)->isDead()) { 
+			//particles.erase(i); --i; 
+			tmpParticles.push_back(*i);
+		}
     }
+	particles.clear();
+	particles.swap(tmpParticles);
+	//tmpParticles.clear();
+
+
 }
 
 void ParticleSystem::CreateFireball(Vector<3,float> position, Vector<3,float> velocity, float size) {

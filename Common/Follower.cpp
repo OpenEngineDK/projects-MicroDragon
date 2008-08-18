@@ -17,7 +17,7 @@ Follower::~Follower() {}
 
 void Follower::update(Vector<3,float> target, float acceleration, float speed, float timeStep) {
     if(timeStep<0.0001) return; //@todo: remove this hack, done by cpvc
-    float factor = std::min(1.0f,(float)pow(acceleration,timeStep));
+    float factor = min(1.0f,(float)pow(acceleration,timeStep));
     velocity = velocity*(1-factor)+(target-position)*factor;
     position = position+velocity*speed*timeStep;
 }
