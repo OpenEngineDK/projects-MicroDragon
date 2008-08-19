@@ -32,8 +32,8 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate)
 
     int textsize = frameHeight*0.08;
 
-    int surfWidth = 512;
-    int surfHeight = textsize*2;
+    unsigned int surfWidth = 512;
+    unsigned int surfHeight = textsize*2;
 
     // scale texture height and width to nerest power of two
     unsigned int two = 2;

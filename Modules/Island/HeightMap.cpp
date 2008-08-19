@@ -61,7 +61,7 @@ HeightMap::~HeightMap() {
 
 /** This Renders The Height Map As Quads */
 GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
-    int x, z; //Create Some Variables For Readability 
+    int x = 0, z = 0; //Create Some Variables For Readability 
     Vector<3,float> normal[4];
     Vector<3,float> point[4];
     Vector<3,float> color[4];
@@ -72,9 +72,10 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
         for ( int Z = 0; Z < MAP_SIZE-1; Z++ ) {
             for (int i=0; i<4; i++) {
                 if (i==0) { x = X;   z = Z;   }
-                if (i==1) { x = X;   z = Z+1; }
-                if (i==2) { x = X+1; z = Z+1; }
-                if (i==3) { x = X+1; z = Z;   }
+                else if (i==1) { x = X;   z = Z+1; }
+                else if (i==2) { x = X+1; z = Z+1; }
+                else if (i==3) { x = X+1; z = Z;   }
+                else throw Exception("index out of bound");
                 point[i] = Point(x,z);
                 normal[i] = Normal(x,z);
                 color[i] = Color(x,z);
@@ -114,8 +115,10 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
 }
 
 void HeightMap::CalculateHeightArray(ITextureResourcePtr hMap) {
+    /* @todo
   int width = hMap->GetWidth();
   int height = hMap->GetHeight();
+    */
   unsigned char* data = hMap->GetData();
 
   for (int i=0; i<MAP_SIZE; i++)

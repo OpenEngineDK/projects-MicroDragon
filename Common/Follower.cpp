@@ -8,6 +8,8 @@
 #include <sys/time.h>
 #endif
 
+using namespace std;
+
 Follower::Follower(Vector<3,float> initPos) {
     this->position = initPos;
     this->velocity = Vector<3,float>(0,0,0);
