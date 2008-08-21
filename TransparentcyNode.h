@@ -9,16 +9,17 @@ using OpenEngine::Renderers::IRenderingView;
 class TransparencyNode : public IRenderNode {
 public:
   void Apply(IRenderingView* rv) {
+      //glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glDepthMask(GL_FALSE);
-      glDisable(GL_LIGHTING);
+      //glDepthMask(GL_FALSE);
+      //glDisable(GL_LIGHTING);
 
       VisitSubNodes(*rv);
 
-      glEnable(GL_LIGHTING);
+      //glEnable(GL_LIGHTING);
       glDisable(GL_BLEND);
-      glDepthMask(GL_TRUE);
+      //glDepthMask(GL_TRUE);
   }
 };
 

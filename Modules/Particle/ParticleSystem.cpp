@@ -167,14 +167,19 @@ void ParticleSystem::Apply(IRenderingView* rv) {
     sort(particles.begin(),particles.end(),closerToCamera());
 
     // Draw particles
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    GLboolean depthmask; //save state
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &depthmask);
     glDepthMask(GL_FALSE);
-    for (vector<Particle*>::iterator i=particles.begin(); i!=particles.end(); ++i) {
+
+    GLboolean t = glIsEnabled(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
+
+    for (vector<Particle*>::iterator i=particles.begin(); 
+         i!=particles.end(); ++i) {
         (*i)->draw();
     }
-    glDepthMask(GL_TRUE);
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_2D);
+
+    if (!t)
+        glDisable(GL_TEXTURE_2D);
+    glDepthMask(depthmask);
 }

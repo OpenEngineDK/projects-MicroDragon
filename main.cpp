@@ -192,7 +192,7 @@ void SetupSound(Config& config) {
     config.musicplayer->Shuffle();
     config.musicplayer->Next();
     config.musicplayer->Play();
-    
+    config.engine.ProcessEvent().Attach(*config.musicplayer);    
 }
 
 void SetupResources(Config& config) {
@@ -385,10 +385,9 @@ void SetupScene(Config& config) {
     timeModifier->ProcessEvent().Attach(*boids);
 
     ParticleSystem* pat = new ParticleSystem(heightMap,config.camera,boids);
+
     tpNode->AddNode(pat);
-
     tpNode->AddNode(boids);
-
     tpNode->AddNode(oscs);
 
     config.engine.InitializeEvent().Attach(*pat);

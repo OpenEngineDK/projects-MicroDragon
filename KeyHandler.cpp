@@ -81,6 +81,7 @@ void KeyHandler::ResetGame() {
     ResetCamera();
     boidssystem->ResetBoids();
     timeFactor = 1.0;
+    timeModifier.SetFactor(timeFactor);
     done = pause = false;
     gamestate.Reset();
 }

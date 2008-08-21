@@ -302,10 +302,14 @@ void Boid::HandleFire(Vector<3,float> firePosition, float fireStrength) {
 
 
 void Boid::draw( ) {
+    GLboolean t = glIsEnabled(GL_BLEND);
+
+    // dont use blend
+    glDisable(GL_BLEND);
     draw2(false);
-  
+ 
+    // use blend to render shadows
     glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glPushMatrix();
     glColor4f( 0.0, 0.0, 0.0, 0.3 );
     Vector<3,float> n = heightMap->NormalAt(position);
@@ -315,10 +319,12 @@ void Boid::draw( ) {
         0, -n[2], 1,0,
         position[0],heightMap->HeightAt(position)[1]+0.1,position[2],1};
     glMultMatrixf(matrix);
-    glScalef( 1.0, 0.0, 1.0 );
+    glScalef( 1.0, 0.0, 1.0 ); // make it flat
     draw2(true);
     glPopMatrix();
-    glDisable(GL_BLEND);
+
+    if (!t)
+        glDisable(GL_BLEND);
 }
 
 void Boid::draw2( bool shadow ) {
