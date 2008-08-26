@@ -255,6 +255,7 @@ void SetupRendering(Config& config) {
         config.renderer != NULL ||
         config.gamestate == NULL ||
         config.camera == NULL ||
+        config.soundsystem == NULL ||
         config.scene == NULL)
         throw Exception("Setup renderer dependencies are not satisfied.");
 
