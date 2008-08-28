@@ -1,26 +1,24 @@
 #include "ParticleSystem.h"
+
+#include "ParticleSystemEvents.h"
+#include "Particle.h"
 #include "FireBall.h"
 
 #include "../Boid/BoidsSystem.h"
 #include "../Island/HeightMap.h"
-//#include "../Dragon/Dragon.h"
-//#include "../../Common/gltga.h"
-
-#include "Particle.h"
-#include "ParticleSystemEvents.h"
-#include "../../Common/random.h"
 
 #include <Display/IViewingVolume.h>
 #include <Meta/OpenGL.h>
+#include <Math/RandomGenerator.h>
 #include <Renderers/IRenderingView.h>
 #include <Resources/ResourceManager.h>
 #include <Resources/ITextureResource.h>
 #include <Renderers/OpenGL/TextureLoader.h>
 
+#include <iostream>
+
 using namespace OpenEngine::Resources;
 using namespace OpenEngine::Renderers::OpenGL;
-
-#include <iostream>
 using namespace std;
 
 unsigned int textures[10];
@@ -84,9 +82,9 @@ void ParticleSystem::CreateParticles(double time, double prevTime,
     int endI   = int(time    *particlesPerSecond);
     for (int i=startI; i<endI; i++) {
         Vector<3,float> randomVector = Vector<3,float>(
-                                 randObject->ran_uniform_0to1()-0.5,
-                                 randObject->ran_uniform_0to1()-0.5,
-                                 randObject->ran_uniform_0to1()-0.5
+                                                       randObject->UniformFloat(-0.5,0.5),
+                                                       randObject->UniformFloat(-0.5,0.5),
+                                                       randObject->UniformFloat(-0.5,0.5)
                                  );
         Vector<3,float> pos = position;
         if (endI-startI>1) pos = pos-velocity*2/2*(time-prevTime);
@@ -95,7 +93,7 @@ void ParticleSystem::CreateParticles(double time, double prevTime,
                                    velocity+(randomVector*velocityRandomness),
                                    size,
                                    lifeTime,
-                                   randObject->ran_uniform_0to1()
+                                   randObject->UniformFloat(0,1)
                                    );
         // Update particles based on current time compared to birth time
         if (endI-startI>1)
@@ -124,9 +122,9 @@ void ParticleSystem::Handle(ProcessEventArg arg) {
     // Gravity and slight randomness
     for (vector<Particle*>::iterator i=particles.begin(); i!=particles.end(); ++i) {
         (*i)->addExternalForce(Vector<3,float>(0,10,0));
-        (*i)->addExternalForce(Vector<3,float>(randObject->ran_uniform_0to1()-0.5,
-                                    randObject->ran_uniform_0to1()-0.5,
-                                    randObject->ran_uniform_0to1()-0.5)*20);
+        (*i)->addExternalForce(Vector<3,float>(randObject->UniformFloat(-0.5,0.5),
+                                               randObject->UniformFloat(-0.5,0.5),
+                                               randObject->UniformFloat(-10,10) ));
     }
 
     // Update all particles
@@ -150,11 +148,11 @@ void ParticleSystem::Handle(ProcessEventArg arg) {
 
 void ParticleSystem::CreateFireball(Vector<3,float> position, Vector<3,float> velocity, float size) {
     Vector<3,float> randomVector = Vector<3,float>(
-                             randObject->ran_uniform_0to1()-0.5,
-                             randObject->ran_uniform_0to1()-0.5,
-                             randObject->ran_uniform_0to1()-0.5
+                                                   randObject->UniformFloat(-0.5,0.5),
+                                                   randObject->UniformFloat(-0.5,0.5),
+                                                   randObject->UniformFloat(-0.5,0.5)
                              );
-    FireBall* p = new FireBall( heightMap, vv, boidssystem, this, position, velocity, size, 2.0, randObject->ran_uniform_0to1()*1.0 );
+    FireBall* p = new FireBall( heightMap, vv, boidssystem, this, position, velocity, size, 2.0, randObject->UniformFloat(0,1) );
     particles.push_back(p);
 }
 

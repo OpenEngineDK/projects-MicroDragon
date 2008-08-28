@@ -13,7 +13,6 @@ SET( PROJECT_SOURCES
   Common/utilities.cpp
   Common/OpenGLUtil.cpp
   Common/FaceListUtil.cpp
-  Common/random.cpp
   Common/Follower.cpp
 
   Modules/Island/Island.cpp

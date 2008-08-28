@@ -9,30 +9,33 @@
 
 #include "Voice.h"
 
+#include <Math/RandomGenerator.h>
 #include <Resources/ResourceManager.h>
 
-using OpenEngine::Resources::ResourceManager;
+using OpenEngine::Math::RandomGenerator;
 using OpenEngine::Resources::ISoundResource;
+using OpenEngine::Resources::ResourceManager;
 
 Voice::Voice(ISoundSystem& soundsystem): soundsystem(soundsystem) {
-    ISoundResourcePtr screamres;
-    
-    int i = int((rand()/(float)RAND_MAX)*6);
-    //logger.info << "rand: " << i << logger.end;
+    RandomGenerator* randGen = new RandomGenerator(); //@todo: move this
+    randGen->SeedWithTime();
+
     string soundfile;
-    switch(i) {
+    switch(randGen->UniformInt(0,5)) {
     case 0: soundfile = "SoundFX/vester-aargh.ogg"; break;
     case 1: soundfile = "SoundFX/cpvc-AARGH.ogg"; break;
     case 2: soundfile = "SoundFX/ian-aargh.ogg"; break;
     case 3: soundfile = "SoundFX/jakob-aargh.ogg"; break;
     case 4: soundfile = "SoundFX/salomon-aargh.ogg"; break;
+    case 5: soundfile = "SoundFX/ptx-jargh.ogg"; break;
     default:
-        soundfile = "SoundFX/ptx-jargh.ogg"; break;
+        throw Exception("SoundFX index out of range");
     }
 
-
-    screamres = ResourceManager<ISoundResource>::Create(soundfile);
-    screamsound = soundsystem.CreateMonoSound(screamres);
+    ISoundResourcePtr screamres =
+        ResourceManager<ISoundResource>::Create(soundfile);
+    screamsound = (IMonoSound*)soundsystem.CreateSound(screamres);
+    //@todo: remove the IMonoSound* cast above
 }
 
 Voice::~Voice() {

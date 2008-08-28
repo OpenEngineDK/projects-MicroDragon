@@ -15,7 +15,7 @@
 #include "Modules/Intro/Intro.h"
 #include "Modules/OscSurface/OscSurface.h"
 #include "Modules/Target/Target.h"
-#include "Modules/InputGrabber/InputGrabber.h"
+//#include "Modules/InputGrabber/InputGrabber.h"
 //#include "Modules/Particle/ParticleSystem.h"
 
 #include <Logging/Logger.h>

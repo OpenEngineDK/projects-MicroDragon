@@ -20,14 +20,10 @@
 class BoidsSystem;
 class HeightMap;
 class Particle;
-class RandomGenerator;
 namespace OpenEngine {
-  namespace Display {
-    class IViewingVolume;
-  }
-  namespace Renderers {
-    class IRenderingView;
-  }
+  namespace Display {class IViewingVolume;}
+  namespace Math {class RandomGenerator;}
+  namespace Renderers {class IRenderingView;}
 }
 
 using OpenEngine::Core::IListener;
@@ -36,15 +32,18 @@ using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Core::IEvent;
 using OpenEngine::Core::Event;
 using OpenEngine::Display::IViewingVolume;
+using OpenEngine::Math::RandomGenerator;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using std::vector;
 
 class ParticleSystem : public IListener<InitializeEventArg>,
-public IListener<ProcessEventArg>, public IRenderNode {
+    public IListener<ProcessEventArg>, public IRenderNode {
+
 public:
-  ParticleSystem(HeightMap* heightMap, IViewingVolume* vv, BoidsSystem* boidssystem);
+    ParticleSystem(HeightMap* heightMap, IViewingVolume* vv,
+                   BoidsSystem* boidssystem);
     ~ParticleSystem();
 
     void Handle(InitializeEventArg arg);
@@ -52,11 +51,15 @@ public:
 
     virtual void Apply(IRenderingView* rv);
   
-    void CreateParticles(double time, double prevTime, float particlesPerSecond,
-                         Vector<3,float> position, Vector<3,float> velocity,
-			 float velocityRandomness,
+    void CreateParticles(double time, double prevTime, 
+                         float particlesPerSecond,
+                         Vector<3,float> position,
+                         Vector<3,float> velocity,
+                         float velocityRandomness,
                          double size, double lifeTime);
-    void CreateFireball(Vector<3,float> position, Vector<3,float> velocity, float size);
+
+    void CreateFireball(Vector<3,float> position, 
+                        Vector<3,float> velocity, float size);
 
     virtual IEvent<ParticleSystemEventArg>& ParticleSystemEvent();
 

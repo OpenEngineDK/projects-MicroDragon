@@ -62,7 +62,7 @@ Island::Island(HeightMap* heightMap) : heightMap(heightMap) {
 	      numberOfTrees++;
             }
         }
-    logger.info << "number of trees: " << numberOfTrees << logger.end;
+    logger.info << "Number of trees generated: " << numberOfTrees << logger.end;
 }
 
 Island::~Island() {

@@ -144,7 +144,12 @@ int main(int argc, char** argv) {
 
     // Setup logging facilities.
     Logger::AddLogger(new StreamLogger(&std::cout));
-
+    /*
+    logger.info << "type input and press enter to continue" << logger.end;
+    string input;
+    cin >> input;
+    logger.info << "input string: " << input << logger.end;
+    */
     // Print usage info.
     logger.info << "========= ";
     logger.info << "Running The OpenEngine DragonPanic Project";
@@ -184,22 +189,23 @@ int main(int argc, char** argv) {
 void SetupSound(Config& config) {
     config.soundsystem = new OpenALSoundSystem(config.scene,config.camera);
     config.musicplayer = new MusicPlayer(config.camera,config.soundsystem);
-    config.musicplayer->AddStereoBackGroundSound("Music/beak.ogg");
-    config.musicplayer->AddStereoBackGroundSound("Music/defibrilation.ogg");
-    config.musicplayer->AddStereoBackGroundSound("Music/glow.ogg");
-    config.musicplayer->AddStereoBackGroundSound("Music/trouble.ogg");
+    config.musicplayer->AddSound("Music/beak.ogg");
+    config.musicplayer->AddSound("Music/defibrilation.ogg");
+    config.musicplayer->AddSound("Music/glow.ogg");
+    config.musicplayer->AddSound("Music/trouble.ogg");
     config.musicplayer->SetGain(0.3);
-    config.musicplayer->Shuffle();
+    config.musicplayer->Shuffle(true);
     config.musicplayer->Next();
     config.musicplayer->Play();
-    config.engine.ProcessEvent().Attach(*config.musicplayer);    
+    config.engine.ProcessEvent().Attach(*config.musicplayer);
 }
 
 void SetupResources(Config& config) {
     // set the resources directory
     // @todo we should check that this path exists
     // set the resources directory
-    string resources = "projects/DragonPanic/data/";
+    string resources = "/Users/cpvc/Documents/mydocs/OpenEngine/dragonpanic/projects/DragonPanic/data/";
+    //string resources = "projects/DragonPanic/data/";
     DirectoryManager::AppendPath(resources);
 
     // load resource plug-ins
@@ -218,7 +224,8 @@ void SetupDisplay(Config& config) {
         config.viewport      != NULL)
         throw Exception("Setup display dependencies are not satisfied.");
 
-    config.frame         = new SDLFrame(1024, 768, 32 /*, FRAME_FULLSCREEN*/ );
+    //config.frame         = new SDLFrame(1440, 900, 32, FRAME_FULLSCREEN);
+    config.frame         = new SDLFrame(800, 600, 32);
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
     //config.frustum       = new Frustum(*config.camera, 20, 3000);
