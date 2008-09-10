@@ -204,8 +204,7 @@ void SetupResources(Config& config) {
     // set the resources directory
     // @todo we should check that this path exists
     // set the resources directory
-    string resources = "/Users/cpvc/Documents/mydocs/OpenEngine/dragonpanic/projects/DragonPanic/data/";
-    //string resources = "projects/DragonPanic/data/";
+    string resources = "projects/DragonPanic/data/";
     DirectoryManager::AppendPath(resources);
 
     // load resource plug-ins
