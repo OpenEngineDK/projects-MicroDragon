@@ -414,7 +414,7 @@ void SetupScene(Config& config) {
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
     KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap,
-                                       *config.mouse, island, dragon, boids, *timeModifier, *config.gamestate, *config.musicplayer);
+                                       *config.mouse, island, dragon, boids, *timeModifier, *config.gamestate, *config.musicplayer, *config.frame);
     //    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate);
 
     config.engine.ProcessEvent().Attach(*key_h);

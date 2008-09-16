@@ -36,15 +36,15 @@ KeyHandler::KeyHandler(FollowCamera& camera,
                        BoidsSystem* boidssystem,
                        TimeModifier& timeModifier,
                        GameState& gamestate,
-                       MusicPlayer& musicplayer)
+                       MusicPlayer& musicplayer,
+                       IFrame& frame)
     : camera(camera)
     , target(target)
     , hmap(hmap)
     , mouse(mouse)
     , timeModifier(timeModifier) 
-
-      //    , timeModifier(timeModifier)
     , gamestate(gamestate)
+    , frame(frame)
 
     , up(0),down(0),left(0),right(0)
     , cam_up(0),cam_down(0),cam_left(0),cam_right(0)
@@ -208,6 +208,7 @@ void KeyHandler::HandleDown(Key key) {
         //inputgrabber->togglePause();
         break;
     case KEY_f:
+        frame.ToggleOption(FRAME_FULLSCREEN);
         //inputgrabber->printLocation();
         break;
     case KEY_SPACE:

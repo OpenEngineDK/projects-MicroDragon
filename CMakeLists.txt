@@ -67,10 +67,10 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_OBJResource
   Extensions_RAWResource
   Extensions_TGAResource
+  Extensions_ScaledTextureResource
   Extensions_SDL
   Extensions_OEGUI
   Extensions_VorbisResource
   Extensions_OpenALSoundSystem
   Extensions_MusicPlayer
-
 )

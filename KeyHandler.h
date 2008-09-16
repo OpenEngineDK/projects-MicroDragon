@@ -74,6 +74,8 @@ private:
     IMouse& mouse;
     TimeModifier& timeModifier;
     GameState& gamestate;
+    IFrame& frame;
+
     bool done, pause;
 
     list<Key> keysPressed;
@@ -101,7 +103,8 @@ public:
                BoidsSystem* boidssystem,
                TimeModifier& timeModifer,
                GameState& gamestate,
-               MusicPlayer& musicplayer);
+               MusicPlayer& musicplayer,
+               IFrame& frame);
     ~KeyHandler();
 
     void Handle(KeyboardEventArg arg);
