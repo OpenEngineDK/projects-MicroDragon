@@ -27,6 +27,7 @@
 #include <Renderers/IRenderNode.h>
 // OpenGL rendering implementation
 #include <Renderers/OpenGL/LightRenderer.h>
+#include <Renderers/OpenGL/BufferedRenderer.h>
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
 #include <Renderers/OpenGL/TextureLoader.h>
@@ -267,6 +268,7 @@ void SetupRendering(Config& config) {
 
     // Create a renderer
     config.renderer = new Renderer();
+    //config.renderer = new BufferedRenderer();
 
     // Setup a rendering view
     RenderingView* rv = new RenderingView(*config.viewport);
