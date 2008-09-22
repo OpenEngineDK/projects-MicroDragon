@@ -67,8 +67,8 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
     Vector<3,float> tex[4];
     
     FaceSet* faces = new FaceSet();
-    for ( int X = 0; X < scaledHeightMap->GetWidth()-1; X++ ) {
-        for ( int Z = 0; Z < scaledHeightMap->GetHeight()-1; Z++ ) {
+    for ( unsigned int X = 0; X < scaledHeightMap->GetWidth()-1; X++ ) {
+        for ( unsigned int Z = 0; Z < scaledHeightMap->GetHeight()-1; Z++ ) {
             for (int i=0; i<4; i++) {
                 if (i==0) { x = X;   z = Z;   }
                 else if (i==1) { x = X;   z = Z+1; }
@@ -116,8 +116,8 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
 }
 
 void HeightMap::CalculateNormalArray() {
-    for ( int X = 0; X < scaledHeightMap->GetWidth(); X++ )
-        for ( int Y = 0; Y < scaledHeightMap->GetHeight(); Y++ ) {
+    for ( unsigned int X = 0; X < scaledHeightMap->GetWidth(); X++ )
+        for ( unsigned int Y = 0; Y < scaledHeightMap->GetHeight(); Y++ ) {
             normalArray[X+(Y*scaledHeightMap->GetWidth())] = 
 	      (Point(X+1,Y) - Point(X-1,Y))
                 % (Point(X,Y+1) - Point(X,Y-1)).GetNormalize()*-1;
@@ -147,8 +147,11 @@ float HeightMap::Height(int x, int z) {
  */
 Vector<3,float> HeightMap::Point(int X, int Z) {
     //@todo: define a clamp macro or function to do the min max thing
-    int x = max(0,min(scaledHeightMap->GetWidth()-1,X)); // Error Check Our x Value
-    int z = max(0,min(scaledHeightMap->GetHeight()-1,Z)); // Error Check Our y Value
+    int width = scaledHeightMap->GetWidth();
+    int x = max(0,min(width-1,X)); // Error Check Our x Value
+    int height = scaledHeightMap->GetHeight();
+    int z = max(0,min(height-1,Z)); // Error Check Our y Value
+
     return Vector<3,float>(x*1.0/(scaledHeightMap->GetWidth()-1),
                            Height(x,z)*HEIGHT_RATIO,
                            z*1.0/(scaledHeightMap->GetHeight()-1))*scale+translate;
@@ -194,8 +197,10 @@ Vector<3,float> HeightMap::NormalAt(Vector<3,float> p) {
  * This Returns The Normal From A Normal Map Index
  */
 Vector<3,float> HeightMap::Normal(int X, int Z) {
-    int x = max(0,min(scaledHeightMap->GetWidth()-1,X)); // Error Check Our x Value
-    int z = max(0,min(scaledHeightMap->GetHeight()-1,Z)); // Error Check Our y Value
+    int width = scaledHeightMap->GetWidth();
+    int x = max(0,min(width-1,X)); // Error Check Our x Value
+    int height = scaledHeightMap->GetHeight();
+    int z = max(0,min(height-1,Z)); // Error Check Our y Value
 
     // Index Into Our Normal Array And Return The Normal
     return normalArray[x + (z * scaledHeightMap->GetWidth())];
