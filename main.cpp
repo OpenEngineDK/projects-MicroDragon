@@ -189,6 +189,8 @@ int main(int argc, char** argv) {
 
 void SetupSound(Config& config) {
     config.soundsystem = new OpenALSoundSystem(config.scene,config.camera);
+    config.engine.ProcessEvent().Attach(*config.soundsystem);
+    config.soundsystem->SetMasterGain(1.0);
     config.musicplayer = new MusicPlayer(config.camera,config.soundsystem);
     config.musicplayer->AddSound("Music/beak.ogg");
     config.musicplayer->AddSound("Music/defibrilation.ogg");
@@ -313,6 +315,9 @@ void SetupScene(Config& config) {
     GLSettingsNode* scene = new GLSettingsNode(fadetime);
     config.scene = scene;
     config.engine.ProcessEvent().Attach(*scene);
+
+    // attach scene to soundsystem
+    config.soundsystem->SetRoot(scene);
 
     // Set scene lighting
     float pFade = 1.4;
