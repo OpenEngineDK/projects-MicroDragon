@@ -54,6 +54,5 @@ win32 /libraries http://openengine.dk/data/libraries/vorbis-win32.zip
 # data
 any /projects/DragonPanic/data  http://www.openengine.dk/data/projects/DragonPanic/Island.zip
 any /projects/DragonPanic/data  http://www.openengine.dk/data/projects/DragonPanic/Dragon.zip
-any /projects/DragonPanic/data  http://www.openengine.dk/data/projects/DragonPanic/Intro.zip
 any /projects/DragonPanic/data  http://www.openengine.dk/data/images/Smoke.zip
 any /projects/DragonPanic/data  http://www.openengine.dk/data/projects/DragonPanic/dragonsounds.tar.gz
