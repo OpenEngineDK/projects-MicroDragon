@@ -1,6 +1,5 @@
 #include "Particle.h"
 
-#include "../InputGrabber/InputGrabber.h"
 #include "../Island/HeightMap.h"
 #include "../../Common/OpenGLUtil.h"
 #include "../../Common/VectorExt.h"

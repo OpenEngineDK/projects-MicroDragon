@@ -76,8 +76,6 @@
 #include "Modules/Island/Island.h"
 #include "Modules/Island/HeightMap.h"
 #include "Modules/Target/Target.h"
-#include "Modules/InputGrabber/InputGrabber.h"
-#include "Modules/Intro/Intro.h"
 #include "Modules/OscSurface/OscSurface.h"
 #include "Modules/Dragon/Dragon.h"
 #include "Modules/Particle/ParticleSystem.h"
@@ -145,12 +143,7 @@ int main(int argc, char** argv) {
 
     // Setup logging facilities.
     Logger::AddLogger(new StreamLogger(&std::cout));
-    /*
-    logger.info << "type input and press enter to continue" << logger.end;
-    string input;
-    cin >> input;
-    logger.info << "input string: " << input << logger.end;
-    */
+
     // Print usage info.
     logger.info << "========= ";
     logger.info << "Running The OpenEngine DragonPanic Project";
@@ -387,10 +380,6 @@ void SetupScene(Config& config) {
     config.engine.InitializeEvent().Attach(*oscs);
     timeModifier->ProcessEvent().Attach(*oscs);
     config.engine.DeinitializeEvent().Attach(*oscs);
-
-    // Intro* intro = new Intro(inputgrabber);
-    // scene->AddNode(intro);
-    // config.engine.ProcessEvent().Attach(*intro);
 
     //@todo: Boids have transparent shadows
     BoidsSystem* boids = new BoidsSystem(heightMap, oscs,*config.soundsystem);

@@ -22,9 +22,6 @@ SET( PROJECT_SOURCES
   Modules/Target/Target.cpp
   Modules/OscSurface/OscSurface.cpp
 
-  Modules/InputGrabber/InputGrabber.cpp
-  Modules/Intro/Intro.cpp
-
   Modules/Boid/Boid.cpp
   Modules/Boid/BoidsSystem.cpp
   Modules/Boid/Voice.cpp

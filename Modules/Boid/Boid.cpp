@@ -6,7 +6,6 @@
 
 
 // from same project
-#include "../InputGrabber/InputGrabber.h"
 #include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
 #include "../Particle/ParticleSystem.h"
