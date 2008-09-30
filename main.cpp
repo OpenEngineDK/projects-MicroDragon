@@ -328,7 +328,7 @@ void SetupScene(Config& config) {
     to1->diffuse = Vector<4,float>(0.4*pFade, 0.4*pFade, 0.7*pFade, 1.0);
     to1->specular = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
 
-    LightFader* light1Fader = new LightFader(*light1, *to1, light1, fadetime);
+    LightFader* light1Fader = new LightFader(light1, to1, light1, fadetime);
     config.engine.ProcessEvent().Attach(*light1Fader);
 
     PointLightNode* light2 = new PointLightNode();
@@ -343,7 +343,7 @@ void SetupScene(Config& config) {
     to2->ambient = Vector<4,float>(0.1*pFade, 0.1*pFade, 0.1*pFade, 1.0);
     to2->diffuse = Vector<4,float>(0.8*pFade, 0.8*pFade, 0.7*pFade, 1.0);
     to2->specular = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
-    LightFader* light2Fader = new LightFader(*light2, *to2, light2, fadetime);
+    LightFader* light2Fader = new LightFader(light2, to2, light2, fadetime);
     config.engine.ProcessEvent().Attach(*light2Fader);
 
     TimeModifier* timeModifier = 

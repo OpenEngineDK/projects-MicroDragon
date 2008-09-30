@@ -33,7 +33,7 @@ private:
     Timer timer;
 
 public:
-    LightFader(LightNode& from, LightNode& to, LightNode* lightNode, float time);
+    LightFader(LightNode* from, LightNode* to, LightNode* lightNode, float time);
     virtual ~LightFader();
 
     void Handle(ProcessEventArg arg);
