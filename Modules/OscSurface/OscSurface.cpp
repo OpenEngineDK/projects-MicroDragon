@@ -33,9 +33,9 @@ OscSurface::~OscSurface() {
 void OscSurface::Handle(InitializeEventArg arg) {
     float *zInit;
 
-    z_norm = (float *)malloc( M*N*3*sizeof(float) );
+    z_norm =  new float[M*N*3];
 
-    zInit = (float *)malloc( M*N*sizeof(float) );
+    zInit = new float[M*N];
     for ( int i=0; i<M; i++ )
         for ( int j=0; j<N; j++ ) {
             zInit[i*N+j] = 0;
@@ -51,9 +51,9 @@ void OscSurface::Handle(InitializeEventArg arg) {
 		       " tau2y= " + Convert::ToString(tauy2) );
     }
 
-    zOld = (float *)malloc( M*N*sizeof(float) );
-    zCur = (float *)malloc( M*N*sizeof(float) );
-    zNew = (float *)malloc( M*N*sizeof(float) );
+    zOld = new float [M*N];
+    zCur = new float [M*N];
+    zNew = new float [M*N];
 
     for ( int i=0; i<M*N; i++)
         zNew[i] = zCur[i] = zOld[i] = zInit[i];
@@ -177,7 +177,9 @@ void OscSurface::OnRenderEnter(float timeSte) {
 		else throw Exception("unknown index");
                 xz = x*N+z;
                 point[c] = Vector<3,float>(x*hx, zCur[xz]*15.0/120, z*hz);
-                normal[c] = Vector<3,float>(z_norm[xz*3+0], 1.0f, z_norm[xz*3+1]);
+                Vector<3,float> norm(z_norm[xz*3+0], 1.0f, z_norm[xz*3+1]);
+                norm.Normalize();
+                normal[c] = norm;
             }
 
             Vector<3,float> diagonalCross = (point[0]-point[2]) % (point[1]-point[3]);
@@ -194,10 +196,10 @@ void OscSurface::OnRenderLeave(float timeSte) {
 }
 
 void OscSurface::Handle(DeinitializeEventArg arg) {
-    free( z_norm );
-    free( zOld );
-    free( zCur );
-    free( zNew );
+    delete[] z_norm;
+    delete[] zOld;
+    delete[] zCur;
+    delete[] zNew;
 }
 
 void OscSurface::Handle(ProcessEventArg arg) {

@@ -302,6 +302,9 @@ void Boid::HandleFire(Vector<3,float> firePosition, float fireStrength) {
 
 void Boid::draw( ) {
     GLboolean t = glIsEnabled(GL_BLEND);
+    GLboolean l = glIsEnabled(GL_LIGHTING);
+
+    glDisable(GL_LIGHTING);
 
     // dont use blend
     glDisable(GL_BLEND);
@@ -324,6 +327,8 @@ void Boid::draw( ) {
 
     if (!t)
         glDisable(GL_BLEND);
+    if (l)
+        glEnable(GL_LIGHTING);
 }
 
 void Boid::draw2( bool shadow ) {

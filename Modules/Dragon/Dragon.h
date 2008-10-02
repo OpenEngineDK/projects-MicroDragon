@@ -26,13 +26,6 @@ namespace OpenEngine {
     }
 }
 
-/*
-#include "Tube.h"
-#include "../../Common/Follower.h"
-#include <Meta/OpenGL.h>
-#include <Scene/TransformationNode.h>
-*/
-
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::ProcessEventArg;
@@ -44,9 +37,6 @@ using OpenEngine::Scene::TransformationNode;
 using OpenEngine::Geometry::Line;
 using std::list;
 using std::string;
-
-const static int HEAD_DISPLAY_ID = 10;
-const static int JAW_DISPLAY_ID  = 11;
 
 class Dragon : public IListener<InitializeEventArg>,
   public IListener<ProcessEventArg>, public IRenderNode {

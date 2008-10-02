@@ -97,8 +97,10 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
                                                   Vector<3,float>(0,0,1)));
                 face->vert[t] =
                     Vector<3,float>(point[j][0],  point[j][1],  point[j][2]);
-                face->norm[t] =
-                    Vector<3,float>(normal[j][0], normal[j][1], normal[j][2]);
+
+
+                Vector<3,float> n(normal[j][0], normal[j][1], normal[j][2]);
+                face->norm[t] = n.GetNormalize();
                 face->colr[t] =
                     Vector<4,float>(color[j][0], color[j][1], color[j][2], 0.0);
                 face->texc[t] = Vector<2,float>(tex[j][0], tex[j][1]);
