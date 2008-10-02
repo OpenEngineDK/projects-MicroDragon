@@ -56,6 +56,7 @@
 #include <Logging/Logger.h>
 #include <Logging/StreamLogger.h>
 #include <Utils/LayerStatistics.h> 
+#include <Utils/EventProfiler.h>
 
 // OERacer utility files
 #include <Utils/QuitHandler.h>
@@ -97,6 +98,7 @@ using namespace OpenEngine::Sound;
 // Configuration structure to pass around to the setup methods
 struct Config {
     IEngine&              engine;
+    EventProfiler         prof;
     IFrame*               frame;
     Viewport*             viewport;
     IViewingVolume*       viewingvolume;
@@ -110,6 +112,12 @@ struct Config {
     GameState*            gamestate;
     ISoundSystem*         soundsystem;
     MusicPlayer*          musicplayer;
+    TimeModifier*         timeModifier;
+    Target*               target;
+    BoidsSystem*          boids;
+    ParticleSystem*       partsys;
+    OscSurface*           oscs;
+    Dragon*               dragon;
     bool                  resourcesLoaded;
     Config(IEngine& engine)
         : engine(engine)
@@ -126,6 +134,12 @@ struct Config {
         , gamestate(NULL)
         , soundsystem(NULL)
         , musicplayer(NULL)
+        , timeModifier(NULL)
+        , target(NULL)
+        , boids(NULL)
+        , partsys(NULL)
+        , oscs(NULL)
+        , dragon(NULL)
         , resourcesLoaded(false)
     {}
 };
@@ -169,10 +183,13 @@ int main(int argc, char** argv) {
     SetupRendering(config);
 
     // Possibly add some debugging stuff
-    // SetupDebugging(config);
+    SetupDebugging(config);
 
     // Start up the engine.
     engine->Start();
+
+    // Print out any profiling info
+    config.prof.DumpInfo();
 
     // Return when the engine stops.
     delete engine;
@@ -356,6 +373,7 @@ void SetupScene(Config& config) {
 
     TimeModifier* timeModifier = 
         new TimeModifier(config.engine.ProcessEvent(),1.00f);
+    config.timeModifier = timeModifier;
     //timeModifier->SetFactor(1.23);
 
     //init HeightMap
@@ -373,7 +391,7 @@ void SetupScene(Config& config) {
     config.scene->AddNode(island);
     hMap->Unload();
 
-    Target* target = new Target(*heightMap);
+    Target* target = config.target = new Target(*heightMap);
     TransformationNode* targetNode = &target->GetTargetNode();
     config.scene->AddNode(targetNode);
     config.engine.ProcessEvent().Attach(*target);
@@ -383,19 +401,19 @@ void SetupScene(Config& config) {
 
     Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
     //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
-    OscSurface* oscs = new OscSurface(heightMap,oscsColor);
+    OscSurface* oscs = config.oscs = new OscSurface(heightMap,oscsColor);
     //tpNode->AddNode(oscs); // Moved down!
     config.engine.InitializeEvent().Attach(*oscs);
     timeModifier->ProcessEvent().Attach(*oscs);
     config.engine.DeinitializeEvent().Attach(*oscs);
 
     //@todo: Boids have transparent shadows
-    BoidsSystem* boids = new BoidsSystem(heightMap, oscs,*config.soundsystem);
+    BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem);
     //tpNode->AddNode(boids); // moved down!
     config.engine.InitializeEvent().Attach(*boids);
     timeModifier->ProcessEvent().Attach(*boids);
 
-    ParticleSystem* pat = new ParticleSystem(heightMap,config.camera,boids);
+    ParticleSystem* pat = config.partsys = new ParticleSystem(heightMap,config.camera,boids);
 
     tpNode->AddNode(pat);
     tpNode->AddNode(boids);
@@ -407,7 +425,7 @@ void SetupScene(Config& config) {
     pat->ParticleSystemEvent().Attach(*boids);
     boids->SetParticleSystem(pat);
 
-    Dragon* dragon = new Dragon(heightMap,target,pat);
+    Dragon* dragon = config.dragon = new Dragon(heightMap,target,pat);
     config.scene->AddNode(dragon);
     config.engine.InitializeEvent().Attach(*dragon);
     config.engine.ProcessEvent().Attach(*dragon);
@@ -426,10 +444,29 @@ void SetupScene(Config& config) {
 
     config.joystick->JoystickButtonEvent().Attach(*key_h);
     config.joystick->JoystickAxisEvent().Attach(*key_h);
-
 }
 
 void SetupDebugging(Config& config) {
+    // main engine events
+    config.prof.Profile<ProcessEventArg>
+        ("Input System", config.engine.ProcessEvent(), *config.mouse);
+    config.prof.Profile<ProcessEventArg>
+        ("Sound System", config.engine.ProcessEvent(), *config.soundsystem);
+    config.prof.Profile<ProcessEventArg>
+        ("Music Player", config.engine.ProcessEvent(), *config.musicplayer);
+    config.prof.Profile<ProcessEventArg>
+        ("Target",       config.engine.ProcessEvent(), *config.target);
+    config.prof.Profile<ProcessEventArg>
+        ("Renderer",     config.engine.ProcessEvent(), *config.renderer);
+    config.prof.Profile<ProcessEventArg>
+        ("Dragon",       config.engine.ProcessEvent(), *config.dragon);
+    // time modified events
+    config.prof.Profile<ProcessEventArg>
+        ("Particle System", config.timeModifier->ProcessEvent(), *config.partsys);
+    config.prof.Profile<ProcessEventArg>
+        ("Boids System",    config.timeModifier->ProcessEvent(), *config.boids);
+    config.prof.Profile<ProcessEventArg>
+        ("Osc Surface",     config.timeModifier->ProcessEvent(), *config.oscs);
 
     // Visualization of the frustum
     if (config.frustum != NULL) {
