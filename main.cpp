@@ -304,13 +304,21 @@ void SetupScene(Config& config) {
 
     // Create a root scene node
     float fadetime = 3000.0 * 3.5;
+    
+    RenderStateNode* renderStateNode = new RenderStateNode();
+    renderStateNode->AddOptions(RenderStateNode::RENDER_LIGHTING);
+    renderStateNode->AddOptions(RenderStateNode::RENDER_TEXTURES);
+    renderStateNode->AddOptions(RenderStateNode::RENDER_SHADERS);
+    renderStateNode->AddOptions(RenderStateNode::RENDER_BACKFACES);
+    renderStateNode->AddOptions(RenderStateNode::RENDER_WITH_DEPTH_TEST);
+    config.scene = renderStateNode;
 
-    GLSettingsNode* scene = new GLSettingsNode(fadetime);
-    config.scene = scene;
-    config.engine.ProcessEvent().Attach(*scene);
+    GLSettingsNode* glNode = new GLSettingsNode(fadetime);
+    config.engine.ProcessEvent().Attach(*glNode);
+    renderStateNode->AddNode(glNode);
 
     // attach scene to soundsystem
-    config.soundsystem->SetRoot(scene);
+    config.soundsystem->SetRoot(config.scene);
 
     // Set scene lighting
     float pFade = 1.4;
@@ -322,7 +330,7 @@ void SetupScene(Config& config) {
     TransformationNode* light1Position = new TransformationNode();
     light1Position->SetPosition(Vector<3,float>(0.8, 0.7, 0.4));
     light1Position->AddNode(light1);
-    scene->AddNode(light1Position);
+    config.scene->AddNode(light1Position);
     PointLightNode* to1 = new PointLightNode();
     to1->ambient = Vector<4,float>(0.1*pFade, 0.1*pFade, 0.1*pFade, 1.0);
     to1->diffuse = Vector<4,float>(0.4*pFade, 0.4*pFade, 0.7*pFade, 1.0);
@@ -338,7 +346,7 @@ void SetupScene(Config& config) {
     TransformationNode* light2Position = new TransformationNode();
     light2Position->SetPosition(Vector<3,float>(-1.0, 1.0, 0.7));
     light2Position->AddNode(light2);
-    scene->AddNode(light2Position);
+    config.scene->AddNode(light2Position);
     PointLightNode* to2 = new PointLightNode();
     to2->ambient = Vector<4,float>(0.1*pFade, 0.1*pFade, 0.1*pFade, 1.0);
     to2->diffuse = Vector<4,float>(0.8*pFade, 0.8*pFade, 0.7*pFade, 1.0);
@@ -362,16 +370,16 @@ void SetupScene(Config& config) {
     HeightMap* heightMap = new HeightMap(hMap, texture, 300.0, 0.25, 16);
 
     Island* island = new Island(heightMap);
-    scene->AddNode(island);
+    config.scene->AddNode(island);
     hMap->Unload();
 
     Target* target = new Target(*heightMap);
     TransformationNode* targetNode = &target->GetTargetNode();
-    scene->AddNode(targetNode);
+    config.scene->AddNode(targetNode);
     config.engine.ProcessEvent().Attach(*target);
 
     TransparencyNode* tpNode = new TransparencyNode();
-    scene->AddNode(tpNode);
+    config.scene->AddNode(tpNode);
 
     Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
     //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
@@ -400,7 +408,7 @@ void SetupScene(Config& config) {
     boids->SetParticleSystem(pat);
 
     Dragon* dragon = new Dragon(heightMap,target,pat);
-    scene->AddNode(dragon);
+    config.scene->AddNode(dragon);
     config.engine.InitializeEvent().Attach(*dragon);
     config.engine.ProcessEvent().Attach(*dragon);
 
