@@ -65,7 +65,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_TGAResource
   Extensions_ScaledTextureResource
   Extensions_SDL
-  Extensions_OEGUI
   Extensions_CairoResource
   Extensions_VorbisResource
   Extensions_OpenALSoundSystem
