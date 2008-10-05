@@ -17,7 +17,7 @@
 
 #include <Resources/IModelResource.h>
 #include <Resources/ResourceManager.h>
-#include <Renderers/OpenGL/TextureLoader.h>
+#include <Renderers/TextureLoader.h>
 #include <Renderers/IRenderingView.h>
 #include <Scene/TransformationNode.h>
 #include <Math/Math.h>
@@ -29,11 +29,11 @@
 
 using namespace OpenEngine::Resources;
 using namespace OpenEngine::Geometry;
-using namespace OpenEngine::Renderers::OpenGL;
+//using namespace OpenEngine::Renderers::OpenGL;
 using OpenEngine::Math::PI;
 using OpenEngine::Math::Quaternion;
 
-Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesystem)
+Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesystem, TextureLoader& textureLoader)
   : heightMap(heightMap), target(target), particlesystem(particlesystem) {
     jawPos = 0.0f;
     enableTexture = enabled = true;
@@ -86,6 +86,11 @@ Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesys
     //FaceListUtil::Unitize(gNode->GetFaceSet());
     //FaceListUtil::OverrideSoftNormsWithHardNorm(gNode->GetFaceSet());
     jawNode->AddNode(jawRes->GetSceneNode());
+
+    neckTexture = ResourceManager<ITextureResource>
+        ::Create(folder + "DragonNeckColor128x512.tga");
+    //neckTexture->Load();
+    textureLoader.Load(neckTexture);
 }
 
 Dragon::~Dragon() {
@@ -102,12 +107,6 @@ void Dragon::Handle(InitializeEventArg arg) {
     neck = new Tube( 2.5, 1.2, 1.0, 0.5, neckLength );
     headFocus = new Follower(target->getTarget());
     headPos = new Follower(target->getTarget());
-
-   ITextureResourcePtr neck = ResourceManager<ITextureResource>
-     ::Create(folder + "DragonNeckColor128x512.tga");
-   neck->Load();
-   TextureLoader::LoadTextureResource(neck);
-   neckTextureID =  neck->GetID();
 }
 
 void Dragon::Apply(IRenderingView* rv) {
@@ -127,7 +126,7 @@ void Dragon::Apply(IRenderingView* rv) {
   */
   if( enableTexture ) {
     glEnable( GL_TEXTURE_2D );
-    glBindTexture(GL_TEXTURE_2D, neckTextureID);
+    glBindTexture(GL_TEXTURE_2D, neckTexture->GetID());
   }
   neck->draw();
   if( enableTexture )

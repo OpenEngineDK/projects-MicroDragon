@@ -8,6 +8,7 @@
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
 #include <Renderers/IRenderNode.h>
+#include <Resources/ITextureResource.h>
 
 #include <string>
 #include <list>
@@ -24,6 +25,9 @@ namespace OpenEngine {
     namespace Geometry {
       class Line;
     }
+    namespace Renderers {
+        class TextureLoader;
+    }
 }
 
 using OpenEngine::Core::IListener;
@@ -32,18 +36,21 @@ using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Renderers::TextureLoader;
 using OpenEngine::Scene::TransformationNode;
 
 using OpenEngine::Geometry::Line;
 using std::list;
 using std::string;
 
+using namespace OpenEngine::Resources;
+
 class Dragon : public IListener<InitializeEventArg>,
   public IListener<ProcessEventArg>, public IRenderNode {
 public:
   bool enabled;
 
-  Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesystem);
+  Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesystem, TextureLoader& textureLoader);
     ~Dragon();
     void toggleRenderState();
 
@@ -66,8 +73,7 @@ private:
     TransformationNode* jawAngleNode;
 
     Tube* neck;
-
-    unsigned int neckTextureID;
+    ITextureResourcePtr neckTexture;
 
     list<Line*> redlines;
     list<Line*> bluelines;

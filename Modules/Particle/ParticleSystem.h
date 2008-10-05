@@ -7,6 +7,7 @@
 #include <Core/IEvent.h>
 #include <Core/Event.h>
 #include <Renderers/IRenderNode.h>
+#include <Renderers/TextureLoader.h>
 
 // using templates
 #include <Math/Vector.h>
@@ -23,7 +24,7 @@ class Particle;
 namespace OpenEngine {
   namespace Display {class IViewingVolume;}
   namespace Math {class RandomGenerator;}
-  namespace Renderers {class IRenderingView;}
+  namespace Renderers {class IRenderingView; class TextureLoader;}
 }
 
 using OpenEngine::Core::IListener;
@@ -35,15 +36,18 @@ using OpenEngine::Display::IViewingVolume;
 using OpenEngine::Math::RandomGenerator;
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Renderers::TextureLoader;
 using OpenEngine::Renderers::IRenderingView;
 using std::vector;
+
+using namespace OpenEngine;
 
 class ParticleSystem : public IListener<InitializeEventArg>,
     public IListener<ProcessEventArg>, public IRenderNode {
 
 public:
     ParticleSystem(HeightMap* heightMap, IViewingVolume* vv,
-                   BoidsSystem* boidssystem);
+                   BoidsSystem* boidssystem, Renderers::TextureLoader& textureLoader);
     ~ParticleSystem();
 
     void Handle(InitializeEventArg arg);
@@ -66,6 +70,7 @@ public:
  private:
     Event<ParticleSystemEventArg> particleEvents;
 
+    TextureLoader& textureLoader;
     IViewingVolume* vv;
     HeightMap* heightMap;
     BoidsSystem* boidssystem;

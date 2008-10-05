@@ -13,24 +13,24 @@
 #include <Renderers/IRenderingView.h>
 #include <Resources/ResourceManager.h>
 #include <Resources/ITextureResource.h>
-#include <Renderers/OpenGL/TextureLoader.h>
 
 #include <iostream>
 
 using namespace OpenEngine::Resources;
-using namespace OpenEngine::Renderers::OpenGL;
 using namespace std;
 
 unsigned int textures[10];
 int textureIndex;
 
 ParticleSystem::ParticleSystem(HeightMap* heightMap, IViewingVolume* vv,
-			       BoidsSystem* boidssystem) {
-  this->heightMap = heightMap;
-  this->vv = vv;
-  this->boidssystem = boidssystem;
-  randObject = new RandomGenerator();
-  textureIndex = 0;
+                               BoidsSystem* boidssystem,
+                               Renderers::TextureLoader& textureLoader) 
+    : textureLoader(textureLoader) {
+    this->heightMap = heightMap;
+    this->vv = vv;
+    this->boidssystem = boidssystem;
+    randObject = new RandomGenerator();
+    textureIndex = 0;
 }
 
 ParticleSystem::~ParticleSystem(){
@@ -39,27 +39,21 @@ ParticleSystem::~ParticleSystem(){
 
 void ParticleSystem::Handle(InitializeEventArg arg) {
     ITextureResourcePtr tex1 = 
-      ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
-    tex1->Load();
-    TextureLoader::LoadTextureResource(tex1);
+        ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
+    textureLoader.Load(tex1);
     textures[ textureIndex ] = tex1->GetID();
-    tex1->Unload();
     textureIndex++;
 
     ITextureResourcePtr tex2 = 
       ResourceManager<ITextureResource>::Create("Smoke/smoke02.tga");
-    tex2->Load();
-    TextureLoader::LoadTextureResource(tex2);
+    textureLoader.Load(tex2);
     textures[ textureIndex ] = tex2->GetID();
-    tex2->Unload();
     textureIndex++;
 
     ITextureResourcePtr tex3 = 
       ResourceManager<ITextureResource>::Create("Smoke/smoke03.tga");
-    tex3->Load();
-    TextureLoader::LoadTextureResource(tex3);
+    textureLoader.Load(tex3);
     textures[ textureIndex ] = tex3->GetID();
-    tex3->Unload();
     textureIndex++;
 }
 

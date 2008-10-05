@@ -9,26 +9,16 @@
 
 #include "DragonHUD.h"
 
-#include <Resources/CairoSurfaceResource.h>
 #include <string>
 #include <Utils/Convert.h>
 
-#include <Logging/Logger.h>
-
 using namespace OpenEngine::Resources;
-using OpenEngine::Utils::Convert;
-using std::string;
 
+DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate, HUD& hud, TextureLoader& texLoader)
+    : gamestate(gamestate), hud(hud), texLoader(texLoader) {
 
-DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate)
-  : testval(0), gamestate(gamestate) {
     frameWidth = frame.GetWidth();
     frameHeight = frame.GetHeight();
-
-    
-    float downpadding = 0.02;
-    float leftpadding = 0.02;
-    float rightpadding = 0.02;
 
     int textsize = frameHeight*0.08;
 
@@ -40,55 +30,53 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate)
     while (surfHeight > two)
         two = two << 1;
     surfHeight = two;
-//     unsigned int widthPowerOfTwo = 0;
-//     while (movieWidth > (two<<widthPowerOfTwo))
-//         widthPowerOfTwo++;
-//     width = (two<<widthPowerOfTwo);
+
+    textTool = new CairoTextTool();
+    textTool->SetFont("Monaco", textsize);
+    textTool->Shadows(true);
+    textTool->SetColor(Vector<4,float>(1,0,0,0.8));
+
+    timeTexture = CairoResource::Create(surfWidth,surfHeight);
+    texLoader.Load(timeTexture, TextureLoader::RELOAD_ALWAYS);
+    pointTexture = CairoResource::Create(surfWidth,surfHeight);
+    texLoader.Load(pointTexture, TextureLoader::RELOAD_ALWAYS);
+
+    HUD::Surface* timeSurface = hud.CreateSurface(timeTexture);
+    timeSurface->SetPosition(HUD::Surface::RIGHT, 
+                             HUD::Surface::BOTTOM);
+    int offset = 15;
+    Vector<2,int> position = timeSurface->GetPosition();
+    timeSurface->SetPosition( position[0]-offset,
+                               position[1]-offset);
 
 
-
-  CairoSurfaceResourcePtr timeRes = 
-      CairoSurfaceResourcePtr(new CairoSurfaceResource(CairoSurfaceResource::CreateCairoSurface(surfWidth,surfHeight)));
-  CairoSurfaceResourcePtr scoreRes = 
-      CairoSurfaceResourcePtr(new CairoSurfaceResource(CairoSurfaceResource::CreateCairoSurface(surfWidth,surfHeight)));
-
-
-    time = new DragonText(*timeRes, string(""));
-    time->SetAlignment(RIGHT);
-    time->SetTextSize(textsize);
-    score = new DragonText(*scoreRes, string(""));
-    score->SetTextSize(textsize);
-    
-    int ypos = frameHeight - (downpadding*frameHeight) - surfHeight;
-
-    Layer* timeLayer = new Layer(frameWidth-frameWidth*rightpadding-surfWidth,ypos);
-    Layer* scoreLayer = new Layer(frameWidth*leftpadding,ypos);
-
-    timeLayer->texr = timeRes;
-    scoreLayer->texr = scoreRes;
-
-    layerNode = new LayerNode(frameWidth,frameHeight);
-    layerNode->AddLayer(*timeLayer);
-    layerNode->AddLayer(*scoreLayer);
+    HUD::Surface* pointSurface = hud.CreateSurface(pointTexture);
+    pointSurface->SetPosition(HUD::Surface::LEFT,
+                              HUD::Surface::BOTTOM);
+    position = pointSurface->GetPosition();
+    pointSurface->SetPosition( position[0]+offset,
+                               position[1]-offset);
 }
 
 DragonHUD::~DragonHUD() {}
 
-void DragonHUD::Handle(RenderingEventArg arg) {
+void DragonHUD::Handle(ProcessEventArg arg) {
     char timestring[255];
     int timeleft = gamestate.GetTimeLeft();
     int min = timeleft / 60;
     int sec =  timeleft - min*60;
     sprintf(timestring, "%d:%.2d",min,sec);
-    time->SetString(Convert::ToString(timestring));
-    score->SetString(Convert::ToString(gamestate.GetScore() ));
-    time->Draw();
-    score->Draw();
-}
 
-LayerNode* DragonHUD::GetLayerNode() {
-    return layerNode;
-}
+    std::string time = Convert::ToString(timestring);
+    std::string points = Convert::ToString( gamestate.GetScore() );
 
+    textTool->SetAlignment(CairoTextTool::RIGHT);
+    textTool->DrawText(time, timeTexture);
+    timeTexture->RebindTexture();
+
+    textTool->SetAlignment(CairoTextTool::LEFT);
+    textTool->DrawText(points, pointTexture);
+    pointTexture->RebindTexture();
+}
 
 

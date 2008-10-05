@@ -10,37 +10,40 @@
 #ifndef _TIMER_LAYER_H_
 #define _TIMER_LAYER_H_
 
-#include "DragonText.h"
 #include "../GameState.h"
 
-#include <Display/Layer.h>
-#include <Display/TextSurface.h>
-#include <Scene/LayerNode.h>
 #include <Core/IListener.h>
-#include <Renderers/IRenderer.h>
 #include <Display/IFrame.h>
+#include <Display/HUD.h>
+#include <Renderers/IRenderer.h>
+#include <Renderers/TextureLoader.h>
+#include <Resources/CairoResource.h>
+#include <Utils/CairoTextTool.h>
 
 using OpenEngine::Core::IListener;
 using OpenEngine::Renderers::RenderingEventArg;
-using OpenEngine::Display::TextSurface;
-using OpenEngine::Display::Layer;
-using OpenEngine::Scene::LayerNode;
-using OpenEngine::Display::IFrame;
+using OpenEngine::Renderers::TextureLoader;
 
-class DragonHUD : public IListener<RenderingEventArg> {
+using namespace OpenEngine::Utils;
+using namespace OpenEngine::Display;
+
+using namespace OpenEngine;
+
+class DragonHUD : public IListener<ProcessEventArg> {
 private:
-    DragonText* time;
-    DragonText* score;
-    LayerNode* layerNode;
-    int frameWidth, frameHeight;
-    int testval;
+    CairoTextTool* textTool;
+    CairoResourcePtr timeTexture;
+    CairoResourcePtr pointTexture;
+    unsigned int frameWidth, frameHeight;
     GameState& gamestate;
+    Display::HUD& hud;
+    TextureLoader& texLoader;
 public:
-    DragonHUD(IFrame& frame, GameState& gamestate);
+    DragonHUD(IFrame& frame, GameState& gamestate,
+              HUD& hud, TextureLoader& texLoader);
     virtual ~DragonHUD();
 
-    void Handle(RenderingEventArg arg);
-    LayerNode* GetLayerNode();
+    void Handle(ProcessEventArg arg);
 };
 
 

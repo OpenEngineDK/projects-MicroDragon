@@ -34,7 +34,6 @@ SET( PROJECT_SOURCES
   Modules/Dragon/Tube.cpp
 
   HUD/DragonHUD.cpp
-  HUD/DragonText.cpp
 )
 
 # Include needed to use SDL under Mac OS X
@@ -60,12 +59,14 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   OpenEngine_Utils
   # Extension dependencies
   Extensions_GenericHandlers
+  Extensions_HUD
   Extensions_OBJResource
   Extensions_RAWResource
   Extensions_TGAResource
   Extensions_ScaledTextureResource
   Extensions_SDL
   Extensions_OEGUI
+  Extensions_CairoResource
   Extensions_VorbisResource
   Extensions_OpenALSoundSystem
   Extensions_MusicPlayer

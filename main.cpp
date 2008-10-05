@@ -21,6 +21,7 @@
 #include <Display/ViewingVolume.h>
 // SDL implementation
 #include <Display/SDLFrame.h>
+#include <Display/HUD.h>
 #include <Devices/SDLInput.h>
 
 // Rendering structures
@@ -30,7 +31,7 @@
 #include <Renderers/OpenGL/BufferedRenderer.h>
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
-#include <Renderers/OpenGL/TextureLoader.h>
+#include <Renderers/TextureLoader.h>
 
 // Resources
 #include <Resources/IModelResource.h>
@@ -119,6 +120,8 @@ struct Config {
     OscSurface*           oscs;
     Dragon*               dragon;
     bool                  resourcesLoaded;
+    HUD*                  hud;
+    TextureLoader*        textureLoader;
     Config(IEngine& engine)
         : engine(engine)
         , frame(NULL)
@@ -141,6 +144,8 @@ struct Config {
         , oscs(NULL)
         , dragon(NULL)
         , resourcesLoaded(false)
+        , hud(NULL)
+        , textureLoader(NULL)
     {}
 };
 
@@ -179,8 +184,8 @@ int main(int argc, char** argv) {
     SetupDisplay(config);
     SetupDevices(config);
     SetupSound(config);
-    SetupScene(config);
     SetupRendering(config);
+    SetupScene(config);
 
     // Possibly add some debugging stuff
     SetupDebugging(config);
@@ -272,10 +277,8 @@ void SetupDevices(Config& config) {
 void SetupRendering(Config& config) {
     if (config.viewport == NULL ||
         config.renderer != NULL ||
-        config.gamestate == NULL ||
         config.camera == NULL ||
-        config.soundsystem == NULL ||
-        config.scene == NULL)
+        config.soundsystem == NULL )
         throw Exception("Setup renderer dependencies are not satisfied.");
 
     // Create a renderer
@@ -287,29 +290,20 @@ void SetupRendering(Config& config) {
     config.renderer->ProcessEvent().Attach(*rv);
 
     // Add rendering initialization tasks
-    TextureLoader* tl = new TextureLoader();
+    config.textureLoader = new TextureLoader(*config.renderer);
+
     DisplayListTransformer* dlt = new DisplayListTransformer(rv);
-    config.renderer->InitializeEvent().Attach(*tl);
     config.renderer->InitializeEvent().Attach(*dlt);
 
     config.renderer->PreProcessEvent()
       .Attach( *(new LightRenderer()) );
 
-    // Transform the scene to use vertex arrays
-    VertexArrayTransformer vaT;
-    vaT.Transform(*config.scene);
-
-    // Supply the scene to the renderer
-    config.renderer->SetSceneRoot(config.scene);
-
     config.engine.InitializeEvent().Attach(*config.renderer);
     config.engine.ProcessEvent().Attach(*config.renderer);
     config.engine.DeinitializeEvent().Attach(*config.renderer);
 
-    //HUD
-    DragonHUD* hud = new DragonHUD(*config.frame, *config.gamestate);
-    config.scene->AddNode(hud->GetLayerNode());
-    config.renderer->PreProcessEvent().Attach(*hud);
+    config.hud = new HUD();
+    config.renderer->PostProcessEvent().Attach( *config.hud );
 }
 
 void SetupScene(Config& config) {
@@ -320,23 +314,19 @@ void SetupScene(Config& config) {
         throw Exception("Setup scene dependencies are not satisfied.");
 
     // Create a root scene node
-    float fadetime = 3000.0 * 3.5;
-    
+
     RenderStateNode* renderStateNode = new RenderStateNode();
-    renderStateNode->AddOptions(RenderStateNode::RENDER_LIGHTING);
-    renderStateNode->AddOptions(RenderStateNode::RENDER_TEXTURES);
-    renderStateNode->AddOptions(RenderStateNode::RENDER_SHADERS);
-    renderStateNode->AddOptions(RenderStateNode::RENDER_BACKFACES);
-    renderStateNode->AddOptions(RenderStateNode::RENDER_WITH_DEPTH_TEST);
+    renderStateNode->EnableOption(RenderStateNode::LIGHTING);
     config.scene = renderStateNode;
 
+    float fadetime = 3000.0 * 3.5;
     GLSettingsNode* glNode = new GLSettingsNode(fadetime);
     config.engine.ProcessEvent().Attach(*glNode);
     renderStateNode->AddNode(glNode);
 
     // attach scene to soundsystem
     config.soundsystem->SetRoot(config.scene);
-
+    
     // Set scene lighting
     float pFade = 1.4;
 
@@ -413,7 +403,7 @@ void SetupScene(Config& config) {
     config.engine.InitializeEvent().Attach(*boids);
     timeModifier->ProcessEvent().Attach(*boids);
 
-    ParticleSystem* pat = config.partsys = new ParticleSystem(heightMap,config.camera,boids);
+    ParticleSystem* pat = config.partsys = new ParticleSystem(heightMap,config.camera,boids, *config.textureLoader);
 
     tpNode->AddNode(pat);
     tpNode->AddNode(boids);
@@ -425,7 +415,7 @@ void SetupScene(Config& config) {
     pat->ParticleSystemEvent().Attach(*boids);
     boids->SetParticleSystem(pat);
 
-    Dragon* dragon = config.dragon = new Dragon(heightMap,target,pat);
+    Dragon* dragon = config.dragon = new Dragon(heightMap,target,pat,*config.textureLoader);
     config.scene->AddNode(dragon);
     config.engine.InitializeEvent().Attach(*dragon);
     config.engine.ProcessEvent().Attach(*dragon);
@@ -444,6 +434,21 @@ void SetupScene(Config& config) {
 
     config.joystick->JoystickButtonEvent().Attach(*key_h);
     config.joystick->JoystickAxisEvent().Attach(*key_h);
+
+    config.textureLoader->Load(*config.scene);
+
+    // Transform the scene to use vertex arrays
+    VertexArrayTransformer vaT;
+    vaT.Transform(*config.scene);
+
+    // Supply the scene to the renderer
+    config.renderer->SetSceneRoot(config.scene);
+
+    //HUD
+    DragonHUD* hud = new DragonHUD(*config.frame, *config.gamestate,
+                                   *config.hud, *config.textureLoader);
+    //config.scene->AddNode(hud->GetLayerNode());
+    config.engine.ProcessEvent().Attach(*hud);
 }
 
 void SetupDebugging(Config& config) {
@@ -475,16 +480,6 @@ void SetupDebugging(Config& config) {
     }
 
     // FPS layer with cairo
-    CairoSurfaceResourcePtr sr =
-      CairoSurfaceResourcePtr(new CairoSurfaceResource(CairoSurfaceResource::CreateCairoSurface(1000,100)));
-    TextSurface *ts = new TextSurface(*sr, string("Loading FPS"));
-    Layer layer(0,0);
-    layer.texr = sr;
-    LayerNode *ln = new LayerNode(1024, 768); 
-    ln->AddLayer(layer);
-    config.scene->AddNode(ln);
-    LayerStatistics* layerStat = new LayerStatistics(1000000, ts);
-    config.engine.ProcessEvent().Attach(*layerStat);
-
+    //@todo: added a fps via CairoResource and CairoTextTool
 }
 
