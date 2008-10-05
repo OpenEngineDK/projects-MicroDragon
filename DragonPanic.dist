@@ -25,8 +25,8 @@ darcs-dev /extensions/RAWResource     fh.daimi.au.dk:/users/cgd/code/extensions/
 darcs-dev /extensions/ScaledTextureResource fh.daimi.au.dk:/users/cgd/code/extensions/ScaledTextureResource
 
 # cairo extension
-darcs /extensions/OEGUI http://openengine.dk/code/extensions/OEGUI
-darcs-dev /extensions/OEGUI fh.daimi.au.dk:/users/cgd/code/extensions/OEGUI
+darcs /extensions/CairoResource http://openengine.dk/code/extensions/CairoResource
+darcs-dev /extensions/CairoResource fh.daimi.au.dk:/users/cgd/code/extensions/CairoResource
 
 #sound
 darcs /extensions/OpenALSoundSystem http://openengine.dk/code/extensions/OpenALSoundSystem
