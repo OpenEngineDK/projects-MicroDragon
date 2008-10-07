@@ -58,6 +58,8 @@
 #include <Logging/StreamLogger.h>
 #include <Utils/LayerStatistics.h> 
 #include <Utils/EventProfiler.h>
+#include <Utils/FPSSurface.h>
+#include <Scene/DotVisitor.h>
 
 // OERacer utility files
 #include <Utils/QuitHandler.h>
@@ -465,6 +467,9 @@ void SetupDebugging(Config& config) {
         ("Renderer",     config.engine.ProcessEvent(), *config.renderer);
     config.prof.Profile<ProcessEventArg>
         ("Dragon",       config.engine.ProcessEvent(), *config.dragon);
+    // renderer events
+    config.prof.Profile<RenderingEventArg>
+        ("HUD", config.renderer->ProcessEvent(), *config.hud);
     // time modified events
     config.prof.Profile<ProcessEventArg>
         ("Particle System", config.timeModifier->ProcessEvent(), *config.partsys);
@@ -480,6 +485,24 @@ void SetupDebugging(Config& config) {
     }
 
     // FPS layer with cairo
-    //@todo: added a fps via CairoResource and CairoTextTool
+    FPSSurfacePtr fps = FPSSurface::Create();
+    config.textureLoader->Load(fps, TextureLoader::RELOAD_ALWAYS);
+    config.engine.ProcessEvent().Attach(*fps);
+    HUD::Surface* fpshud = config.hud->CreateSurface(fps);
+    fpshud->SetPosition(HUD::Surface::LEFT, HUD::Surface::TOP);
+ 
+    ofstream dotfile("scene.dot", ofstream::out);
+    if (!dotfile.good()) {
+        logger.error << "Can not open 'scene.dot' for output"
+                     << logger.end;
+    } else {
+        DotVisitor dot;
+        dot.Write(*config.scene, &dotfile);
+        logger.info << "Saved physics graph to 'scene.dot'"
+                    << logger.end
+                    << "To create a SVG image run: "
+                    << "dot -Tsvg scene.dot > scene.svg"
+                    << logger.end;
+    }
 }
 
