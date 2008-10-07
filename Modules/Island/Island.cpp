@@ -66,8 +66,7 @@ Island::Island(HeightMap* heightMap) : heightMap(heightMap) {
 }
 
 Island::~Island() {
-    delete heightMap;
-    // @todo: delete trees
+    // No need to delete height-map and trees as they are sub-nodes.
 }
 
 void Island::Apply(IRenderingView* rv) {

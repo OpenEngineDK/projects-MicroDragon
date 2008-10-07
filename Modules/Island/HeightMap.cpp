@@ -50,10 +50,8 @@ void HeightMap::Apply(IRenderingView* rv) {
 }
 
 HeightMap::~HeightMap() {
-  //this->RemoveNode(geometry); //@todo: could this be made to work?
-  delete geometry;
-
-  delete normalArray;
+    // No need to delete `geometry' as it is a sub-node.
+    delete normalArray;
 }
 
 /**
