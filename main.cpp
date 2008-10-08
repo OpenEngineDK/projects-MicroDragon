@@ -56,7 +56,6 @@
 // Utilities and logger
 #include <Logging/Logger.h>
 #include <Logging/StreamLogger.h>
-#include <Utils/LayerStatistics.h> 
 #include <Utils/EventProfiler.h>
 #include <Utils/FPSSurface.h>
 #include <Scene/DotVisitor.h>
