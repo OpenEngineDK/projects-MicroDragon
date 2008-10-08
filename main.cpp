@@ -301,6 +301,7 @@ void SetupRendering(Config& config) {
 
     // Add rendering initialization tasks
     config.textureLoader = new TextureLoader(*config.renderer);
+    config.renderer->PreProcessEvent().Attach(*config.textureLoader);
 
     DisplayListTransformer* dlt = new DisplayListTransformer(rv);
     config.renderer->InitializeEvent().Attach(*dlt);
@@ -457,8 +458,10 @@ void SetupScene(Config& config) {
     config.renderer->SetSceneRoot(config.scene);
 
     //HUD
+    config.textureLoader->SetDefaultReloadPolicy(TextureLoader::RELOAD_QUEUED);
     DragonHUD* hud = new DragonHUD(*config.frame, *config.gamestate,
                                    *config.hud, *config.textureLoader);
+    config.textureLoader->SetDefaultReloadPolicy(TextureLoader::RELOAD_NEVER);
     //config.scene->AddNode(hud->GetLayerNode());
     config.engine.ProcessEvent().Attach(*hud);
 }
@@ -496,7 +499,7 @@ void SetupDebugging(Config& config) {
 
     // FPS layer with cairo
     FPSSurfacePtr fps = FPSSurface::Create();
-    config.textureLoader->Load(fps, TextureLoader::RELOAD_ALWAYS);
+    config.textureLoader->Load(fps, TextureLoader::RELOAD_QUEUED);
     config.engine.ProcessEvent().Attach(*fps);
     HUD::Surface* fpshud = config.hud->CreateSurface(fps);
     fpshud->SetPosition(HUD::Surface::LEFT, HUD::Surface::TOP);

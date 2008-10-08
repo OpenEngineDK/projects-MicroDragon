@@ -38,9 +38,9 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate, HUD& hud, TextureLoade
     textTool->SetColor(Vector<4,float>(0.5,0,0,0.9));
 
     timeTexture = CairoResource::Create(surfWidth,surfHeight);
-    texLoader.Load(timeTexture, TextureLoader::RELOAD_ALWAYS);
+    texLoader.Load(timeTexture);
     pointTexture = CairoResource::Create(surfWidth,surfHeight);
-    texLoader.Load(pointTexture, TextureLoader::RELOAD_ALWAYS);
+    texLoader.Load(pointTexture);
 
     HUD::Surface* timeSurface = hud.CreateSurface(timeTexture);
     timeSurface->SetPosition(HUD::Surface::RIGHT, 
