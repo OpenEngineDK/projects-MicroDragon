@@ -10,6 +10,7 @@
 #include "DragonHUD.h"
 
 #include <string>
+#include <Resources/ResourceManager.h>
 #include <Utils/Convert.h>
 
 using namespace OpenEngine::Resources;
@@ -57,6 +58,12 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate, HUD& hud, TextureLoade
     position = pointSurface->GetPosition();
     pointSurface->SetPosition( position[0]+offset,
                                position[1]-offset);
+
+    ITextureResourcePtr logo = 
+        ResourceManager<ITextureResource>::Create("HUD/oelogo.png");
+    logo->Load();
+    HUD::Surface* logoSurface = hud.CreateSurface(logo);
+    logoSurface->SetPosition(HUD::Surface::RIGHT, HUD::Surface::TOP);
 }
 
 DragonHUD::~DragonHUD() {}

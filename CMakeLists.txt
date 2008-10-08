@@ -61,7 +61,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_HUD
   Extensions_OBJResource
   Extensions_RAWResource
-  Extensions_TGAResource
+  Extensions_SDLImage
   Extensions_ScaledTextureResource
   Extensions_SDL
   Extensions_CairoResource

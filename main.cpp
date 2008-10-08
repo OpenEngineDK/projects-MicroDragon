@@ -41,7 +41,7 @@
 // OBJ and TGA plugins
 #include <Resources/RAWResource.h>
 #include <Resources/ITextureResource.h>
-#include <Resources/TGAResource.h>
+#include <Resources/SDLImage.h>
 #include <Resources/OBJResource.h>
 
 // Scene structures
@@ -237,7 +237,7 @@ void SetupResources(Config& config) {
 
     // load resource plug-ins
     ResourceManager<IModelResource>::AddPlugin(new OBJPlugin());
-    ResourceManager<ITextureResource>::AddPlugin(new TGAPlugin());
+    ResourceManager<ITextureResource>::AddPlugin(new SDLImagePlugin());
     ResourceManager<ISoundResource>::AddPlugin(new VorbisResourcePlugin());
 
     config.resourcesLoaded = true;
@@ -511,7 +511,7 @@ void SetupDebugging(Config& config) {
     } else {
         DotVisitor dot;
         dot.Write(*config.scene, &dotfile);
-        logger.info << "Saved physics graph to 'scene.dot'"
+        logger.info << "Saved scene graph to 'scene.dot'"
                     << logger.end
                     << "To create a SVG image run: "
                     << "dot -Tsvg scene.dot > scene.svg"
