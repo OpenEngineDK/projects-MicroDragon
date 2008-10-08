@@ -12,8 +12,10 @@ Target::Target(HeightMap& heightMap)
     : heightMap(heightMap) {
     target = Vector<3,float>(0,0,0);
     active = false;
-    rnode.SetTarget(this);
-    tnode.AddNode(&rnode);
+    rnode = new TargetRenderNode();
+    rnode->SetTarget(this);
+    tnode = new TransformationNode();
+    tnode->AddNode(rnode);
 }
 
 Target::~Target() {
@@ -21,12 +23,12 @@ Target::~Target() {
 }
 
 void Target::Handle(ProcessEventArg arg) {
-    target = heightMap.HeightAt(tnode.GetPosition());
-    tnode.SetPosition(target);
+    target = heightMap.HeightAt(tnode->GetPosition());
+    tnode->SetPosition(target);
     target[1] = max(target[1]+1.0f,1.0f);
 }
 
-TransformationNode& Target::GetTargetNode() {
+TransformationNode* Target::GetTargetNode() {
     return tnode;
 }
 
@@ -40,19 +42,17 @@ Vector<3,float> Target::getTarget(){
 
 void Target::setTarget(float x, float y, float z){
     setTarget(Vector<3,float>(x,y,z));
-    tnode.SetPosition(Vector<3,float>(x,y,z));
+    tnode->SetPosition(Vector<3,float>(x,y,z));
 }
 
 void Target::setTarget( Vector<3,float> v ){
     target = v;
-    tnode.SetPosition(v);
+    tnode->SetPosition(v);
 }
 
 void Target::printTarget() {
   logger.info << target << logger.end;
 }
-
-
 
 Target::TargetRenderNode::TargetRenderNode() {
 

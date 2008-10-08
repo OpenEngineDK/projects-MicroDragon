@@ -13,6 +13,8 @@
 
 // non reference or pointer member variables
 #include <Utils/Timer.h>
+#include <Math/RandomGenerator.h>
+#include <vector>
 
 #include <Sound/ISoundSystem.h>
 
@@ -29,7 +31,12 @@ namespace OpenEngine {
     namespace Renderers {
         class IRenderingView;
     }
+    namespace Sound {
+        class IMonoSound;
+    }
 }
+
+using namespace OpenEngine;
 
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::InitializeEventArg;
@@ -41,6 +48,7 @@ using OpenEngine::Renderers::IRenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Utils::Timer;
 using OpenEngine::Sound::ISoundSystem;
+using OpenEngine::Math::RandomGenerator;
 
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
@@ -82,6 +90,8 @@ private:
     OscSurface* oscsurface;
 
     ISoundSystem& soundsystem;
+    std::vector<Sound::IMonoSound*> screams;
+    RandomGenerator randGen;
 
     Timer timer;
 
@@ -91,6 +101,8 @@ private:
 
     bool disableLogic;
     int renderState, numberOfRenderStates;
+
+    void AddSoundToList(std::string soundfile);
 };
 
 #endif

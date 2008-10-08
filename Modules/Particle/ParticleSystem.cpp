@@ -131,7 +131,8 @@ void ParticleSystem::Handle(ProcessEventArg arg) {
         if (!(*i)->isDead()) { 
 			//particles.erase(i); --i; 
 			tmpParticles.push_back(*i);
-		}
+		} else
+			delete *i;
     }
 	particles.clear();
 	particles.swap(tmpParticles);

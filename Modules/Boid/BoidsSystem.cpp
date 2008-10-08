@@ -9,6 +9,10 @@
 #include <Math/Math.h>
 #include <Logging/Logger.h>
 
+#include <Resources/ResourceManager.h>
+#include <Resources/ISoundResource.h>
+#include <Sound/IMonoSound.h>
+
 using OpenEngine::Math::PI;
 
 BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem):
@@ -22,9 +26,30 @@ BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSys
     disableLogic = false;
     aliveBoids = numberOfBoids;
     particlesystem = NULL;
+
+    randGen.SeedWithTime();
+    AddSoundToList("SoundFX/vester-aargh.ogg");
+    AddSoundToList("SoundFX/cpvc-AARGH.ogg");
+    AddSoundToList("SoundFX/ian-aargh.ogg");
+    AddSoundToList("SoundFX/jakob-aargh.ogg");
+    AddSoundToList("SoundFX/salomon-aargh.ogg");
+    AddSoundToList("SoundFX/ptx-jargh.ogg");
+}
+
+void BoidsSystem::AddSoundToList(std::string soundfile) {
+    Resources::ISoundResourcePtr screamres =
+        Resources::ResourceManager<Resources::ISoundResource>
+        ::Create(soundfile);
+    Sound::IMonoSound* screamsound = (Sound::IMonoSound*) //@todo remove cast
+        soundsystem.CreateSound(screamres);
+    screams.push_back(screamsound);
 }
 
 BoidsSystem::~BoidsSystem() {
+    std::vector<Sound::IMonoSound*>::iterator itr;
+    for (itr=screams.begin(); itr!=screams.end(); itr++)
+        delete *itr;
+    screams.clear();
 }
 
 void BoidsSystem::Handle(InitializeEventArg arg) {
@@ -41,18 +66,20 @@ void BoidsSystem::ResetBoids() {
     for (int i=0; i<gridSize; i++) {
         for (int j=0; j<gridSize; j++) {
             float val = (i+gridSize*j)*1.0/numberOfBoids;
+            unsigned int index = randGen.UniformInt(0,screams.size()-1);
+
             boids[i*gridSize+j] =
-	      new Boid(heightMap,oscsurface,this,
-		       Vector<3,float>(i*2-(gridSize-1),0,
-				       j*2-(gridSize-1)),
-		       Vector<3,float>(0,0,1),
-		       Vector<3,float>(0,0,0),
+                new Boid(heightMap,oscsurface,this,
+                         Vector<3,float>(i*2-(gridSize-1),0,
+                                         j*2-(gridSize-1)),
+                         Vector<3,float>(0,0,1),
+                         Vector<3,float>(0,0,0),
 		       Vector<3,float>(sin(2*PI*(0.0/3+val))*0.5+0.5,
-				       sin(2*PI*(1.0/3+val))*0.5+0.5, 
-				       sin(2*PI*(2.0/3+val))*0.5+0.5)
-                   .GetNormalize(), new Voice(soundsystem));
-        }
+                               sin(2*PI*(1.0/3+val))*0.5+0.5, 
+                               sin(2*PI*(2.0/3+val))*0.5+0.5)
+                         .GetNormalize(), *screams.at(index));
     }
+}
 }
 
 void BoidsSystem::Apply(IRenderingView* rv) {

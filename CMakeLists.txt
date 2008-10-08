@@ -24,7 +24,6 @@ SET( PROJECT_SOURCES
 
   Modules/Boid/Boid.cpp
   Modules/Boid/BoidsSystem.cpp
-  Modules/Boid/Voice.cpp
 
   Modules/Particle/ParticleSystem.cpp
   Modules/Particle/Particle.cpp

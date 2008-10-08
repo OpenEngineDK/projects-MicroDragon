@@ -28,6 +28,7 @@ using namespace OpenEngine::Utils;
 using namespace OpenEngine::Display;
 
 using namespace OpenEngine;
+using namespace OpenEngine::Resources;
 
 class DragonHUD : public IListener<ProcessEventArg> {
 private:

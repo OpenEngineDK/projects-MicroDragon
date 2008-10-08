@@ -4,8 +4,6 @@
 //include templated classes only
 #include <Math/Vector.h>
 
-#include "Voice.h"
-
 using OpenEngine::Math::Vector;
 
 class BoidsSystem;
@@ -13,11 +11,19 @@ class HeightMap;
 class OscSurface;
 class ParticleSystem;
 
+namespace OpenEngine {
+    namespace Sound {
+        class IMonoSound;
+    }
+}
+
+using namespace OpenEngine::Sound;
+
 class Boid {
 public:
     Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssystem, 
          Vector<3,float> position, Vector<3,float> forward,
-         Vector<3,float> velocity, Vector<3,float> color, Voice* voice);
+         Vector<3,float> velocity, Vector<3,float> color, IMonoSound& voice);
     ~Boid();
     void addDesiredVelocity( Vector<3,float> steering, double weight );
     void addSteering( Vector<3,float> steering, double weight );
@@ -43,7 +49,7 @@ private:
     Vector<3,float> color;
     bool airborn;
 
-    Voice* voice;
+    IMonoSound& voice;
 
     void draw2(  bool shadow );
 

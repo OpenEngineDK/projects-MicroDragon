@@ -27,6 +27,7 @@ private:
         Target* target;
     public:
         TargetRenderNode();
+        virtual ~TargetRenderNode() {}
         void SetTarget(Target* target);
         virtual void Apply(IRenderingView* rv);
     };
@@ -34,17 +35,17 @@ private:
     bool active;
     Vector<3,float> target;
     HeightMap& heightMap;
-    TargetRenderNode rnode;
-    TransformationNode tnode;
+    TargetRenderNode* rnode;
+    TransformationNode* tnode;
 
 public:
     Target(HeightMap& heightMap);
-    ~Target();
+    virtual ~Target();
 
     void SetActive(bool active);
     void Handle(ProcessEventArg arg);
     
-    TransformationNode& GetTargetNode();
+    TransformationNode* GetTargetNode();
   
     Vector<3,float> getTarget();
     void setTarget(float x, float y, float z);

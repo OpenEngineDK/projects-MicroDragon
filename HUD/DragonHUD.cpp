@@ -32,9 +32,10 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate, HUD& hud, TextureLoade
     surfHeight = two;
 
     textTool = new CairoTextTool();
-    textTool->SetFont("Monaco", textsize);
+    textTool->SetFontName("Monaco");
+    textTool->SetFontSize(textsize);
     textTool->Shadows(true);
-    textTool->SetColor(Vector<4,float>(1,0,0,0.8));
+    textTool->SetColor(Vector<4,float>(0.5,0,0,0.9));
 
     timeTexture = CairoResource::Create(surfWidth,surfHeight);
     texLoader.Load(timeTexture, TextureLoader::RELOAD_ALWAYS);

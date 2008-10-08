@@ -198,26 +198,34 @@ int main(int argc, char** argv) {
     // Print out any profiling info
     config.prof.DumpInfo();
 
-    // Return when the engine stops.
+    delete config.scene;
     delete engine;
 
+    // Return when the engine stops.
     return EXIT_SUCCESS;
 }
 
 void SetupSound(Config& config) {
     config.soundsystem = new OpenALSoundSystem(config.scene,config.camera);
-    config.engine.ProcessEvent().Attach(*config.soundsystem);
-    config.soundsystem->SetMasterGain(1.0);
     config.musicplayer = new MusicPlayer(config.camera,config.soundsystem);
-    config.musicplayer->AddSound("Music/beak.ogg");
-    config.musicplayer->AddSound("Music/defibrilation.ogg");
-    config.musicplayer->AddSound("Music/glow.ogg");
-    config.musicplayer->AddSound("Music/trouble.ogg");
-    config.musicplayer->SetGain(0.3);
-    config.musicplayer->Shuffle(true);
-    config.musicplayer->Next();
-    config.musicplayer->Play();
-    config.engine.ProcessEvent().Attach(*config.musicplayer);
+
+    bool enableSound = true;
+    if (enableSound) {
+        // setup the sound system
+        config.soundsystem->SetMasterGain(1.0);
+        config.engine.ProcessEvent().Attach(*config.soundsystem);
+
+        // setup the music player
+        config.musicplayer->AddSound("Music/beak.ogg");
+        config.musicplayer->AddSound("Music/defibrilation.ogg");
+        config.musicplayer->AddSound("Music/glow.ogg");
+        config.musicplayer->AddSound("Music/trouble.ogg");
+        config.musicplayer->SetGain(0.3);
+        config.musicplayer->Shuffle(true);
+        config.musicplayer->Next();
+        config.musicplayer->Play();
+        config.engine.ProcessEvent().Attach(*config.musicplayer);
+    }
 }
 
 void SetupResources(Config& config) {
@@ -384,7 +392,7 @@ void SetupScene(Config& config) {
     hMap->Unload();
 
     Target* target = config.target = new Target(*heightMap);
-    TransformationNode* targetNode = &target->GetTargetNode();
+    TransformationNode* targetNode = target->GetTargetNode();
     config.scene->AddNode(targetNode);
     config.engine.ProcessEvent().Attach(*target);
 
@@ -400,12 +408,14 @@ void SetupScene(Config& config) {
     config.engine.DeinitializeEvent().Attach(*oscs);
 
     //@todo: Boids have transparent shadows
-    BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem);
-    //tpNode->AddNode(boids); // moved down!
+    BoidsSystem* boids = config.boids = 
+        new BoidsSystem(heightMap, oscs,*config.soundsystem);
     config.engine.InitializeEvent().Attach(*boids);
     timeModifier->ProcessEvent().Attach(*boids);
 
-    ParticleSystem* pat = config.partsys = new ParticleSystem(heightMap,config.camera,boids, *config.textureLoader);
+    ParticleSystem* pat = config.partsys = 
+        new ParticleSystem(heightMap,config.camera,boids,
+                           *config.textureLoader);
 
     tpNode->AddNode(pat);
     tpNode->AddNode(boids);
