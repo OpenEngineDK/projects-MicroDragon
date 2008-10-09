@@ -11,7 +11,6 @@ SET( PROJECT_SOURCES
   GameState.cpp
 
   Common/utilities.cpp
-  Common/OpenGLUtil.cpp
   Common/FaceListUtil.cpp
   Common/Follower.cpp
 
@@ -68,4 +67,5 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_VorbisResource
   Extensions_OpenALSoundSystem
   Extensions_MusicPlayer
+  Extensions_GLUT
 )

@@ -9,15 +9,15 @@
 #include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
 #include "../Particle/ParticleSystem.h"
-#include "../../Common/OpenGLUtil.h"
 #include "../../Common/VectorExt.h"
 #include "../../Common/utilities.h"
 
-// OpenEngine Core
-#include <Math/Math.h>
 #include <math.h>
-#include <Logging/Logger.h>
 
+// OpenEngine Core
+#include <Meta/GLUT.h>
+#include <Math/Math.h>
+#include <Logging/Logger.h>
 #include <Sound/IMonoSound.h>
 
 using OpenEngine::Math::PI;
@@ -357,13 +357,13 @@ void Boid::draw2( bool shadow ) {
     if (!shadow) glColor3f( 0.4*l, 0.3*l, 0.2*l );
     glTranslatef( 0.0, -0.2, 0.0 );
     glScalef( 0.2, 0.6, 0.2 );
-    OpenGLUtil::GLSolidCube( 1.0 );
+    glutSolidCube( 1.0 );
     glPopMatrix();
     glPushMatrix(); // Foot
     if (!shadow) glColor3f( 0.2*l, 0.2*l, 0.2*l );  
     glTranslatef( 0.0, -0.6, 0.1 );
     glScalef( 0.2, 0.2, 0.4 );
-    OpenGLUtil::GLSolidCube( 1.0 );
+    glutSolidCube( 1.0 );
     glPopMatrix();
     glPopMatrix();
     glPushMatrix(); // Leg
@@ -373,13 +373,13 @@ void Boid::draw2( bool shadow ) {
     if (!shadow) glColor3f( 0.4*l, 0.3*l, 0.2*l );
     glTranslatef( 0.0, -0.2, 0.0 );
     glScalef( 0.2, 0.6, 0.2 );
-    OpenGLUtil::GLSolidCube( 1.0 );
+    glutSolidCube( 1.0 );
     glPopMatrix();
     glPushMatrix(); // Foot
     if (!shadow) glColor3f( 0.2*l, 0.2*l, 0.2*l );
     glTranslatef( 0.0, -0.6, 0.1 );
     glScalef( 0.2, 0.2, 0.4 );
-    OpenGLUtil::GLSolidCube( 1.0 );
+    glutSolidCube( 1.0 );
     glPopMatrix();
     glPopMatrix();
     glPushMatrix(); // Arm
@@ -389,12 +389,12 @@ void Boid::draw2( bool shadow ) {
     if (!shadow) glColor3f( shirtColor[0]*l, shirtColor[1]*l, shirtColor[2]*l );
     glTranslatef( 0.0, -0.25, 0.0 );
     glScalef( 0.2, 0.6, 0.2 );
-    OpenGLUtil::GLSolidCube( 1.0 );
+    glutSolidCube( 1.0 );
     glPopMatrix();
     glPushMatrix(); // Hand
     if (!shadow) glColor3f( 0.7*l, 0.6*l, 0.5*l );
     glTranslatef( 0.0, -0.55, 0.0 );
-    OpenGLUtil::GLSolidSphere( 0.1, 8, 4 );
+    glutSolidSphere( 0.1, 8, 4 );
     glPopMatrix();
     glPopMatrix();
     glPushMatrix(); // Arm
@@ -404,25 +404,25 @@ void Boid::draw2( bool shadow ) {
     if (!shadow) glColor3f( shirtColor[0]*l, shirtColor[1]*l, shirtColor[2]*l );
     glTranslatef( 0.0, -0.25, 0.0 );
     glScalef( 0.2, 0.6, 0.2 );
-    OpenGLUtil::GLSolidCube( 1.0 );
+    glutSolidCube( 1.0 );
     glPopMatrix();
     glPushMatrix(); // Hand
     if (!shadow) glColor3f( 0.7*l, 0.6*l, 0.5*l );
     glTranslatef( 0.0, -0.55, 0.0 );
-    OpenGLUtil::GLSolidSphere( 0.1, 8, 4 );
+    glutSolidSphere( 0.1, 8, 4 );
     glPopMatrix();
     glPopMatrix();
     glPushMatrix(); // Body
     if (!shadow) glColor3f( shirtColor[0]*l, shirtColor[1]*l, shirtColor[2]*l );
     glTranslatef( 0.0, 1.05, 0.0 );
     glScalef( 0.5, 0.7, 0.3 );
-    OpenGLUtil::GLSolidCube( 1.0 );
+    glutSolidCube( 1.0 );
     glPopMatrix();
     glPushMatrix(); // Head
     if (!shadow) glColor3f( 0.7*l, 0.6*l, 0.5*l );
     glTranslatef( 0.0, 1.6, 0.0 );
     glScalef( 0.4, 0.4, 0.4 );
-    OpenGLUtil::GLSolidSphere( 0.5, 12, 6 );
+    glutSolidSphere( 0.5, 12, 6 );
     glPopMatrix();
   
     glPopMatrix();

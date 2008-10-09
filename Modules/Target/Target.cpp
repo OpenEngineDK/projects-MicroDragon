@@ -1,9 +1,9 @@
 #include "Target.h"
 
-#include "../../Common/OpenGLUtil.h"
 #include "../Island/HeightMap.h"
 
 #include <Meta/OpenGL.h>
+#include <Meta/GLUT.h>
 #include <Logging/Logger.h>
 
 using namespace std;
@@ -64,10 +64,10 @@ void Target::TargetRenderNode::Apply(IRenderingView* rv) {
     // Draw target
     if (target->active) {
         glColor3f( 0.8, 0.0, 0.0 );
-        OpenGLUtil::GLSolidCube( 0.5 );
+        glutSolidCube( 0.5 );
     }
     else {
         glColor3f( 0.0, 0.8, 0.0 );
-        OpenGLUtil::GLSolidCube( 0.4 );
+        glutSolidCube( 0.4 );
     }
 }

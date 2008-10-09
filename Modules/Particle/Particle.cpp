@@ -1,9 +1,9 @@
 #include "Particle.h"
 
 #include "../Island/HeightMap.h"
-#include "../../Common/OpenGLUtil.h"
 #include "../../Common/VectorExt.h"
 
+#include <Meta/OpenGL.h>
 #include <Math/Math.h>
 #include <Math/Matrix.h>
 #include <Math/Quaternion.h>

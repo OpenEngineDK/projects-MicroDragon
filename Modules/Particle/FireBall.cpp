@@ -3,12 +3,12 @@
 #include "ParticleSystem.h"
 #include "ParticleSystemEvents.h"
 
-#include "../../Common/OpenGLUtil.h"
 #include "../../Common/VectorExt.h"
 
 #include "../Island/HeightMap.h"
 #include "../Boid/BoidsSystem.h"
 
+#include <Meta/OpenGL.h>
 #include <Math/Math.h>
 #include <Math/Matrix.h>
 #include <Math/Quaternion.h>

@@ -68,6 +68,8 @@
 #include <Sound/MusicPlayer.h>
 #include <Resources/VorbisResource.h>
 
+#include <Meta/GLUT.h>
+
 // from project
 #include "LightFader.h"
 #include "KeyHandler.h"
@@ -160,6 +162,7 @@ void SetupDebugging(Config&);
 void SetupSound(Config&);
 
 int main(int argc, char** argv) {
+    InitializeGlut(&argc, argv);
 
     // Setup logging facilities.
     Logger::AddLogger(new StreamLogger(&std::cout));
