@@ -32,18 +32,22 @@ using std::string;
 class HeightMap : public IRenderNode {
 private:
     float scale;
+    unsigned int height, width;
+    unsigned char* data;
+
     Vector<3,float> translate;
     float HEIGHT_RATIO; /* Ratio That The Y Is Scaled According To The X And Z */
     GeometryNode* geometry;
     ITextureResourcePtr scaledHeightMap;
     Vector<3,float>* normalArray; /* Holds The Normal Map Data */
 
-    inline Vector<3,float> Point(int X, int Z);
-    inline Vector<3,float> Normal(int X, int Z);
-    inline Vector<3,float> Color(int X, int Z);
-    GeometryNode* ConstructGeometry(ITextureResourcePtr texture);
-    void CalculateNormalArray();
-    inline float Height(int X, int Z);
+    inline int Clamp(int x, int m);
+    inline Vector<3,float> Point(int x, int z);
+    inline Vector<3,float> Normal(int x, int z);
+    inline Vector<3,float> Color(int x, int z);
+    inline float Height(int x, int z);
+    inline GeometryNode* ConstructGeometry(ITextureResourcePtr texture);
+    inline void CalculateNormalArray();
 
 public:
     HeightMap(ITextureResourcePtr heightMap, ITextureResourcePtr texture,

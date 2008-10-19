@@ -25,14 +25,9 @@ OscSurface::OscSurface(HeightMap* heightMap, Vector<4,float> color) : heightMap(
     translate = Vector<3,float>(-60,0,-60);
 
     runningTime = 0;
-}
 
-OscSurface::~OscSurface() {
-}
-
-void OscSurface::Handle(InitializeEventArg arg) {
+    // initialize the surface
     float *zInit;
-
     z_norm =  new float[M*N*3];
 
     zInit = new float[M*N];
@@ -60,10 +55,21 @@ void OscSurface::Handle(InitializeEventArg arg) {
 
     t = 0;
 
-    free( zInit );
+    delete[] zInit;
 }
 
-void OscSurface::OnLogicEnter(float timeStep) {
+OscSurface::~OscSurface() {
+    delete[] z_norm;
+    delete[] zOld;
+    delete[] zCur;
+    delete[] zNew;
+}
+
+void OscSurface::Handle(ProcessEventArg arg) {
+    unsigned int dt = arg.approx;
+    float deltaTime = ((float)dt)/1000.0;
+    float timeStep = deltaTime/1000.0;
+
     float nzx, nzy, hx, hy;
 
     runningTime += timeStep*0.2;
@@ -71,7 +77,7 @@ void OscSurface::OnLogicEnter(float timeStep) {
     hx = 1.0/(M-1);
     hy = aspect/(N-1);
 
-    preFrame( runningTime );
+    PreFrame( runningTime );
 
     // approximate the normal in all grid points:
     for (int i=0; i<M; i++)
@@ -96,7 +102,7 @@ void OscSurface::OnLogicEnter(float timeStep) {
         }
 }
 
-void OscSurface::preFrame( double time ) {
+void OscSurface::PreFrame( double time ) {
     long    steps;
     float   *zDummy;
 
@@ -106,22 +112,23 @@ void OscSurface::preFrame( double time ) {
     for (int st = 0; st<steps; st++) {
         for (int i=1; i<(M-1); i++)
             for (int j=1; j<(N-1); j++) {
-                zNew[i*N+j] =
+                // Block waves where there is solid land
+	        if (heightMap->HeightAt(i*scale/(M-1)+translate[0],j*scale/(N-1)+translate[2])>0) {
+                    zNew[i*N+j] = 0;
+		} else {
+		  zNew[i*N+j] =
                     taux2 * ( zCur[(i+1)*N+j  ] + zCur[(i-1)*N+j  ] )
                     + tauy2 * ( zCur[ i   *N+j+1] + zCur[ i   *N+j-1] )
                     + tauxy2*zCur[i*N+j]  
                     - zOld[i*N+j];
-
-                // Block waves where there is solid land
-                if (heightMap->HeightAt(i*scale/(M-1)+translate[0],j*scale/(N-1)+translate[2])>0)
-                    zNew[i*N+j] = 0;
-            }
-
-        for (int i=1; i<(M-1); i++)
-            for (int j=1; j<(N-1); j++) {
+		  
+		  // damping
+		  zNew[i*N+j] *= 0.998;
+		}
+		//damping
                 zCur[i*N+j] *= 0.998;
-                zNew[i*N+j] *= 0.998;
             }
+
 
         zDummy = zOld;
         zOld   = zCur;
@@ -142,14 +149,22 @@ void OscSurface::createRipple(float posX, float posZ, float width, float height)
     float hx = 1.0/(M-1);  float hy = aspect/(N-1);
     for ( int i=1; i<(M-1); i++ )
         for ( int j=1; j<(N-1); j++ )
-            zCur[i*N+j] += gaussPeak(
+            zCur[i*N+j] += GaussPeak(
                                      (posX-translate[0])/scale,
                                      (posZ-translate[2])/scale,
                                      width/scale, width/scale, i*hx, j*hy
                                      )*height/scale;
 }
 
-void OscSurface::OnRenderEnter(float timeSte) {
+float OscSurface::GaussPeak(float my_x, float my_y,
+                  float sigma_x, float sigma_y,
+                  float x, float y) {
+    float xn = (x-my_x)/sigma_x;
+    float yn = (y-my_y)/sigma_y;
+    return ( exp( -(xn*xn + yn*yn) ) );
+}
+
+void OscSurface::Apply(IRenderingView* rv) {
     float hx = 1.0/(M-1);
     float hz = aspect/(N-1);
 
@@ -189,27 +204,9 @@ void OscSurface::OnRenderEnter(float timeSte) {
         }
 
     glEnd();
-}
 
-void OscSurface::OnRenderLeave(float timeSte) {
-    glPopMatrix();
-}
 
-void OscSurface::Handle(DeinitializeEventArg arg) {
-    delete[] z_norm;
-    delete[] zOld;
-    delete[] zCur;
-    delete[] zNew;
-}
-
-void OscSurface::Handle(ProcessEventArg arg) {
-    unsigned int dt = arg.approx;
-    float deltaTime = ((float)dt)/1000.0;
-    OnLogicEnter(deltaTime/1000.0);
-}
-
-void OscSurface::Apply(IRenderingView* rv) {
-    OnRenderEnter(0.0);
     VisitSubNodes(*rv);
-    OnRenderLeave(0.0);
+
+    glPopMatrix();
 }

@@ -5,7 +5,7 @@
 #include <Math/Vector.h>
 
 // inherits from
-#include <Core/IModule.h>
+#include <Core/IListener.h>
 #include <Core/EngineEvents.h>
 #include <Renderers/IRenderNode.h>
 
@@ -14,8 +14,6 @@
 class HeightMap;
 namespace OpenEngine {
     namespace Core {
-      class DeinitializeEventArg;
-      class InitializeEventArg;
       class ProcessEventArg;
     }
     namespace Renderers {
@@ -23,7 +21,7 @@ namespace OpenEngine {
     }
 }
 
-using OpenEngine::Core::IModule;
+using OpenEngine::Core::IListener;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::DeinitializeEventArg;
@@ -32,7 +30,7 @@ using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Math::Vector;
 using OpenEngine::Utils::Timer;
 
-class OscSurface : public IModule, public IRenderNode {
+class OscSurface : public IListener<ProcessEventArg>, public IRenderNode {
 private:
   HeightMap* heightMap;
 
@@ -54,22 +52,20 @@ private:
   Timer timer;
   Vector<4,float> color;
 
+  inline float GaussPeak(float my_x, float my_y,
+			 float sigma_x, float sigma_y,
+			 float x, float y);
+
+  inline void PreFrame(double time);
+
 public:
   OscSurface(HeightMap* heightMap, Vector<4,float> color);
-  ~OscSurface();
+  virtual ~OscSurface();
 
-  void Handle(InitializeEventArg arg);
   void Handle(ProcessEventArg arg);
-  void Handle(DeinitializeEventArg arg);
-
   virtual void Apply(IRenderingView* rv);
-  
-  void OnLogicEnter(float timeStep);
-  void OnRenderEnter(float timeStep);
-  void OnRenderLeave(float timeStep);
 
-  void preFrame(double time);
-  void createRipple(float x, float z, float width, float height);
+  void createRipple(float x, float z, float width, float height);  
 };
 
 #endif

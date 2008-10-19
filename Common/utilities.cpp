@@ -107,14 +107,3 @@ void draw_pyramid() {
   */
 //}
 
-float  gaussPeak( float my_x, float my_y,
-                  float sigma_x, float sigma_y,
-                  float x, float y )
-{
-    float xn, yn;
-
-    xn = (x-my_x)/sigma_x;
-    yn = (y-my_y)/sigma_y;
-
-    return ( exp( -(xn*xn + yn*yn ) ) );
-}

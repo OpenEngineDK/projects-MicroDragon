@@ -197,11 +197,21 @@ int main(int argc, char** argv) {
     // Start up the engine.
     engine->Start();
 
+#if OE_DEBUG
     // Print out any profiling info
     config.prof.DumpInfo();
+#endif
+
+    // release event system
+    // post condition: scene and modules are not processed
+    delete engine;
+
+    // destroy all modules
+    // post condition: no one has refs to the scene
+    //delete config.boids; //delete sounds
+    delete config.soundsystem; // close soundsystem
 
     delete config.scene;
-    delete engine;
 
     // Return when the engine stops.
     return EXIT_SUCCESS;
@@ -405,10 +415,7 @@ void SetupScene(Config& config) {
     Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
     //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
     OscSurface* oscs = config.oscs = new OscSurface(heightMap,oscsColor);
-    //tpNode->AddNode(oscs); // Moved down!
-    config.engine.InitializeEvent().Attach(*oscs);
     timeModifier->ProcessEvent().Attach(*oscs);
-    config.engine.DeinitializeEvent().Attach(*oscs);
 
     //@todo: Boids have transparent shadows
     BoidsSystem* boids = config.boids = 
@@ -469,6 +476,7 @@ void SetupScene(Config& config) {
 }
 
 void SetupDebugging(Config& config) {
+#if OE_DEBUG
     // main engine events
     config.prof.Profile<ProcessEventArg>
         ("Input System", config.engine.ProcessEvent(), *config.mouse);
@@ -499,13 +507,6 @@ void SetupDebugging(Config& config) {
         config.scene->AddNode(config.frustum->GetFrustumNode());
     }
 
-    // FPS layer with cairo
-    FPSSurfacePtr fps = FPSSurface::Create();
-    config.textureLoader->Load(fps, TextureLoader::RELOAD_QUEUED);
-    config.engine.ProcessEvent().Attach(*fps);
-    HUD::Surface* fpshud = config.hud->CreateSurface(fps);
-    fpshud->SetPosition(HUD::Surface::LEFT, HUD::Surface::TOP);
- 
     ofstream dotfile("scene.dot", ofstream::out);
     if (!dotfile.good()) {
         logger.error << "Can not open 'scene.dot' for output"
@@ -519,5 +520,13 @@ void SetupDebugging(Config& config) {
                     << "dot -Tsvg scene.dot > scene.svg"
                     << logger.end;
     }
+#endif
+
+    // FPS layer with cairo
+    FPSSurfacePtr fps = FPSSurface::Create();
+    config.textureLoader->Load(fps, TextureLoader::RELOAD_QUEUED);
+    config.engine.ProcessEvent().Attach(*fps);
+    HUD::Surface* fpshud = config.hud->CreateSurface(fps);
+    fpshud->SetPosition(HUD::Surface::LEFT, HUD::Surface::TOP); 
 }
 

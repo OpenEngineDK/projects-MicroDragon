@@ -30,7 +30,6 @@ Island::Island(HeightMap* heightMap) : heightMap(heightMap) {
     this->AddNode(heightMap);
 
     trees = new TransformationNode();
-    this->AddNode(trees);
 
     //initialize trees position
     numberOfTrees = 0;

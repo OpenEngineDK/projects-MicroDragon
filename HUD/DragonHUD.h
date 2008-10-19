@@ -35,10 +35,12 @@ private:
     CairoTextTool* textTool;
     CairoResourcePtr timeTexture;
     CairoResourcePtr pointTexture;
+    HUD::Surface* logoSurface, *timeSurface, *pointSurface;
     unsigned int frameWidth, frameHeight;
     GameState& gamestate;
     Display::HUD& hud;
     TextureLoader& texLoader;
+    unsigned int timeleft, score;
 public:
     DragonHUD(IFrame& frame, GameState& gamestate,
               HUD& hud, TextureLoader& texLoader);

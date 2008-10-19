@@ -16,6 +16,10 @@ using OpenEngine::Math::PI;
 using std::min;
 using std::max;
 
+int HeightMap::Clamp(int x, int m) {
+    return max(0,min(m,x));
+}
+
 HeightMap::HeightMap(ITextureResourcePtr heightMap,
 		     ITextureResourcePtr texture,
                      float scale, float heightRatio, int stepSize) : scale(scale) {
@@ -31,13 +35,16 @@ HeightMap::HeightMap(ITextureResourcePtr heightMap,
     scaledHeightMap = ITextureResourcePtr
         ( new ScaledTextureResource(heightMap, stepSize) );
     scaledHeightMap->Load();
+    width = scaledHeightMap->GetWidth();
+    height = scaledHeightMap->GetHeight();
+    data = scaledHeightMap->GetData();
 
     // @todo: calculate this, and move it to island
     translate = Vector<3,float>(-150,-3.75,-150);
 
     // calculate the normalArray
     normalArray =
-        new Vector<3,float>[scaledHeightMap->GetWidth()*scaledHeightMap->GetHeight()];
+        new Vector<3,float>[width*height];
     CalculateNormalArray();
 
     // calculate and add geometry
@@ -51,7 +58,7 @@ void HeightMap::Apply(IRenderingView* rv) {
 
 HeightMap::~HeightMap() {
     // No need to delete `geometry' as it is a sub-node.
-    delete normalArray;
+    delete[] normalArray;
 }
 
 /**
@@ -65,8 +72,8 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
     Vector<3,float> tex[4];
     
     FaceSet* faces = new FaceSet();
-    for ( unsigned int X = 0; X < scaledHeightMap->GetWidth()-1; X++ ) {
-        for ( unsigned int Z = 0; Z < scaledHeightMap->GetHeight()-1; Z++ ) {
+    for ( unsigned int X = 0; X < width-1; X++ ) {
+        for ( unsigned int Z = 0; Z < height-1; Z++ ) {
             for (int i=0; i<4; i++) {
                 if (i==0) { x = X;   z = Z;   }
                 else if (i==1) { x = X;   z = Z+1; }
@@ -76,8 +83,8 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
                 point[i] = Point(x,z);
                 normal[i] = Normal(x,z);
                 color[i] = Color(x,z);
-                tex[i][0] = z*(1.0/(float)scaledHeightMap->GetHeight());
-                tex[i][1] = x*(1.0/(float)scaledHeightMap->GetWidth());
+                tex[i][0] = z*(1.0/(float)height);
+                tex[i][1] = x*(1.0/(float)width);
             }
             
             Vector<3,float> diagonalCross = (point[0]-point[2]) % (point[1]-point[3]);
@@ -116,9 +123,9 @@ GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
 }
 
 void HeightMap::CalculateNormalArray() {
-    for ( unsigned int X = 0; X < scaledHeightMap->GetWidth(); X++ )
-        for ( unsigned int Y = 0; Y < scaledHeightMap->GetHeight(); Y++ ) {
-            normalArray[X+(Y*scaledHeightMap->GetWidth())] = 
+    for (unsigned int X = 0; X < width; X++)
+        for ( unsigned int Y = 0; Y < height; Y++ ) {
+            normalArray[X+(Y*width)] = 
 	      (Point(X+1,Y) - Point(X-1,Y))
                 % (Point(X,Y+1) - Point(X,Y-1)).GetNormalize()*-1;
         }
@@ -128,38 +135,30 @@ void HeightMap::CalculateNormalArray() {
  * This Returns The Height From A Height Map Index
  */
 float HeightMap::Height(int x, int z) {
-    unsigned char* heightArray = scaledHeightMap->GetData();
-    //@todo: use unsigned
-    int width = scaledHeightMap->GetWidth();
-    int height = scaledHeightMap->GetHeight();
-
-    x = max(0,min(width-1,x)); // Error Check Our x Value
-    z = max(0,min(height-1,z)); // Error Check Our y Value
+    x = Clamp(width-1,x); // Error Check Our x Value
+    z = Clamp(height-1,z); // Error Check Our y Value
 
     //if( !((0 < x < width) && (0 < z < height)) ) return 0.0f;
 
     // Index Into Our Height Array And Return The Height
-    return heightArray[x + (z * scaledHeightMap->GetWidth())]/255.0f;
+    return data[x + (z * width)]/255.0f;
 }
 
 /**
  * This Returns Points On The Surface
  */
-Vector<3,float> HeightMap::Point(int X, int Z) {
-    //@todo: define a clamp macro or function to do the min max thing
-    int width = scaledHeightMap->GetWidth();
-    int x = max(0,min(width-1,X)); // Error Check Our x Value
-    int height = scaledHeightMap->GetHeight();
-    int z = max(0,min(height-1,Z)); // Error Check Our y Value
+Vector<3,float> HeightMap::Point(int x, int z) {
+  x = Clamp(width-1,x); // Error Check Our x Value
+  z = Clamp(height-1,z); // Error Check Our y Value
 
-    return Vector<3,float>(x*1.0/(scaledHeightMap->GetWidth()-1),
+    return Vector<3,float>(x*1.0/(width-1),
                            Height(x,z)*HEIGHT_RATIO,
-                           z*1.0/(scaledHeightMap->GetHeight()-1))*scale+translate;
+                           z*1.0/(height-1))*scale+translate;
 }
 
 float HeightMap::HeightAt(float x, float z) {
-    float floatX = (x-translate[0])/scale*(scaledHeightMap->GetWidth()-1);
-    float floatZ = (z-translate[2])/scale*(scaledHeightMap->GetHeight()-1);
+    float floatX = (x-translate[0])/scale*(width-1);
+    float floatZ = (z-translate[2])/scale*(height-1);
 
     float xDir = fmod(floatX,1.0f);
     float zDir = fmod(floatZ,1.0f);
@@ -183,8 +182,8 @@ Vector<3,float> HeightMap::HeightAt(Vector<3,float> p) {
 }
 
 Vector<3,float> HeightMap::NormalAt(Vector<3,float> p) {
-    float floatX = (p[0]-translate[0])/scale*(scaledHeightMap->GetWidth()-1);
-    float floatZ = (p[2]-translate[2])/scale*(scaledHeightMap->GetHeight()-1);
+    float floatX = (p[0]-translate[0])/scale*(width-1);
+    float floatZ = (p[2]-translate[2])/scale*(height-1);
     return (
             Normal(int(floatX)  ,int(floatZ)  )*(1-fmod(floatX,1.0f))*(1-fmod(floatZ,1.0f))+
             Normal(int(floatX)+1,int(floatZ)  )*(  fmod(floatX,1.0f))*(1-fmod(floatZ,1.0f))+
@@ -196,21 +195,19 @@ Vector<3,float> HeightMap::NormalAt(Vector<3,float> p) {
 /**
  * This Returns The Normal From A Normal Map Index
  */
-Vector<3,float> HeightMap::Normal(int X, int Z) {
-    int width = scaledHeightMap->GetWidth();
-    int x = max(0,min(width-1,X)); // Error Check Our x Value
-    int height = scaledHeightMap->GetHeight();
-    int z = max(0,min(height-1,Z)); // Error Check Our y Value
+Vector<3,float> HeightMap::Normal(int x, int z) {
+  //x = Clamp(width-1,x); // Error Check Our x Value
+  //z = Clamp(height-1,z); // Error Check Our y Value
 
     // Index Into Our Normal Array And Return The Normal
-    return normalArray[x + (z * scaledHeightMap->GetWidth())];
+    return normalArray[x + (z * width)];
 }
 
 /**
  * Sets The Color Value For A Particular Index, Depending On The Height Index
  */
-Vector<3,float> HeightMap::Color(int X, int Z) {
-    float fColor = Height(X,Z);
+Vector<3,float> HeightMap::Color(int x, int z) {
+    float fColor = Height(x,z);
     float c = cos(pow(fColor,1.0f)*PI)*-0.5+0.5;
     //return Vector<3,float>( 0.20+0.30*c, 0.15+0.35*c, 0.10+0.40*c );
     return Vector<3,float>( 0.25+0.30*c, 0.20+0.35*c, 0.15+0.40*c ) *1.5;
