@@ -11,6 +11,7 @@ SET( PROJECT_SOURCES
   GameState.cpp
 
   Common/utilities.cpp
+  Common/OpenGLUtil.cpp
   Common/FaceListUtil.cpp
   Common/Follower.cpp
 

@@ -2,6 +2,7 @@
 
 #include "../../Common/VectorExt.h"
 #include "../../Common/utilities.h"
+#include "../../Common/OpenGLUtil.h"
 
 #include <Math/Math.h>
 #include <Meta/GLUT.h>
@@ -268,7 +269,7 @@ void Tube::draw() {
     glTranslatef( 0, 1, 0 );
     glRotatef( -40, 1, 0, 0 );
     glScalef( 0.05, 0.75, 0.35 );
-    glutSolidSphere( 1.0, 8, 4 );
+    OpenGLUtil::GLSolidSphere( 1.0, 8, 4 );
     glPopMatrix();
   }
   

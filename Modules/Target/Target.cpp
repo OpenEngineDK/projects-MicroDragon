@@ -1,6 +1,7 @@
 #include "Target.h"
 
 #include "../Island/HeightMap.h"
+#include "../../Common/OpenGLUtil.h"
 
 #include <Meta/OpenGL.h>
 #include <Meta/GLUT.h>
@@ -64,10 +65,10 @@ void Target::TargetRenderNode::Apply(IRenderingView* rv) {
     // Draw target
     if (target->active) {
         glColor3f( 0.8, 0.0, 0.0 );
-        glutSolidCube( 0.5 );
+        OpenGLUtil::GLSolidCube( 0.5 );
     }
     else {
         glColor3f( 0.0, 0.8, 0.0 );
-        glutSolidCube( 0.4 );
+        OpenGLUtil::GLSolidCube( 0.4 );
     }
 }

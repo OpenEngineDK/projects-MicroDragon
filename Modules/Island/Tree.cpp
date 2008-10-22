@@ -1,6 +1,7 @@
 #include "Tree.h"
 
 #include <Meta/OpenGL.h>
+#include "../../Common/OpenGLUtil.h"
 #include <Meta/GLUT.h>
 #include <Renderers/IRenderNode.h>
 #include <Renderers/IRenderingView.h>
@@ -18,7 +19,7 @@ void Tree::Apply(IRenderingView* rv) {
     glPushMatrix();
     glTranslatef( position[0], position[1]+2, position[2] );
     glScalef(1,1.5,1);
-    glutSolidSphere( 1.0, 8, 4 );
+    OpenGLUtil::GLSolidSphere( 1.0, 8, 4 );
     glPopMatrix();
 
     glColor3f( 0.33, 0.22, 0.11 );
@@ -26,7 +27,7 @@ void Tree::Apply(IRenderingView* rv) {
     glPushMatrix();
     glTranslatef( position[0], position[1]+0.4, position[2] );
     glScalef(1,1.5,1);
-    glutSolidCube( 0.6 );
+    OpenGLUtil::GLSolidCube( 0.6 );
     glPopMatrix();
 
     VisitSubNodes(*rv);
