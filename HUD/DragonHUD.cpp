@@ -19,7 +19,7 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate, HUD& hud, TextureLoade
     : gamestate(gamestate), hud(hud), texLoader(texLoader) {
 
     ITextureResourcePtr logo = 
-        ResourceManager<ITextureResource>::Create("logo/small-p2.png");
+        ResourceManager<ITextureResource>::Create("logo/small.png");
     logo->Load();
     logoSurface = hud.CreateSurface(logo);
     logoSurface->SetPosition(HUD::Surface::RIGHT, HUD::Surface::TOP);
