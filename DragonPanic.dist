@@ -54,6 +54,10 @@ win32 /libraries http://openengine.dk/data/libraries/vorbis-win32.zip
 # os x libraries
 
 # linux libraries
+linux /libraries http://openengine.dk/data/libraries/openal-linux32.zip
+linux /libraries http://openengine.dk/data/libraries/sdlimage-linux32.zip
+
+
 
 # data
 any /projects/DragonPanic/data      http://www.openengine.dk/data/projects/DragonPanic/Island.zip
