@@ -25,7 +25,7 @@
 #include <Devices/SDLInput.h>
 
 // Rendering structures
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 // OpenGL rendering implementation
 #include <Renderers/OpenGL/LightRenderer.h>
 #include <Renderers/OpenGL/BufferedRenderer.h>

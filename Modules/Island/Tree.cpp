@@ -3,7 +3,7 @@
 #include <Meta/OpenGL.h>
 #include "../../Common/OpenGLUtil.h"
 #include <Meta/GLUT.h>
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 #include <Renderers/IRenderingView.h>
 
 Tree::Tree(Vector<3,float> position) {

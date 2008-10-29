@@ -2,7 +2,7 @@
 #define _TREE_H_
 
 //inherits from
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 
 //templated classes
 #include <Math/Vector.h>
@@ -15,9 +15,9 @@ namespace OpenEngine {
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderingView;
-using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Scene::RenderNode;
 
-class Tree : public IRenderNode {
+class Tree : public RenderNode {
 private:
     Vector<3,float> position;
 public:

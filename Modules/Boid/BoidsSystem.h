@@ -6,7 +6,7 @@
 #include <Core/EngineEvents.h>
 #include <Core/IEvent.h>
 #include <Core/Event.h>
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 
 //templated classes
 #include <Math/Vector.h>
@@ -44,7 +44,7 @@ using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Core::IEvent;
 using OpenEngine::Core::Event;
 using OpenEngine::Math::Vector;
-using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Scene::RenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Utils::Timer;
 using OpenEngine::Sound::ISoundSystem;
@@ -53,7 +53,7 @@ using OpenEngine::Math::RandomGenerator;
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
 class BoidsSystem : public IListener<InitializeEventArg>,
-  public IListener<ProcessEventArg>, public IRenderNode, 
+  public IListener<ProcessEventArg>, public RenderNode, 
 public IListener<ParticleSystemEventArg> {
 public:
   unsigned int aliveBoids;

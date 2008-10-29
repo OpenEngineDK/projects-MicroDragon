@@ -3,13 +3,13 @@
 
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::ProcessEventArg;
-using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Scene::RenderNode;
 
-class GLSettingsNode : public IListener<ProcessEventArg>, public IRenderNode {
+class GLSettingsNode : public IListener<ProcessEventArg>, public RenderNode {
 private:
   float timeSpend,time;
   bool done;

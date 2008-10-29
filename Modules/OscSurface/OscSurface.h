@@ -7,7 +7,7 @@
 // inherits from
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 
 #include <Utils/Timer.h>
 
@@ -25,12 +25,12 @@ using OpenEngine::Core::IListener;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::DeinitializeEventArg;
-using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Scene::RenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Math::Vector;
 using OpenEngine::Utils::Timer;
 
-class OscSurface : public IListener<ProcessEventArg>, public IRenderNode {
+class OscSurface : public IListener<ProcessEventArg>, public RenderNode {
 private:
   HeightMap* heightMap;
 

@@ -7,7 +7,7 @@
 // inherits from
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 #include <Resources/ITextureResource.h>
 
 #include <string>
@@ -34,7 +34,7 @@ using OpenEngine::Core::IListener;
 using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
-using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Scene::RenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Renderers::TextureLoader;
 using OpenEngine::Scene::TransformationNode;
@@ -46,7 +46,7 @@ using std::string;
 using namespace OpenEngine::Resources;
 
 class Dragon : public IListener<InitializeEventArg>,
-  public IListener<ProcessEventArg>, public IRenderNode {
+  public IListener<ProcessEventArg>, public RenderNode {
 public:
   bool enabled;
 

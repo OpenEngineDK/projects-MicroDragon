@@ -7,7 +7,7 @@
 // inherits from
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 
 #include <Scene/TransformationNode.h>
 
@@ -15,7 +15,7 @@ class HeightMap;
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
-using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Scene::RenderNode;
 using OpenEngine::Renderers::IRenderingView;
 
 using OpenEngine::Scene::TransformationNode;
@@ -23,7 +23,7 @@ using OpenEngine::Scene::TransformationNode;
 class Target : public IListener<ProcessEventArg> {
 private:
 
-    class TargetRenderNode : public IRenderNode {
+    class TargetRenderNode : public RenderNode {
         Target* target;
     public:
         TargetRenderNode();

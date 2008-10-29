@@ -2,7 +2,7 @@
 #define _ISLAND_H_
 
 //inherits from
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 
 //templated classes
 #include <Math/Vector.h>
@@ -22,12 +22,12 @@ namespace OpenEngine {
 }
 
 using OpenEngine::Math::Vector;
-using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Scene::RenderNode;
 using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Scene::TransformationNode;
 using namespace std;
 
-class Island : public IRenderNode {
+class Island : public RenderNode {
 private:
     HeightMap* heightMap;
     TransformationNode* trees;

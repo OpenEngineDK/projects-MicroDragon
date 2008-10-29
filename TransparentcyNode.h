@@ -6,7 +6,7 @@
 
 using OpenEngine::Renderers::IRenderingView;
 
-class TransparencyNode : public IRenderNode {
+class TransparencyNode : public RenderNode {
 public:
   void Apply(IRenderingView* rv) {
       //glEnable(GL_TEXTURE_2D);

@@ -2,7 +2,7 @@
 #define _HEIGHT_MAP_
 
 //inherits from
-#include <Renderers/IRenderNode.h>
+#include <Scene/RenderNode.h>
 
 //using shared pointers
 #include <Resources/ITextureResource.h>
@@ -24,12 +24,12 @@ namespace OpenEngine {
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Renderers::IRenderingView;
-using OpenEngine::Renderers::IRenderNode;
+using OpenEngine::Scene::RenderNode;
 using OpenEngine::Resources::ITextureResourcePtr;
 using OpenEngine::Scene::GeometryNode;
 using std::string;
 
-class HeightMap : public IRenderNode {
+class HeightMap : public RenderNode {
 private:
     float scale;
     unsigned int height, width;
