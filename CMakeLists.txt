@@ -62,6 +62,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_OBJResource
   Extensions_RAWResource
   Extensions_SDLImage
+  Extensions_OpenGLRenderer
   Extensions_ScaledTextureResource
   Extensions_SDL
   Extensions_CairoResource
