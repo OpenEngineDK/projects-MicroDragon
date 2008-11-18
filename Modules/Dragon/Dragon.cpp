@@ -13,7 +13,9 @@
 #include "../../Common/VectorExt.h"
 #include "../Island/HeightMap.h"
 #include "../Target/Target.h"
-#include "../Particle/ParticleSystem.h"
+#include "../Boid/BoidsSystem.h"
+#include "../Particle/BreathWeapon.h"
+#include "../Particle/OEFireBall.h"
 
 #include <Resources/IModelResource.h>
 #include <Resources/ResourceManager.h>
@@ -27,14 +29,23 @@
 
 #include <Geometry/Line.h>
 
+#include <ParticleSystem/ParticleSystem.h>
+
 using namespace OpenEngine::Resources;
 using namespace OpenEngine::Geometry;
 //using namespace OpenEngine::Renderers::OpenGL;
 using OpenEngine::Math::PI;
 using OpenEngine::Math::Quaternion;
 
-Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesystem, TextureLoader& textureLoader)
-  : heightMap(heightMap), target(target), particlesystem(particlesystem) {
+Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target, 
+               TextureLoader& textureLoader, 
+               OpenEngine::ParticleSystem::ParticleSystem& oeparticlesys, ISceneNode* particleRoot)
+    : heightMap(heightMap), target(target),  
+      oeparticlesys(oeparticlesys), 
+      breathweapon(new BreathWeapon(oeparticlesys, textureLoader, *heightMap, boidssystem)),
+      fireball(new OEFireBall(oeparticlesys,textureLoader)),
+      particleRoot(particleRoot) {
+
     jawPos = 0.0f;
     enableTexture = enabled = true;
     numberOfRenderStates = 3;
@@ -51,6 +62,7 @@ Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesys
 
     folder = "Dragon/";
 
+    
     headNode = new TransformationNode();    
     this->AddNode(headNode);
 
@@ -87,15 +99,34 @@ Dragon::Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesys
     //FaceListUtil::OverrideSoftNormsWithHardNorm(gNode->GetFaceSet());
     jawNode->AddNode(jawRes->GetSceneNode());
 
+
     neckTexture = ResourceManager<ITextureResource>
         ::Create(folder + "DragonNeckColor128x512.tga");
     //neckTexture->Load();
     textureLoader.Load(neckTexture);
+
+    // Adjust the breath weapon emit point and direction relative
+    // to the headNode transformation.
+    breathweapon->Rotate(-0.5*PI,0.0,0.0);
+    headNode->AddNode(breathweapon);
+    
+    fireball->Move(0.0,-1,3.0);
+    fireball->Rotate(-0.5*PI,0.0,0.0);
+    
+    headNode->AddNode(fireball);
+    particleRoot->AddNode(breathweapon->GetSceneNode());
+    particleRoot->AddNode(fireball->GetSceneNode());
 }
 
 Dragon::~Dragon() {
     delete headFocus;
     delete headPos;
+
+//@todo: how to handle deallocation of particle renderer?
+//     particleRoot->RemoveNode(breathweapon->GetSceneNode());
+//     particleRoot->RemoveNode(fireball->GetSceneNode());
+//     delete breathweapon;
+//     delete fireball;
 }
 
 void Dragon::Handle(InitializeEventArg arg) {
@@ -137,10 +168,10 @@ void Dragon::Apply(IRenderingView* rv) {
   else
     glColor3f( 0.2, 0.8, 0.2 );
 
-  glPushMatrix();
-  //get necks position
-  float* headTransform = neck->getLinkMatrix(Tube::links-1);
-  glMultMatrixf(headTransform);
+//   glPushMatrix();
+//   //get necks position
+//   float* headTransform = neck->getLinkMatrix(Tube::links-1);
+//   glMultMatrixf(headTransform);
   /* @todo
     float* headTransform = neck->getLinkMatrix(Tube::links-1);
     Matrix<4,4,float> m = Matrix<4,4,float>(headTransform);
@@ -148,7 +179,7 @@ void Dragon::Apply(IRenderingView* rv) {
   */
   
   VisitSubNodes(*rv);
-  glPopMatrix();
+  //glPopMatrix();
 }
 
 void Dragon::Handle(ProcessEventArg arg) {
@@ -213,6 +244,16 @@ void Dragon::Handle(ProcessEventArg arg) {
     neck->update(startP,Vector<3,float>(0.1,1,0),Vector<3,float>(1,0,0),
 		 fireSource,fireDir,fireSource-startP,true);
 
+
+    // update the headNode Transformation node according to the new neck
+    // position and rotation
+    float* m = neck->getLinkMatrix(Tube::links-1);
+    headNode->SetRotation(Quaternion<float>(Matrix<3,3,float>(m[0],m[1],m[2],
+                                                              m[4],m[5],m[6],
+                                                              m[8],m[9],m[10])));
+    headNode->SetPosition(Vector<3,float>(m[12],m[13],m[14]));
+
+
     if (chargingFireball) jawPos = min(jawPos+timeStep*21,21.0f);
     else if (usingBreathWeapon) jawPos = min(jawPos+timeStep*120,21.0f);
     else jawPos -= timeStep*60;
@@ -243,36 +284,38 @@ void Dragon::Handle(ProcessEventArg arg) {
     // Create smoke from mouth while charging
     if (chargingFireball) {
         fireballCharge = min(fireballCharge+timeStep,1.0f);
-        particlesystem->CreateParticles(
-            time, prevTime, 25*fireballCharge,
-            fireSource+fireDir*4.0+jawRotateAxis*0.75, 
-	    jawRotateAxis*+5+fireDir*1+fireSourceVel/2, 3.0,
-            1.0+1.0*fireballCharge, 1.0
-            );
-        particlesystem->CreateParticles(
-            time, prevTime, 25*fireballCharge,
-            fireSource+fireDir*4.0-jawRotateAxis*0.75, 
-	    jawRotateAxis*-5+fireDir*1+fireSourceVel/2, 3.0,
-            1.0+1.0*fireballCharge, 1.0
-            );
+//         particlesystem->CreateParticles(
+//             time, prevTime, 25*fireballCharge,
+//             fireSource+fireDir*4.0+jawRotateAxis*0.75, 
+// 	    jawRotateAxis*+5+fireDir*1+fireSourceVel/2, 3.0,
+//             1.0+1.0*fireballCharge, 1.0
+//             );
+//         particlesystem->CreateParticles(
+//             time, prevTime, 25*fireballCharge,
+//             fireSource+fireDir*4.0-jawRotateAxis*0.75, 
+// 	    jawRotateAxis*-5+fireDir*1+fireSourceVel/2, 3.0,
+//             1.0+1.0*fireballCharge, 1.0
+//             );
     }
     // Create fireball
     else if (fireballCharge>0.1) {
-        particlesystem->
-	  CreateFireball(fireSource+fireDir*5,
-			 (fireDir*75.0)+(fireSourceVel*0.5),
-			 2.0+fireballCharge*5.0);
+//         particlesystem->
+// 	  CreateFireball(fireSource+fireDir*5,
+// 			 (fireDir*75.0)+(fireSourceVel*0.5),
+// 			 2.0+fireballCharge*5.0);
+
+        fireball->Fire();
         fireballCharge = 0.0;
     }
     
     // Create breath weapon particles
     if (isUsingBreathWeapon()) {
-      Vector<3,float> sourceVec = fireSource+fireDir*3;
-      Vector<3,float> destinationVec = (fireDir*60.0)+(fireSourceVel*0.5);
-      particlesystem->
-	CreateParticles(time, prevTime, 100,
-			sourceVec , destinationVec,
-			7.0, 2.0, 2.0);
+//       Vector<3,float> sourceVec = fireSource+fireDir*3;
+//       Vector<3,float> destinationVec = (fireDir*60.0)+(fireSourceVel*0.5);
+//       particlesystem->
+// 	CreateParticles(time, prevTime, 100,
+// 			sourceVec , destinationVec,
+// 			7.0, 2.0, 2.0);
     }
 
     prevTime = time;
@@ -307,10 +350,13 @@ bool Dragon::isUsingBreathWeapon(){
 }
 
 void Dragon::useBreathWeapon( bool input ) {
+    breathweapon->SetActive(input);
     target->SetActive(input);
     usingBreathWeapon = input;
 }
 
 void Dragon::chargeFireball( bool input ) {
     chargingFireball = input;
+    if (input)
+        fireball->SetActive(input);
 }

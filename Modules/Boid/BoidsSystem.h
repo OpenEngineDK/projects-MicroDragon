@@ -25,11 +25,21 @@
 //forward reference
 class Boid;
 class HeightMap;
-class ParticleSystem;
+
 class OscSurface;
+
 namespace OpenEngine {
     namespace Renderers {
+        class TextureLoader;
+    }
+    namespace ParticleSystem {
+        class ParticleSystem;
+    }
+    namespace Renderers {
         class IRenderingView;
+    }
+    namespace Scene {
+        class ISceneNode;
     }
     namespace Sound {
         class IMonoSound;
@@ -49,6 +59,7 @@ using OpenEngine::Renderers::IRenderingView;
 using OpenEngine::Utils::Timer;
 using OpenEngine::Sound::ISoundSystem;
 using OpenEngine::Math::RandomGenerator;
+using OpenEngine::Scene::ISceneNode;
 
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
@@ -58,7 +69,10 @@ public IListener<ParticleSystemEventArg> {
 public:
   unsigned int aliveBoids;
   bool enabled;
-    BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem);
+    BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem,
+                OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
+                OpenEngine::Renderers::TextureLoader& texloader,
+                ISceneNode* particleRoot);
     ~BoidsSystem();
     void toggleRenderState();
 
@@ -80,16 +94,16 @@ public:
     void BoidDied(Boid& boid);
     virtual IEvent<BoidSystemEventArg>& BoidSystemEvent();
 
-    void SetParticleSystem(ParticleSystem* particlesystem);
-    ParticleSystem* GetParticleSystem();
 private:
     Event<BoidSystemEventArg> boidEvents;
 
-    ParticleSystem* particlesystem;
     HeightMap* heightMap;
     OscSurface* oscsurface;
 
+    ISceneNode* particleRoot;
     ISoundSystem& soundsystem;
+    OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem;
+    OpenEngine::Renderers::TextureLoader& texloader;
     std::vector<Sound::IMonoSound*> screams;
     RandomGenerator randGen;
 

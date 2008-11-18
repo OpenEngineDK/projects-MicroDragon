@@ -8,10 +8,10 @@
 // from same project
 #include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
-#include "../Particle/ParticleSystem.h"
 #include "../../Common/VectorExt.h"
 #include "../../Common/utilities.h"
 #include "../../Common/OpenGLUtil.h"
+#include "../Particle/BoidFire.h"
 
 #include <math.h>
 
@@ -19,6 +19,11 @@
 #include <Meta/GLUT.h>
 #include <Math/Math.h>
 #include <Logging/Logger.h>
+#include <Scene/ISceneNode.h>
+
+// extensions
+#include <ParticleSystem/ParticleSystem.h>
+#include <Renderers/TextureLoader.h>
 #include <Sound/IMonoSound.h>
 
 using OpenEngine::Math::PI;
@@ -27,11 +32,22 @@ using std::max;
 
 Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssystem,
            Vector<3,float> position, Vector<3,float> forward,
-           Vector<3,float> velocity, Vector<3,float> color, IMonoSound& voice) : voice(voice) {
+           Vector<3,float> velocity, Vector<3,float> color, IMonoSound& voice,
+           OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
+           OpenEngine::Renderers::TextureLoader& texloader,
+           ISceneNode* particleRoot):
+ 
+    particleRoot(particleRoot),
+    oeparticlesystem(oeparticlesystem),
+    voice(voice) {
+
     this->heightMap = heightMap;
     this->oscsurface = oscsurface;
     this->boidssystem = boidssystem;
 
+    boidfire = new BoidFire(oeparticlesystem, texloader);
+    particleRoot->AddNode(boidfire->GetSceneNode());
+    
     this->position = position;
     this->forward = forward.GetNormalize();
     this->velocity = velocity;
@@ -57,6 +73,10 @@ Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssyste
 }
 
 Boid::~Boid(){
+    // @todo how to handle deallocation of the particle renderer?
+    particleRoot->RemoveNode(boidfire->GetSceneNode());
+    delete boidfire->GetSceneNode();
+    delete boidfire;
 }
 
 Vector<3,float> Boid::getPosition() { return position; }
@@ -198,6 +218,7 @@ void Boid::updatePhysics( double timeDelta ) {
 }
 
 void Boid::updateLocomotion( double timeDelta ) {
+    boidfire->SetPosition(position);
     voice.SetPosition(position);
 
     Vector<3,float> normal = heightMap->NormalAt(position);
@@ -252,25 +273,28 @@ void Boid::updateLocomotion( double timeDelta ) {
         burned = 0;
     }
     if (hot>1 && life>0) {
-        if (!burning) 
+        if (!burning) {
             voice.Play();
+            boidfire->SetActive(true);
+        }
         burning = true;
         
         
     }
     if (burning) {
-      ParticleSystem* particlesystem = boidssystem->GetParticleSystem();
-      if(particlesystem!=NULL)
-	particlesystem->
-	  CreateParticles(prevTime+timeDelta, prevTime, 25,
-			  position+up, velocity, 3.0, 1.0, 1.0);
+//         OldParticle::ParticleSystem* particlesystem = boidssystem->GetParticleSystem();
+//       if(particlesystem!=NULL)
+// 	particlesystem->
+// 	  CreateParticles(prevTime+timeDelta, prevTime, 25,
+// 			  position+up, velocity, 3.0, 1.0, 1.0);
+        life -= 0.05*timeDelta;
     }
     if (life<=0) {
       if(dead==false)
 	boidssystem->BoidDied(*this);
       dead = true; 
     }
-    if (life<-0.4) { burning = false; life = 0; }
+    if (life<-0.4) { burning = false; boidfire->SetActive(false); life = 0; }
 }
 
 Vector<3,float> Boid::GetPosition() {

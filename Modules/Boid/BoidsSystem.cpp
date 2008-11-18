@@ -1,13 +1,15 @@
 #include "BoidsSystem.h"
 
 #include "Boid.h"
-#include "../Particle/ParticleSystem.h"
 
 #include "../Island/HeightMap.h"
 #include "../OscSurface/OscSurface.h"
 
 #include <Math/Math.h>
 #include <Logging/Logger.h>
+#include <ParticleSystem/ParticleSystem.h>
+#include <Renderers/TextureLoader.h>
+#include <Scene/ISceneNode.h>
 
 #include <Resources/ResourceManager.h>
 #include <Resources/ISoundResource.h>
@@ -15,8 +17,14 @@
 
 using OpenEngine::Math::PI;
 
-BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem):
-    soundsystem(soundsystem) {
+BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem,
+                         OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
+                         OpenEngine::Renderers::TextureLoader& texloader,
+                         ISceneNode* particleRoot):
+    particleRoot(particleRoot),
+    soundsystem(soundsystem),
+    oeparticlesystem(oeparticlesystem),
+    texloader(texloader) {
     this->heightMap = heightMap;
     this->oscsurface = oscsurface;
     enabled = true;
@@ -25,7 +33,6 @@ BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSys
     numberOfShownBoids = 0;
     disableLogic = false;
     aliveBoids = numberOfBoids;
-    particlesystem = NULL;
 
     randGen.SeedWithTime();
     AddSoundToList("SoundFX/vester-aargh.ogg");
@@ -68,19 +75,23 @@ void BoidsSystem::ResetBoids() {
             float val = (i+gridSize*j)*1.0/numberOfBoids;
             unsigned int index = randGen.UniformInt(0,screams.size()-1);
 
+            delete boids[i*gridSize+j];
             boids[i*gridSize+j] =
                 new Boid(heightMap,oscsurface,this,
                          Vector<3,float>(i*2-(gridSize-1),0,
                                          j*2-(gridSize-1)),
                          Vector<3,float>(0,0,1),
                          Vector<3,float>(0,0,0),
-		       Vector<3,float>(sin(2*PI*(0.0/3+val))*0.5+0.5,
-                               sin(2*PI*(1.0/3+val))*0.5+0.5, 
-                               sin(2*PI*(2.0/3+val))*0.5+0.5)
-                         .GetNormalize(), *screams.at(index));
+                         Vector<3,float>(sin(2*PI*(0.0/3+val))*0.5+0.5,
+                                         sin(2*PI*(1.0/3+val))*0.5+0.5, 
+                                         sin(2*PI*(2.0/3+val))*0.5+0.5)
+                         .GetNormalize(), *screams.at(index),
+                         oeparticlesystem, texloader,
+                         particleRoot);
+        }
     }
 }
-}
+
 
 void BoidsSystem::Apply(IRenderingView* rv) {
     // Draw boids
@@ -140,14 +151,6 @@ void BoidsSystem::Handle(ParticleSystemEventArg arg) {
         boids[i]->addExternalImpulse((dir.GetNormalize())*strength*
 				     (1/std::max(3.0f,dir.GetLength())));
     }
-}
-
-void BoidsSystem::SetParticleSystem(ParticleSystem* particlesystem) {
-  this->particlesystem = particlesystem;
-}
-
-ParticleSystem* BoidsSystem::GetParticleSystem() {
-  return particlesystem;
 }
 
 void BoidsSystem::IncNumberOfShownBoids() {

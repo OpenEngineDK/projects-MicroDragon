@@ -70,6 +70,10 @@
 
 #include <Meta/GLUT.h>
 
+// NEW OEPARTICLESYSTEM TEST
+#include <ParticleSystem/ParticleSystem.h>
+#include <Effects/FireEffect.h>
+
 // from project
 #include "LightFader.h"
 #include "KeyHandler.h"
@@ -83,7 +87,6 @@
 #include "Modules/Target/Target.h"
 #include "Modules/OscSurface/OscSurface.h"
 #include "Modules/Dragon/Dragon.h"
-#include "Modules/Particle/ParticleSystem.h"
 #include "Modules/Boid/BoidsSystem.h"
 
 #include "HUD/DragonHUD.h"
@@ -93,7 +96,6 @@ using namespace OpenEngine::Core;
 using namespace OpenEngine::Logging;
 using namespace OpenEngine::Devices;
 using namespace OpenEngine::Display;
-using namespace OpenEngine::Renderers::OpenGL;
 using namespace OpenEngine::Renderers;
 using namespace OpenEngine::Resources;
 using namespace OpenEngine::Utils;
@@ -119,12 +121,14 @@ struct Config {
     TimeModifier*         timeModifier;
     Target*               target;
     BoidsSystem*          boids;
-    ParticleSystem*       partsys;
     OscSurface*           oscs;
     Dragon*               dragon;
     bool                  resourcesLoaded;
     HUD*                  hud;
-    TextureLoader*        textureLoader;
+    OpenEngine::Renderers::TextureLoader* textureLoader;
+    OpenEngine::ParticleSystem::ParticleSystem* particlesystem;
+    OpenEngine::ParticleSystem::ParticleSystemTimer* pstimer;
+
     Config(IEngine& engine)
         : engine(engine)
         , frame(NULL)
@@ -143,12 +147,13 @@ struct Config {
         , timeModifier(NULL)
         , target(NULL)
         , boids(NULL)
-        , partsys(NULL)
         , oscs(NULL)
         , dragon(NULL)
         , resourcesLoaded(false)
         , hud(NULL)
         , textureLoader(NULL)
+        , particlesystem(NULL)
+        , pstimer(NULL)
     {}
 };
 
@@ -157,9 +162,10 @@ void SetupResources(Config&);
 void SetupDevices(Config&);
 void SetupDisplay(Config&);
 void SetupRendering(Config&);
+void SetupParticleSystem(Config&);
+void SetupSound(Config&);
 void SetupScene(Config&);
 void SetupDebugging(Config&);
-void SetupSound(Config&);
 
 int main(int argc, char** argv) {
     InitializeGlut(&argc, argv);
@@ -176,7 +182,7 @@ int main(int argc, char** argv) {
     logger.info << logger.end;
 
     logger.info << "  for control information see: ";
-    logger.info << "KeyboardLayout.txt in the project reposetory" << logger.end;
+    logger.info << "KeyboardLayout.txt in the project repository" << logger.end;
     logger.info << logger.end;
 
     // Create an engine and config object
@@ -188,19 +194,20 @@ int main(int argc, char** argv) {
     SetupDisplay(config);
     SetupDevices(config);
     SetupSound(config);
+    SetupParticleSystem(config);
     SetupRendering(config);
     SetupScene(config);
-
+    
     // Possibly add some debugging stuff
     SetupDebugging(config);
 
     // Start up the engine.
     engine->Start();
 
-#if OE_DEBUG
+// #if OE_DEBUG
     // Print out any profiling info
     config.prof.DumpInfo();
-#endif
+// #endif
 
     // release event system
     // post condition: scene and modules are not processed
@@ -217,10 +224,22 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
+
+void SetupParticleSystem(Config& config) {
+    config.particlesystem = new ParticleSystem::ParticleSystem();
+    
+    // Add to engine for processing time (with its timer)
+    config.pstimer = 
+        new ParticleSystem::ParticleSystemTimer(*config.particlesystem);
+    config.engine.InitializeEvent().Attach(*config.particlesystem);
+    //config.engine.ProcessEvent().Attach(*config.pstimer);
+    config.engine.DeinitializeEvent().Attach(*config.particlesystem);
+
+}
+
 void SetupSound(Config& config) {
     config.soundsystem = new OpenALSoundSystem(config.scene,config.camera);
     config.musicplayer = new MusicPlayer(config.camera,config.soundsystem);
-
     bool enableSound = true;
     if (enableSound) {
         // setup the sound system
@@ -229,9 +248,9 @@ void SetupSound(Config& config) {
 
         // setup the music player
         config.musicplayer->AddSound("Music/beak.ogg");
-        config.musicplayer->AddSound("Music/defibrilation.ogg");
-        config.musicplayer->AddSound("Music/glow.ogg");
-        config.musicplayer->AddSound("Music/trouble.ogg");
+//         config.musicplayer->AddSound("Music/defibrilation.ogg");
+//         config.musicplayer->AddSound("Music/glow.ogg");
+//         config.musicplayer->AddSound("Music/trouble.ogg");
         config.musicplayer->SetGain(0.3);
         config.musicplayer->Shuffle(true);
         config.musicplayer->Next();
@@ -304,22 +323,22 @@ void SetupRendering(Config& config) {
         throw Exception("Setup renderer dependencies are not satisfied.");
 
     // Create a renderer
-    config.renderer = new Renderer();
+    config.renderer = new OpenGL::Renderer();
     //config.renderer = new BufferedRenderer();
 
     // Setup a rendering view
-    RenderingView* rv = new RenderingView(*config.viewport);
+    IRenderingView* rv = new OpenGL::RenderingView(*config.viewport);
     config.renderer->ProcessEvent().Attach(*rv);
 
     // Add rendering initialization tasks
-    config.textureLoader = new TextureLoader(*config.renderer);
+    config.textureLoader = new Renderers::TextureLoader(*config.renderer);
     config.renderer->PreProcessEvent().Attach(*config.textureLoader);
 
     DisplayListTransformer* dlt = new DisplayListTransformer(rv);
     config.renderer->InitializeEvent().Attach(*dlt);
 
     config.renderer->PreProcessEvent()
-      .Attach( *(new LightRenderer(*config.camera)) );
+        .Attach( *(new Renderers::OpenGL::LightRenderer(*config.camera)) );
 
     config.engine.InitializeEvent().Attach(*config.renderer);
     config.engine.ProcessEvent().Attach(*config.renderer);
@@ -333,6 +352,8 @@ void SetupScene(Config& config) {
     if (config.scene  != NULL ||
         config.mouse  == NULL ||
         config.keyboard == NULL ||
+        config.particlesystem == NULL ||
+        config.soundsystem == NULL ||
         config.resourcesLoaded == false)
         throw Exception("Setup scene dependencies are not satisfied.");
 
@@ -389,6 +410,8 @@ void SetupScene(Config& config) {
     config.timeModifier = timeModifier;
     //timeModifier->SetFactor(1.23);
 
+    timeModifier->ProcessEvent().Attach(*config.pstimer);
+
     //init HeightMap
     string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
     ITextureResourcePtr hMap = 
@@ -416,28 +439,21 @@ void SetupScene(Config& config) {
     //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
     OscSurface* oscs = config.oscs = new OscSurface(heightMap,oscsColor);
     timeModifier->ProcessEvent().Attach(*oscs);
-
-    //@todo: Boids have transparent shadows
-    BoidsSystem* boids = config.boids = 
-        new BoidsSystem(heightMap, oscs,*config.soundsystem);
-    config.engine.InitializeEvent().Attach(*boids);
-    timeModifier->ProcessEvent().Attach(*boids);
-
-    ParticleSystem* pat = config.partsys = 
-        new ParticleSystem(heightMap,config.camera,boids,
-                           *config.textureLoader);
-
-    tpNode->AddNode(pat);
-    tpNode->AddNode(boids);
     tpNode->AddNode(oscs);
 
-    config.engine.InitializeEvent().Attach(*pat);
-    timeModifier->ProcessEvent().Attach(*pat);
+    //@todo: Boids have transparent shadows
+    BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem,
+                                                        *config.particlesystem,
+                                                        *config.textureLoader,
+                                                        config.scene);
+    config.engine.InitializeEvent().Attach(*boids);
+    timeModifier->ProcessEvent().Attach(*boids);
+    tpNode->AddNode(boids);
 
-    pat->ParticleSystemEvent().Attach(*boids);
-    boids->SetParticleSystem(pat);
 
-    Dragon* dragon = config.dragon = new Dragon(heightMap,target,pat,*config.textureLoader);
+    Dragon* dragon = config.dragon = new Dragon(heightMap, *config.boids, target,
+                                                *config.textureLoader,
+                                                *config.particlesystem, config.scene);
     config.scene->AddNode(dragon);
     config.engine.InitializeEvent().Attach(*dragon);
     config.engine.ProcessEvent().Attach(*dragon);
@@ -467,16 +483,16 @@ void SetupScene(Config& config) {
     config.renderer->SetSceneRoot(config.scene);
 
     //HUD
-    config.textureLoader->SetDefaultReloadPolicy(TextureLoader::RELOAD_QUEUED);
+    config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_QUEUED);
     DragonHUD* hud = new DragonHUD(*config.frame, *config.gamestate,
                                    *config.hud, *config.textureLoader);
-    config.textureLoader->SetDefaultReloadPolicy(TextureLoader::RELOAD_NEVER);
+    config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_NEVER);
     //config.scene->AddNode(hud->GetLayerNode());
     config.engine.ProcessEvent().Attach(*hud);
 }
 
 void SetupDebugging(Config& config) {
-#if OE_DEBUG
+// #if OE_DEBUG
     // main engine events
     config.prof.Profile<ProcessEventArg>
         ("Input System", config.engine.ProcessEvent(), *config.mouse);
@@ -495,11 +511,11 @@ void SetupDebugging(Config& config) {
         ("HUD", config.renderer->ProcessEvent(), *config.hud);
     // time modified events
     config.prof.Profile<ProcessEventArg>
-        ("Particle System", config.timeModifier->ProcessEvent(), *config.partsys);
-    config.prof.Profile<ProcessEventArg>
         ("Boids System",    config.timeModifier->ProcessEvent(), *config.boids);
     config.prof.Profile<ProcessEventArg>
         ("Osc Surface",     config.timeModifier->ProcessEvent(), *config.oscs);
+    config.prof.Profile<ProcessEventArg>
+        ("OE Particle System", config.engine.ProcessEvent(), *config.pstimer);
 
     // Visualization of the frustum
     if (config.frustum != NULL) {
@@ -520,7 +536,7 @@ void SetupDebugging(Config& config) {
                     << "dot -Tsvg scene.dot > scene.svg"
                     << logger.end;
     }
-#endif
+// #endif
 
     // FPS layer with cairo
     FPSSurfacePtr fps = FPSSurface::Create();

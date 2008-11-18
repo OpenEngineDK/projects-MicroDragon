@@ -13,12 +13,23 @@
 #include <string>
 #include <list>
 
+
 class Follower;
 class HeightMap;
-class ParticleSystem;
 class Target;
 class Tube;
+class BreathWeapon;
+class BoidsSystem;
+class OEFireBall;
+
+namespace OldParticle {
+    class ParticleSystem;
+}
+
 namespace OpenEngine {
+    namespace ParticleSystem {
+        class ParticleSystem;
+    }
     namespace Scene {
         class TransformationNode;
     }
@@ -48,17 +59,21 @@ using namespace OpenEngine::Resources;
 class Dragon : public IListener<InitializeEventArg>,
   public IListener<ProcessEventArg>, public RenderNode {
 public:
-  bool enabled;
+    bool enabled;
 
-  Dragon(HeightMap* heightMap, Target* target, ParticleSystem* particlesystem, TextureLoader& textureLoader);
+    Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, 
+           Target* target, 
+           TextureLoader& textureLoader, 
+           OpenEngine::ParticleSystem::ParticleSystem& oeparticlesys, ISceneNode* particleRoot);
+    
     ~Dragon();
     void toggleRenderState();
-
+    
     void Handle(InitializeEventArg arg);
     void Handle(ProcessEventArg arg);
 
     virtual void Apply(IRenderingView* rv);
-  
+    
     void OnLogicEnter(float timeStep);
     float jawPos;
     bool isUsingBreathWeapon();
@@ -67,8 +82,7 @@ public:
 private:
     HeightMap* heightMap;
     Target* target;
-    ParticleSystem* particlesystem;
-
+    
     TransformationNode* headNode;
     TransformationNode* jawAngleNode;
 
@@ -96,6 +110,11 @@ private:
     Vector<3,float> fireSource;
     Vector<3,float> fireSourceVel;
     Vector<3,float> fireDir;
+
+    OpenEngine::ParticleSystem::ParticleSystem& oeparticlesys;
+    BreathWeapon* breathweapon;
+    OEFireBall* fireball;
+    ISceneNode* particleRoot;
 };
 
 #endif

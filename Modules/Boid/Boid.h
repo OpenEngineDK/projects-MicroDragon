@@ -9,7 +9,21 @@ using OpenEngine::Math::Vector;
 class BoidsSystem;
 class HeightMap;
 class OscSurface;
-class ParticleSystem;
+class BoidFire;
+
+namespace OpenEngine {
+    namespace ParticleSystem {
+        class ParticleSystem;
+    }
+    namespace Renderers {
+        class TextureLoader;
+    }
+    namespace Scene {
+        class ISceneNode;
+    }
+}
+
+using OpenEngine::Scene::ISceneNode;
 
 namespace OpenEngine {
     namespace Sound {
@@ -23,7 +37,10 @@ class Boid {
 public:
     Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssystem, 
          Vector<3,float> position, Vector<3,float> forward,
-         Vector<3,float> velocity, Vector<3,float> color, IMonoSound& voice);
+         Vector<3,float> velocity, Vector<3,float> color, IMonoSound& voice,
+         OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
+         OpenEngine::Renderers::TextureLoader& texloader,
+         ISceneNode* particleRoot);
     ~Boid();
     void addDesiredVelocity( Vector<3,float> steering, double weight );
     void addSteering( Vector<3,float> steering, double weight );
@@ -41,10 +58,12 @@ public:
     Vector<3,float> GetPosition();
 
 private:
-    ParticleSystem* particlesystem;
     BoidsSystem* boidssystem;
     OscSurface* oscsurface;
     HeightMap* heightMap;
+    BoidFire* boidfire;
+    ISceneNode* particleRoot;
+    OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem;
 
     Vector<3,float> color;
     bool airborn;

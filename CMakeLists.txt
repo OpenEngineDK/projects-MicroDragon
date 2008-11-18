@@ -25,10 +25,13 @@ SET( PROJECT_SOURCES
   Modules/Boid/Boid.cpp
   Modules/Boid/BoidsSystem.cpp
 
-  Modules/Particle/ParticleSystem.cpp
-  Modules/Particle/Particle.cpp
-  Modules/Particle/FireBall.cpp
-  
+#  Modules/Particle/ParticleSystem.cpp
+#  Modules/Particle/Particle.cpp
+#  Modules/Particle/FireBall.cpp
+  Modules/Particle/BreathWeapon.cpp
+  Modules/Particle/BoidFire.cpp
+  Modules/Particle/OEFireBall.cpp
+
   Modules/Dragon/Dragon.cpp
   Modules/Dragon/Tube.cpp
 
