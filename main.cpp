@@ -323,8 +323,8 @@ void SetupRendering(Config& config) {
         throw Exception("Setup renderer dependencies are not satisfied.");
 
     // Create a renderer
-    config.renderer = new OpenGL::Renderer();
-    //config.renderer = new BufferedRenderer();
+    config.renderer = new OpenGL::Renderer(config.viewport);
+    //config.renderer = new BufferedRenderer(config.viewport);
 
     // Setup a rendering view
     IRenderingView* rv = new OpenGL::RenderingView(*config.viewport);
