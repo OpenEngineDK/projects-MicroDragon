@@ -42,6 +42,12 @@ darcs-dev /extensions/VorbisResource    fh.daimi.au.dk:/users/cgd/code/extension
 darcs-dev /extensions/MusicPlayer       fh.daimi.au.dk:/users/cgd/code/extensions/MusicPlayer
 darcs-dev /extensions/Shapes            fh.daimi.au.dk:/users/cgd/code/extensions/Shapes
 
+#particle system
+darcs /extensions/OEParticleSystem http://openengine.dk/code/extensions/OEParticleSystem
+darcs /extensions/Effects          http://openengine.dk/code/extensions/Effects
+darcs-dev /extensions/OEParticleSystem  fh.daimi.au.dk:/users/cgd/code/extensions/OEParticleSystem
+darcs-dev /extensions/Effects           fh.daimi.au.dk:/users/cgd/code/extensions/Effects
+
 # windows libraries
 win32 /libraries http://openengine.dk/data/libraries/boost-win32.zip
 win32 /libraries http://openengine.dk/data/libraries/glew-win32.zip
