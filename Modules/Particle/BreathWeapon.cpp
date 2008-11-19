@@ -39,13 +39,13 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
                0.25,    //speedVar
                Vector<4,float>(.9,.9,0.0,.9),  //startColor
                Vector<4,float>(.8,0.0,0.0,.3), //endColor
-               Vector<3,float>(0,0.182,0)),    //antigravity
+               Vector<3,float>(0,0.182,0),     //antigravity
+               textureLoader),    
     heightMod(heightMap),
     boidsMod(boidssystem)
 {
     ITextureResourcePtr tex1 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
-    textureLoader.Load(tex1);
     AddTexture(tex1);
     
     system.ProcessEvent().Attach(*this);

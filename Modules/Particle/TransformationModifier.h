@@ -42,7 +42,7 @@ public:
 
         deltapos = q.RotateVector(Vector<3,float>(0.0,-1.0,0.0)) * 0.035;// * speed;
         node->SetPosition(node->GetPosition()-deltapos);
-        logger.info << "handle transmod: " << node->GetPosition() << logger.end;
+        //logger.info << "handle transmod: " << node->GetPosition() << logger.end;
     }
 };
 

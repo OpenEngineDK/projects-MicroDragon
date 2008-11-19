@@ -38,28 +38,29 @@ OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
                0.15,    //speedVar
                Vector<4,float>(.9,.9,0.0,.9),  //startColor
                Vector<4,float>(.9,0.0,0.0,.9), //endColor
-               Vector<3,float>(0.0,0.0,0.0)),    //antigravity
+               Vector<3,float>(0.0,0.0,0.0),   //antigravity
+               textureLoader),                 
     transMod(this,2.0),
     doFire(false)
 
 {
+    system.ProcessEvent().Attach(*this);
     ITextureResourcePtr tex1 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
-    textureLoader.Load(tex1);
     AddTexture(tex1);
     
     ITextureResourcePtr tex2 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke02.tga");
-    textureLoader.Load(tex2);
     AddTexture(tex2);
     
     ITextureResourcePtr tex3 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke03.tga");
-    textureLoader.Load(tex3);
     AddTexture(tex3);
 }
 
-OEFireBall::~OEFireBall() {} 
+OEFireBall::~OEFireBall() {
+    system.ProcessEvent().Detach(*this);
+} 
 
 void OEFireBall::Fire() {
     doFire = true;
