@@ -7,16 +7,17 @@
 // See the GNU General Public License for more details (see LICENSE). 
 //--------------------------------------------------------------------
 
-#ifndef _DRAGON_PANIC_OE_FIRE_BALL_
-#define _DRAGON_PANIC_OE_FIRE_BALL_
+#ifndef _DRAGON_PANIC_EXPLOSION_
+#define _DRAGON_PANIC_EXPLOSION_
 
 #include <Effects/FireEffect.h>
-
-#include "TransformationModifier.h"
-#include "HeightMapModifier.h"
-#include "Explosion.h"
+#include <Math/Vector.h>
 
 namespace OpenEngine {
+    namespace Scene {
+        class TransformationNode;
+    }
+    
     namespace ParticleSystem {
         class ParticleSystem;
         class ParticleEventArg;
@@ -29,30 +30,29 @@ namespace OpenEngine {
 
 using OpenEngine::Effects::FireEffect;
 using OpenEngine::Renderers::TextureLoader;
+using OpenEngine::Scene::TransformationNode;
+using OpenEngine::Math::Vector;
 
 //using OpenEngine::ParticleSystem::ParticleSystem;
 using OpenEngine::ParticleSystem::ParticleEventArg;
 /**
- * Fire ball particle system using OEParticleSystem
+ * Fire ball explosion particle system using OEParticleSystem
  * and Effect/FireEffect
  *
- * @class OEFireBall OEFireBall.h /DragonPanic/Modules/Particle/OEFireBall.h
+ * @class Explosion Explosion.h /DragonPanic/Modules/Particle/Explosion.h
  */
-class OEFireBall : public FireEffect {
+class Explosion : public FireEffect {
 private:
-    Explosion exp;
-    TransformationModifier<TYPE> transMod;
-    //bool doFire;
+    TransformationNode tnode;
+
 public:
-    OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
-               TextureLoader& textureLoader, 
-               HeightMap& heightMap);
+    Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
+               TextureLoader& textureLoader);
      
-    virtual ~OEFireBall();
+    virtual ~Explosion();
 
     void Handle(ParticleEventArg e);
-    void Charge();
-    void Fire();
+    void Fire(Vector<3,float> pos);
 };
 
 #endif

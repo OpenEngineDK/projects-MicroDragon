@@ -14,6 +14,7 @@
 
 #include "HeightMapModifier.h"
 #include "BoidsModifier.h"
+#include "../Island/HeightMap.h"
 
 namespace OpenEngine {
     namespace ParticleSystem {

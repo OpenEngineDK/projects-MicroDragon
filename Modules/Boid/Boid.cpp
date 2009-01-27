@@ -20,6 +20,7 @@
 #include <Math/Math.h>
 #include <Logging/Logger.h>
 #include <Scene/ISceneNode.h>
+#include <Scene/TransformationNode.h>
 
 // extensions
 #include <ParticleSystem/ParticleSystem.h>
@@ -27,6 +28,7 @@
 #include <Sound/IMonoSound.h>
 
 using OpenEngine::Math::PI;
+using OpenEngine::Scene::TransformationNode;
 using std::min;
 using std::max;
 
@@ -46,6 +48,8 @@ Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssyste
     this->boidssystem = boidssystem;
 
     boidfire = new BoidFire(oeparticlesystem, texloader);
+    fireTrans = new TransformationNode();
+    boidfire->SetTransformationNode(fireTrans);
     particleRoot->AddNode(boidfire->GetSceneNode());
     
     this->position = position;
@@ -77,6 +81,7 @@ Boid::~Boid(){
     particleRoot->RemoveNode(boidfire->GetSceneNode());
     delete boidfire->GetSceneNode();
     delete boidfire;
+    delete fireTrans;
 }
 
 Vector<3,float> Boid::getPosition() { return position; }
@@ -218,7 +223,8 @@ void Boid::updatePhysics( double timeDelta ) {
 }
 
 void Boid::updateLocomotion( double timeDelta ) {
-    boidfire->SetPosition(position);
+    TransformationNode* tn = boidfire->GetTransformationNode();
+    if (tn) tn->SetPosition(position);
     voice.SetPosition(position);
 
     Vector<3,float> normal = heightMap->NormalAt(position);

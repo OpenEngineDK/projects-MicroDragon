@@ -30,7 +30,7 @@ public:
     virtual ~BoidsModifier() {}
 
     inline void Process( T& particle ) {
-        boidssystem.HandleFire(particle.position,3.0);
+        boidssystem.HandleFire(particle.position,30*particle.life/particle.maxlife);
     }
 
 };

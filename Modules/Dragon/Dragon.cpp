@@ -40,10 +40,11 @@ using OpenEngine::Math::Quaternion;
 Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target, 
                TextureLoader& textureLoader, 
                OpenEngine::ParticleSystem::ParticleSystem& oeparticlesys, ISceneNode* particleRoot)
+
     : heightMap(heightMap), target(target),  
       oeparticlesys(oeparticlesys), 
       breathweapon(new BreathWeapon(oeparticlesys, textureLoader, *heightMap, boidssystem)),
-      fireball(new OEFireBall(oeparticlesys,textureLoader)),
+      fireball(new OEFireBall(oeparticlesys, textureLoader, *heightMap)),
       particleRoot(particleRoot) {
 
     jawPos = 0.0f;
@@ -107,13 +108,17 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
 
     // Adjust the breath weapon emit point and direction relative
     // to the headNode transformation.
-    breathweapon->Rotate(-0.5*PI,0.0,0.0);
-    headNode->AddNode(breathweapon);
+    TransformationNode* breathTrans = new TransformationNode; // leak on dragon destroy
+    breathTrans->Rotate(-0.5*PI,0.0,0.0);
+    headNode->AddNode(breathTrans);
+    breathweapon->SetTransformationNode(breathTrans);
     
-    fireball->Move(0.0,-1,3.0);
-    fireball->Rotate(-0.5*PI,0.0,0.0);
-    
-    headNode->AddNode(fireball);
+    TransformationNode* ballTrans = new TransformationNode;    // leak on dragon destroy
+    ballTrans->Move(0.0,-1,3.0);
+    ballTrans->Rotate(-0.5*PI,0.0,0.0);
+    headNode->AddNode(ballTrans);
+    fireball->SetTransformationNode(ballTrans);
+
     particleRoot->AddNode(breathweapon->GetSceneNode());
     particleRoot->AddNode(fireball->GetSceneNode());
 }
@@ -358,5 +363,5 @@ void Dragon::useBreathWeapon( bool input ) {
 void Dragon::chargeFireball( bool input ) {
     chargingFireball = input;
     if (input)
-        fireball->SetActive(input);
+        fireball->Charge();
 }

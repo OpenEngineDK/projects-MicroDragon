@@ -31,6 +31,7 @@ SET( PROJECT_SOURCES
   Modules/Particle/BreathWeapon.cpp
   Modules/Particle/BoidFire.cpp
   Modules/Particle/OEFireBall.cpp
+  Modules/Particle/Explosion.cpp
 
   Modules/Dragon/Dragon.cpp
   Modules/Dragon/Tube.cpp

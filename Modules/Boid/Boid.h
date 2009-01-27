@@ -20,10 +20,12 @@ namespace OpenEngine {
     }
     namespace Scene {
         class ISceneNode;
+        class TransformationNode;
     }
 }
 
 using OpenEngine::Scene::ISceneNode;
+using OpenEngine::Scene::TransformationNode;
 
 namespace OpenEngine {
     namespace Sound {
@@ -62,6 +64,7 @@ private:
     OscSurface* oscsurface;
     HeightMap* heightMap;
     BoidFire* boidfire;
+    TransformationNode* fireTrans;
     ISceneNode* particleRoot;
     OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem;
 

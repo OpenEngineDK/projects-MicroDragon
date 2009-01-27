@@ -7,45 +7,37 @@
 // See the GNU General Public License for more details (see LICENSE). 
 //--------------------------------------------------------------------
 
-#include "OEFireBall.h"
+#include "Explosion.h"
 
-#include <Math/Vector.h>
 #include <ParticleSystem/ParticleSystem.h>
 #include <Renderers/TextureLoader.h>
 #include <Resources/ResourceManager.h>
 #include <Resources/ITextureResource.h>
 
 
-using OpenEngine::Math::Vector;
 using OpenEngine::Resources::ResourceManager;
 using OpenEngine::Resources::ITextureResource;
 
-OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
-                       TextureLoader& textureLoader,
-                       HeightMap& heightMap): 
+Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
+                       TextureLoader& textureLoader): 
     FireEffect(system,
                100,     //numParticles
-               10.0,     //number 
+               14.0,     //number 
                2.0,     //numberVar
-               350.0,  //life
+               400.0,  //life
                100.0,  //lifeVar
-               3.0,     //size
+               2.5,     //size
                0.1,     //sizeVar
-               2.5,     //maxSize
+               3.0,     //maxSize
                2*PI,    //angle
                0.1,    //spin
                0.1,     //spinVar
-               .30,     //speed
+               1.0,     //speed
                0.15,    //speedVar
                Vector<4,float>(.9,.9,0.0,.9),  //startColor
                Vector<4,float>(.9,0.0,0.0,.9), //endColor
                Vector<3,float>(0.0,0.0,0.0),   //antigravity
-               textureLoader),                 
-    exp(Explosion(system, textureLoader)),
-    transMod(*this, 3.0, heightMap, exp)
-    //doFire(false)
-    
-{
+               textureLoader) {
     system.ProcessEvent().Attach(*this);
     ITextureResourcePtr tex1 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
@@ -59,28 +51,23 @@ OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
         ResourceManager<ITextureResource>::Create("Smoke/smoke03.tga");
     AddTexture(tex3);
 
-    GetSceneNode()->AddNode(exp.GetSceneNode());
+    SetTransformationNode(&tnode);
 }
 
-OEFireBall::~OEFireBall() {
+Explosion::~Explosion() {
     system.ProcessEvent().Detach(*this);
 } 
 
-void OEFireBall::Charge() {
+void Explosion::Fire(Vector<3,float> pos) {
+    GetTransformationNode()->SetPosition(pos);
     SetActive(true);
 }
 
-void OEFireBall::Fire() {
-    transMod.SetActive(true);
-}
-
-void OEFireBall::Handle(ParticleEventArg e) {
+void Explosion::Handle(ParticleEventArg e) {
     FireEffect::Handle(e);
     for (particles->iterator.Reset(); 
          particles->iterator.HasNext(); 
          particles->iterator.Next()) {
         //TYPE& particle = particles->iterator.Element();
     }
-    transMod.Process();
-        
 }
