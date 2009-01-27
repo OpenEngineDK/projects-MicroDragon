@@ -97,7 +97,7 @@ KeyHandler::~KeyHandler() {}
 
 // set state of keys on up/down events
 void KeyHandler::Handle(KeyboardEventArg arg) {
-    if(arg.type == KeyboardEventArg::PRESS)
+    if(arg.type == EVENT_PRESS)
       keysPressed.push_back(arg.sym);
     else {
       keysPressed.remove(arg.sym);
