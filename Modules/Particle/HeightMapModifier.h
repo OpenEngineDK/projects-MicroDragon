@@ -11,6 +11,9 @@
 #define _DRAGON_PANIC_HEIGHT_MAP_MODIFIER_H_
 
 #include "../Island/HeightMap.h"
+#include <Math/Quaternion.h>
+
+using OpenEngine::Math::Quaternion;
 
 /**
  * Force a particle to change state upon collision with a height map.
@@ -31,11 +34,14 @@ public:
         Vector<3,float> hPos = heightMap.HeightAt(particle.position);
         if (particle.position[1] < hPos[1]-0.1) {
             particle.position = hPos;
-            particle.previousPosition = hPos - Vector<3,float>(0.0,.5,0.0);
-            particle.life = 0;
-            particle.maxlife = 1500;
-            particle.startColor = particle.color;
-            particle.endColor = Vector<4,float>(0.2,0.2,0.2,0.3);
+            
+            Vector<3,float> dir = particle.previousPosition - particle.position;
+            dir *= 0.8;
+            Vector<3,float> norm = heightMap.NormalAt(particle.position);
+            Quaternion<float> q(PI, norm);
+            q.Normalize();
+            
+            particle.previousPosition = hPos - q.RotateVector(dir);
         }
     }
 

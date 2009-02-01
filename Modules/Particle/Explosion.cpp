@@ -37,7 +37,8 @@ Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
                Vector<4,float>(.9,.9,0.0,.9),  //startColor
                Vector<4,float>(.9,0.0,0.0,.9), //endColor
                Vector<3,float>(0.0,0.0,0.0),   //antigravity
-               textureLoader) {
+               textureLoader) 
+{
     system.ProcessEvent().Attach(*this);
     ITextureResourcePtr tex1 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
@@ -65,9 +66,14 @@ void Explosion::Fire(Vector<3,float> pos) {
 
 void Explosion::Handle(ParticleEventArg e) {
     FireEffect::Handle(e);
-    for (particles->iterator.Reset(); 
-         particles->iterator.HasNext(); 
-         particles->iterator.Next()) {
-        //TYPE& particle = particles->iterator.Element();
+    if (GetTotalEmits() >= 100) {
+        SetActive(false);
+        Reset();
     }
+//     for (particles->iterator.Reset(); 
+//          particles->iterator.HasNext(); 
+//          particles->iterator.Next()) {
+//         TYPE& particle = particles->iterator.Element();
+//         //cmod.Process(e.dt, particle);
+//     }
 }

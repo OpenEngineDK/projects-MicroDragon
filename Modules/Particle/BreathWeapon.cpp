@@ -25,21 +25,21 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
                            BoidsSystem& boidssystem): 
     FireEffect(system,
                300,     //numParticles
-               4.0,     //number 
+               6.0,     //number 
                2.0,     //numberVar
                2100.0,  //life
                1000.0,  //lifeVar
-               2.0,     //size
+               3.0,     //size
                0.5,     //sizeVar
                5.0,     //maxSize
                0.05,    //angle
-               0.09,    //spin
+               0.2,    //spin
                0.1,     //spinVar
                2.0,     //speed
                0.25,    //speedVar
-               Vector<4,float>(.9,.9,0.0,.9),  //startColor
-               Vector<4,float>(.8,0.0,0.0,.3), //endColor
-               Vector<3,float>(0,0.182,0),     //antigravity
+               Vector<4,float>(1.0,1.0,1.0,.4),  //startColor
+               Vector<4,float>(1.,1.0,1.0,.3), //endColor
+               Vector<3,float>(0,0.394,0),     //antigravity
                textureLoader),    
     heightMod(heightMap),
     boidsMod(boidssystem)

@@ -44,10 +44,9 @@ using OpenEngine::ParticleSystem::ParticleEventArg;
 class Explosion : public FireEffect {
 private:
     TransformationNode tnode;
-
 public:
     Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
-               TextureLoader& textureLoader);
+              TextureLoader& textureLoader);
      
     virtual ~Explosion();
 
