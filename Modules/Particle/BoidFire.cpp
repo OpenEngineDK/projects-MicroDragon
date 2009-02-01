@@ -44,13 +44,6 @@ BoidFire::BoidFire(OpenEngine::ParticleSystem::ParticleSystem& system,
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
     AddTexture(tex1);
 
-    ITextureResourcePtr tex2 = 
-        ResourceManager<ITextureResource>::Create("Smoke/smoke02.tga");
-    AddTexture(tex2);
-
-    ITextureResourcePtr tex3 = 
-        ResourceManager<ITextureResource>::Create("Smoke/smoke03.tga");
-    AddTexture(tex3);
     system.ProcessEvent().Attach(*this);
 }
 

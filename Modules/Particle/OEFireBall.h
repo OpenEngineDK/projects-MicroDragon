@@ -12,6 +12,7 @@
 
 #include <Effects/FireEffect.h>
 
+#include "../Boid/BoidsSystem.h"
 #include "TransformationModifier.h"
 #include "HeightMapModifier.h"
 #include "Explosion.h"
@@ -29,9 +30,8 @@ namespace OpenEngine {
 
 using OpenEngine::Effects::FireEffect;
 using OpenEngine::Renderers::TextureLoader;
-
-//using OpenEngine::ParticleSystem::ParticleSystem;
 using OpenEngine::ParticleSystem::ParticleEventArg;
+
 /**
  * Fire ball particle system using OEParticleSystem
  * and Effect/FireEffect
@@ -42,17 +42,20 @@ class OEFireBall : public FireEffect {
 private:
     Explosion exp;
     TransformationModifier<TYPE> transMod;
-    //bool doFire;
+    bool charging, firing;
+    float charge, chargeStep, initLife, initSize, initSpeed;
 public:
     OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
                TextureLoader& textureLoader, 
-               HeightMap& heightMap);
+               HeightMap& heightMap,
+               BoidsSystem& boidsSystem);
      
     virtual ~OEFireBall();
 
     void Handle(ParticleEventArg e);
     void Charge();
     void Fire();
+    void Reset();
 };
 
 #endif

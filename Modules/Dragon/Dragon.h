@@ -78,7 +78,8 @@ public:
     float jawPos;
     bool isUsingBreathWeapon();
     void useBreathWeapon( bool input );
-    void chargeFireball( bool input );
+    void ChargeFireball();
+    void ShootFireball();
 private:
     HeightMap* heightMap;
     Target* target;

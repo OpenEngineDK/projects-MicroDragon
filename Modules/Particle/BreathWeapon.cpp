@@ -24,7 +24,7 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
                            HeightMap& heightMap,
                            BoidsSystem& boidssystem): 
     FireEffect(system,
-               300,     //numParticles
+               200,     //numParticles
                6.0,     //number 
                2.0,     //numberVar
                2100.0,  //life
@@ -49,21 +49,6 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
     AddTexture(tex1);
     
     system.ProcessEvent().Attach(*this);
-
-//     ITextureResourcePtr tex2 = 
-//         ResourceManager<ITextureResource>::Create("Smoke/smoke02.tga");
-//     textureLoader.Load(tex2);
-//     AddTexture(tex2);
-
-//     ITextureResourcePtr tex3 = 
-//         ResourceManager<ITextureResource>::Create("Smoke/smoke03.tga");
-//     textureLoader.Load(tex3);
-//     AddTexture(tex3);
-
-//     ITextureResourcePtr tex1 = 
-//         ResourceManager<ITextureResource>::Create("textures/RealFlame_10.tga");
-//     textureLoader.Load(tex1);
-//     AddTexture(tex1);
     
 }
 

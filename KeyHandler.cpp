@@ -229,7 +229,7 @@ void KeyHandler::HandleDown(Key key) {
         dragon->useBreathWeapon( true );
         break;
     case KEY_q:
-        dragon->chargeFireball( true );
+        dragon->ChargeFireball();
         break;
     case KEY_COMMA:
         musicplayer.SetGain(musicplayer.GetGain()-gainStep);
@@ -369,7 +369,7 @@ void KeyHandler::HandleUp(Key key) {
         dragon->useBreathWeapon( false );
         break;
     case KEY_q:
-        dragon->chargeFireball( false );
+        dragon->ShootFireball();
         break;
     default:
         break;
@@ -382,7 +382,9 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
 	dragon->useBreathWeapon( arg.type == JoystickButtonEventArg::PRESS);
 	break;
     case JBUTTON_THREE:
-	dragon->chargeFireball( arg.type == JoystickButtonEventArg::PRESS);
+        if ( arg.type == JoystickButtonEventArg::PRESS )
+            dragon->ChargeFireball();
+        else dragon->ShootFireball();
 	break;
     case JBUTTON_NINE:
         if(arg.type == JoystickButtonEventArg::PRESS)

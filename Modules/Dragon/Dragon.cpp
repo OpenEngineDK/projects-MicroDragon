@@ -44,7 +44,7 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
     : heightMap(heightMap), target(target),  
       oeparticlesys(oeparticlesys), 
       breathweapon(new BreathWeapon(oeparticlesys, textureLoader, *heightMap, boidssystem)),
-      fireball(new OEFireBall(oeparticlesys, textureLoader, *heightMap)),
+      fireball(new OEFireBall(oeparticlesys, textureLoader, *heightMap, boidssystem)),
       particleRoot(particleRoot) {
 
     jawPos = 0.0f;
@@ -287,8 +287,8 @@ void Dragon::Handle(ProcessEventArg arg) {
     */
 
     // Create smoke from mouth while charging
-    if (chargingFireball) {
-        fireballCharge = min(fireballCharge+timeStep,1.0f);
+//    if (chargingFireball) {
+//        fireballCharge = min(fireballCharge+timeStep,1.0f);
 //         particlesystem->CreateParticles(
 //             time, prevTime, 25*fireballCharge,
 //             fireSource+fireDir*4.0+jawRotateAxis*0.75, 
@@ -301,27 +301,27 @@ void Dragon::Handle(ProcessEventArg arg) {
 // 	    jawRotateAxis*-5+fireDir*1+fireSourceVel/2, 3.0,
 //             1.0+1.0*fireballCharge, 1.0
 //             );
-    }
+//    }
     // Create fireball
-    else if (fireballCharge>0.1) {
+//    else if (fireballCharge>0.1) {
 //         particlesystem->
 // 	  CreateFireball(fireSource+fireDir*5,
 // 			 (fireDir*75.0)+(fireSourceVel*0.5),
 // 			 2.0+fireballCharge*5.0);
 
-        fireball->Fire();
-        fireballCharge = 0.0;
-    }
+        //fireball->Fire();
+//         fireballCharge = 0.0;
+//     }
     
     // Create breath weapon particles
-    if (isUsingBreathWeapon()) {
-//       Vector<3,float> sourceVec = fireSource+fireDir*3;
-//       Vector<3,float> destinationVec = (fireDir*60.0)+(fireSourceVel*0.5);
-//       particlesystem->
-// 	CreateParticles(time, prevTime, 100,
-// 			sourceVec , destinationVec,
-// 			7.0, 2.0, 2.0);
-    }
+    //    if (isUsingBreathWeapon()) {
+    //       Vector<3,float> sourceVec = fireSource+fireDir*3;
+    //       Vector<3,float> destinationVec = (fireDir*60.0)+(fireSourceVel*0.5);
+    //       particlesystem->
+    // 	CreateParticles(time, prevTime, 100,
+    // 			sourceVec , destinationVec,
+    // 			7.0, 2.0, 2.0);
+    //    }
 
     prevTime = time;
 
@@ -360,8 +360,13 @@ void Dragon::useBreathWeapon( bool input ) {
     usingBreathWeapon = input;
 }
 
-void Dragon::chargeFireball( bool input ) {
-    chargingFireball = input;
-    if (input)
-        fireball->Charge();
+void Dragon::ChargeFireball() {
+    fireball->Charge();
+    chargingFireball = true;
+}
+
+void Dragon::ShootFireball() {
+    fireball->Fire();
+    chargingFireball = false;
+
 }

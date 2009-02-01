@@ -21,18 +21,24 @@
 template <class T> class BoidsModifier {
 private:
     BoidsSystem& boidssystem;
+    float strength;
 public:
     BoidsModifier(BoidsSystem& boidssystem): 
-        boidssystem(boidssystem) 
+    boidssystem(boidssystem), strength(25)
     {
     }
 
     virtual ~BoidsModifier() {}
 
     inline void Process( T& particle ) {
-        boidssystem.HandleFire(particle.position,30*particle.life/particle.maxlife);
+        boidssystem.HandleFire(particle.position,strength*particle.life/particle.maxlife);
     }
 
+    void SetStrength(float strength) {
+        this->strength = strength;
+    }
+
+    float GetStrength() { return strength; }
 };
 
 #endif

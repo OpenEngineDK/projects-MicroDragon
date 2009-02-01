@@ -10,6 +10,8 @@
 #ifndef _DRAGON_PANIC_EXPLOSION_
 #define _DRAGON_PANIC_EXPLOSION_
 
+#include "BoidsModifier.h"
+#include "../Boid/BoidsSystem.h"
 #include <Effects/FireEffect.h>
 #include <Math/Vector.h>
 
@@ -36,7 +38,7 @@ using OpenEngine::Math::Vector;
 //using OpenEngine::ParticleSystem::ParticleSystem;
 using OpenEngine::ParticleSystem::ParticleEventArg;
 /**
- * Fire ball explosion particle system using OEParticleSystem
+ * Explosion particle system using OEParticleSystem
  * and Effect/FireEffect
  *
  * @class Explosion Explosion.h /DragonPanic/Modules/Particle/Explosion.h
@@ -44,14 +46,19 @@ using OpenEngine::ParticleSystem::ParticleEventArg;
 class Explosion : public FireEffect {
 private:
     TransformationNode tnode;
+    float charge, initLife, initSize, initSpeed;
+    BoidsModifier<FireEffect::TYPE> boidsMod;
 public:
     Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
-              TextureLoader& textureLoader);
+              TextureLoader& textureLoader,
+              BoidsSystem& boidsSystem);
      
     virtual ~Explosion();
 
     void Handle(ParticleEventArg e);
     void Fire(Vector<3,float> pos);
+    void SetCharge(float p);
+    float GetCharge();
 };
 
 #endif

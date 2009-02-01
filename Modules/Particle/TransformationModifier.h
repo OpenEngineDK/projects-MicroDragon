@@ -54,6 +54,10 @@ public:
         delete tmpnode;
     }
     
+    void SetSpeed(float speed) { this->speed = speed; }
+
+    float GetSpeed() { return speed; }
+
     void SetActive(bool active) {
         this->active = active;
         if (active) {
@@ -82,6 +86,7 @@ public:
         if (tmpnode->GetPosition()[1] < h[1]-0.1) {
             SetActive(false);
             fire.SetActive(false);
+            fire.Reset();
             exp.Fire(tmpnode->GetPosition());
         }
     }

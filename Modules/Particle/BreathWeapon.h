@@ -14,6 +14,7 @@
 
 #include "HeightMapModifier.h"
 #include "BoidsModifier.h"
+#include "../Boid/BoidsSystem.h"
 #include "../Island/HeightMap.h"
 
 namespace OpenEngine {
