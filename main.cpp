@@ -515,7 +515,7 @@ void SetupDebugging(Config& config) {
     config.prof.Profile<ProcessEventArg>
         ("Osc Surface",     config.timeModifier->ProcessEvent(), *config.oscs);
     config.prof.Profile<ProcessEventArg>
-        ("OE Particle System", config.engine.ProcessEvent(), *config.pstimer);
+        ("OE Particle System", config.timeModifier->ProcessEvent(), *config.pstimer);
 
     // Visualization of the frustum
     if (config.frustum != NULL) {
