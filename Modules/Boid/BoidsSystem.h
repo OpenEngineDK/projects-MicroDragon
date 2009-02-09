@@ -22,6 +22,9 @@
 #include "BoidSystemEvents.h"
 #include "../Particle/ParticleSystemEvents.h"
 
+// Text particle system
+#include <Effects/TextEffect.h>
+
 //forward reference
 class Boid;
 class HeightMap;
@@ -60,15 +63,18 @@ using OpenEngine::Utils::Timer;
 using OpenEngine::Sound::ISoundSystem;
 using OpenEngine::Math::RandomGenerator;
 using OpenEngine::Scene::ISceneNode;
+using OpenEngine::Effects::TextEffect;
 
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
 class BoidsSystem : public IListener<InitializeEventArg>,
-  public IListener<ProcessEventArg>, public RenderNode, 
-public IListener<ParticleSystemEventArg> {
+                    public IListener<ProcessEventArg>, public RenderNode, 
+                    public IListener<ParticleSystemEventArg> {
+private:
+    TextEffect textEffect;
 public:
-  unsigned int aliveBoids;
-  bool enabled;
+    unsigned int aliveBoids;
+    bool enabled;
     BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem,
                 OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
                 OpenEngine::Renderers::TextureLoader& texloader,

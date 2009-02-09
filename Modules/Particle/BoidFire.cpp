@@ -25,15 +25,15 @@ BoidFire::BoidFire(OpenEngine::ParticleSystem::ParticleSystem& system,
                20,     //numParticles
                4.0,     //number 
                2.0,     //numberVar
-               300.0,  //life
-               100.0,  //lifeVar
+               0.3,  //life
+               0.1,  //lifeVar
                .5,     //size
                0.1,     //sizeVar
                2.0,     //maxSize
                0.4,    //angle
-               0.09,    //spin
-               0.1,     //spinVar
-               -.5,     //speed
+               200,    //spin
+               100,     //spinVar
+               -10,     //speed
                0.25,    //speedVar
                Vector<4,float>(.9,.9,0.0,.9),  //startColor
                Vector<4,float>(.8,0.0,0.0,.3), //endColor

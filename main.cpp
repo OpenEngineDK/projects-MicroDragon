@@ -229,8 +229,8 @@ void SetupParticleSystem(Config& config) {
     config.particlesystem = new ParticleSystem::ParticleSystem();
     
     // Add to engine for processing time (with its timer)
-    config.pstimer = 
-        new ParticleSystem::ParticleSystemTimer(*config.particlesystem);
+    //config.pstimer = 
+    //new ParticleSystem::ParticleSystemTimer(*config.particlesystem);
     config.engine.InitializeEvent().Attach(*config.particlesystem);
     //config.engine.ProcessEvent().Attach(*config.pstimer);
     config.engine.DeinitializeEvent().Attach(*config.particlesystem);
@@ -410,7 +410,7 @@ void SetupScene(Config& config) {
     config.timeModifier = timeModifier;
     //timeModifier->SetFactor(1.23);
 
-    timeModifier->ProcessEvent().Attach(*config.pstimer);
+    timeModifier->ProcessEvent().Attach(*config.particlesystem);
 
     //init HeightMap
     string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
@@ -515,7 +515,7 @@ void SetupDebugging(Config& config) {
     config.prof.Profile<ProcessEventArg>
         ("Osc Surface",     config.timeModifier->ProcessEvent(), *config.oscs);
     config.prof.Profile<ProcessEventArg>
-        ("OE Particle System", config.timeModifier->ProcessEvent(), *config.pstimer);
+        ("OE Particle System", config.timeModifier->ProcessEvent(), *config.particlesystem);
 
     // Visualization of the frustum
     if (config.frustum != NULL) {

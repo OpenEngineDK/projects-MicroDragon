@@ -27,23 +27,23 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
                200,     //numParticles
                6.0,     //number 
                2.0,     //numberVar
-               2100.0,  //life
-               1000.0,  //lifeVar
+               2.1,     //life
+               0.5,     //lifeVar
                3.0,     //size
                0.5,     //sizeVar
-               5.0,     //maxSize
-               0.05,    //angle
-               0.2,    //spin
-               0.1,     //spinVar
-               2.0,     //speed
-               0.25,    //speedVar
+               9.0,     //maxSize
+               0.11,    //angle
+               230.0,     //spin
+               100.0,     //spinVar
+               45.0,    //speed
+               10.0,    //speedVar
                Vector<4,float>(1.0,1.0,1.0,.4),  //startColor
-               Vector<4,float>(1.,1.0,1.0,.3), //endColor
-               Vector<3,float>(0,0.394,0),     //antigravity
+               Vector<4,float>(1.,1.0,1.0,.3),   //endColor
+               Vector<3,float>(0,0.295,0),       //antigravity
                textureLoader),    
     heightMod(heightMap),
-    boidsMod(boidssystem)
-{
+    boidsMod(boidssystem, 300) {
+
     ITextureResourcePtr tex1 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
     AddTexture(tex1);
@@ -64,7 +64,7 @@ void BreathWeapon::Handle(ParticleEventArg e) {
     
         TYPE& particle = particles->iterator.Element();
         heightMod.Process(particle);
-        boidsMod.Process(particle);
+        boidsMod.Process(e.dt, particle);
         
     }
 

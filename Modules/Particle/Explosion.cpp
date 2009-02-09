@@ -22,24 +22,24 @@ Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
                      TextureLoader& textureLoader, BoidsSystem& boidsSystem): 
     FireEffect(system,
                100,     //numParticles
-               14.0,     //number 
-               2.0,     //numberVar
-               400.0,  //life
-               100.0,  //lifeVar
-               2.5,     //size
+               20.0,    //number 
+               5.0,     //numberVar
+               0.2,     //life
+               0.1,     //lifeVar
+               3.0,     //size
                0.1,     //sizeVar
-               3.0,     //maxSize
+               6.0,     //maxSize
                2*PI,    //angle
-               0.1,    //spin
-               0.1,     //spinVar
-               1.0,     //speed
-               0.15,    //speedVar
+               230,     //spin
+               100,     //spinVar
+               15,      //speed
+               5,       //speedVar
                Vector<4,float>(.9,.9,0.0,.9),  //startColor
                Vector<4,float>(.9,0.0,0.0,.9), //endColor
                Vector<3,float>(0.0,0.0,0.0),   //antigravity
                textureLoader),
-    charge(1.0), initLife(life), initSize(size), initSpeed(speed),
-    boidsMod(boidsSystem)
+    charge(1.0), initLife(life), initSize(size), initSpeed(speed), 
+    boidsMod(boidsSystem, 700), maxEmits(150)
 {
     system.ProcessEvent().Attach(*this);
     ITextureResourcePtr tex1 = 
@@ -60,7 +60,7 @@ void Explosion::Fire(Vector<3,float> pos) {
 
 void Explosion::Handle(ParticleEventArg e) {
     FireEffect::Handle(e);
-    if (GetTotalEmits() >= 100) {
+    if (GetTotalEmits() >= maxEmits) {
         SetActive(false);
         Reset();
     }
@@ -68,15 +68,15 @@ void Explosion::Handle(ParticleEventArg e) {
          particles->iterator.HasNext(); 
          particles->iterator.Next()) {
         TYPE& particle = particles->iterator.Element();
-        boidsMod.Process(particle);
+        boidsMod.Process(e.dt, particle);
     }
 }
 
 void Explosion::SetCharge(float p) {
-    life = initLife + 10 * charge;
-    size = initSize + 3 * charge;
-    speed = initSpeed +0.3 * charge;
-    boidsMod.SetStrength(30+100*charge);
+    life = initLife + initLife * charge;
+    size = initSize + initSize * charge;
+    speed = initSpeed + initSpeed * charge;
+    boidsMod.SetStrength(700*charge);
 }
 
 float Explosion::GetCharge() {

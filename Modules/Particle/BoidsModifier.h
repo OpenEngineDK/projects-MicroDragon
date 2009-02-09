@@ -23,22 +23,22 @@ private:
     BoidsSystem& boidssystem;
     float strength;
 public:
-    BoidsModifier(BoidsSystem& boidssystem): 
-    boidssystem(boidssystem), strength(25)
-    {
-    }
-
+ BoidsModifier(BoidsSystem& boidssystem, float strength): 
+    boidssystem(boidssystem), strength(strength) {}
     virtual ~BoidsModifier() {}
 
-    inline void Process( T& particle ) {
-        boidssystem.HandleFire(particle.position,strength*particle.life/particle.maxlife);
+    inline void Process(float dt, T& particle) {
+        boidssystem.HandleFire(particle.position, 
+                               dt*strength*particle.life/particle.maxlife);
     }
 
     void SetStrength(float strength) {
         this->strength = strength;
     }
 
-    float GetStrength() { return strength; }
+    float GetStrength() { 
+        return strength; 
+    }
 };
 
 #endif

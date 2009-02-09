@@ -21,6 +21,7 @@ BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSys
                          OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
                          OpenEngine::Renderers::TextureLoader& texloader,
                          ISceneNode* particleRoot):
+    textEffect(TextEffect(oeparticlesystem, texloader)),
     particleRoot(particleRoot),
     soundsystem(soundsystem),
     oeparticlesystem(oeparticlesystem),
@@ -41,7 +42,11 @@ BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSys
     AddSoundToList("SoundFX/jakob-aargh.ogg");
     AddSoundToList("SoundFX/salomon-aargh.ogg");
     AddSoundToList("SoundFX/ptx-jargh.ogg");
-}
+
+    particleRoot->AddNode(textEffect.GetSceneNode());
+    oeparticlesystem.ProcessEvent().Attach(textEffect);
+    }
+
 
 void BoidsSystem::AddSoundToList(std::string soundfile) {
     Resources::ISoundResourcePtr screamres =
@@ -126,6 +131,13 @@ void BoidsSystem::BoidDied(Boid& boid) {
   Vector<3,float> position = boid.GetPosition();
   BoidSystemEventArg arg = BoidSystemEventArg(BOID_DIED, position);
   this->boidEvents.Notify(arg);
+
+  //@TODO: use eventsystem instead???
+  TransformationNode t;
+  t.SetPosition(position);
+  t.Rotate(PI,0,0);
+  //t.SetRotation(Quaternion<float>(Vector<3,float>(0,1,0)).GetNormalize());
+  textEffect.EmitText("1", &t);
 }
 
 IEvent<BoidSystemEventArg>& BoidsSystem::BoidSystemEvent() {

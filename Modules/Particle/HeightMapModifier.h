@@ -33,15 +33,15 @@ public:
     inline void Process( T& particle ) {
         Vector<3,float> hPos = heightMap.HeightAt(particle.position);
         if (particle.position[1] < hPos[1]-0.1) {
-            particle.position = hPos;
-            
-            Vector<3,float> dir = particle.previousPosition - particle.position;
-            dir *= 0.8;
-            Vector<3,float> norm = heightMap.NormalAt(particle.position);
-            Quaternion<float> q(PI, norm);
+                    
+            Quaternion<float> q(PI, heightMap.NormalAt(particle.position));
             q.Normalize();
             
-            particle.previousPosition = hPos - q.RotateVector(dir);
+            particle.velocity = q.RotateVector(particle.velocity);
+            particle.velocity = Vector<3,float>(0.0,1.0,0.0)*particle.velocity.GetLength();
+            particle.velocity *= 0.5;
+            //particle.forces += particle.velocity.GetNormalize()*(-0.1);
+
         }
     }
 

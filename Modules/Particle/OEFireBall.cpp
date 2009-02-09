@@ -27,26 +27,26 @@ OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
                50,     //numParticles
                10.0,   //number 
                2.0,    //numberVar
-               350.0,  //life
-               100.0,  //lifeVar
+               0.30,   //life
+               0.1,    //lifeVar
                3.0,    //size
                0.1,    //sizeVar
-               1.5,    //maxSize
+               2.0,    //maxSize
                2*PI,   //angle
-               0.1,    //spin
-               0.1,    //spinVar
-               .30,    //speed
-               0.15,   //speedVar
-               Vector<4,float>(.9,.9,0.0,.9),  //startColor
+               230.0,    //spin
+               100.0,    //spinVar
+               9.0,    //speed
+               2.0,    //speedVar
+               Vector<4,float>(1.0,1.0,1.0,.4),//(.9,.9,0.0,.9),  //startColor
                Vector<4,float>(.9,0.0,0.0,.9), //endColor
                Vector<3,float>(0.0,0.0,0.0),   //antigravity
                textureLoader),                 
     exp(Explosion(system, textureLoader, boidsSystem)),
-    transMod(*this, 3.0, heightMap, exp),
+    transMod(*this, 50.0, heightMap, exp),
     charging(false),
     firing(false),
     charge(0.0), chargeStep(0.01), initLife(life), initSize(sizemod.GetMaxSizeVar()),
-    initSpeed(3.0)
+    initSpeed(50.0)
     
 {
     // receive processing time
@@ -56,13 +56,7 @@ OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
     ITextureResourcePtr tex1 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
     AddTexture(tex1);
-//     ITextureResourcePtr tex2 = 
-//         ResourceManager<ITextureResource>::Create("Smoke/smoke02.tga");
-//     AddTexture(tex2);
-//     ITextureResourcePtr tex3 = 
-//         ResourceManager<ITextureResource>::Create("Smoke/smoke03.tga");
-//     AddTexture(tex3);
-
+    
     // attach explosion rendernode 
     GetSceneNode()->AddNode(exp.GetSceneNode());
 }
@@ -89,7 +83,7 @@ void OEFireBall::Fire() {
     }
     firing = true;
     exp.SetCharge(charge);
-    transMod.SetSpeed(initSpeed + 2*initSpeed * charge);
+    transMod.SetSpeed(initSpeed + 2 * initSpeed * charge);
     transMod.SetActive(true);
 }
 
@@ -99,7 +93,7 @@ void OEFireBall::Handle(ParticleEventArg e) {
         if (charge > 1.0) {
             charge = 1.0;
         }
-        life = initLife + 100 * charge;
+        life = initLife + 0.1 * charge;
         sizemod.SetMaxSizeVar(initSize + 10 * charge);
     }
     FireEffect::Handle(e);
@@ -108,7 +102,7 @@ void OEFireBall::Handle(ParticleEventArg e) {
 //          particles->iterator.Next()) {
 //         TYPE& particle = particles->iterator.Element();
 //     }
-    transMod.Process();
+    transMod.Process(e.dt);
         
 }
 

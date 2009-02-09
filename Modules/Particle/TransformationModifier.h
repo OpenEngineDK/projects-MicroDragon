@@ -46,7 +46,7 @@ public:
         tmpnode(new TransformationNode()),
         speed(speed), active(false), 
         heightMap(heightMap),
-        gravity(Vector<3,float>(0,-0.07,0)),
+        gravity(Vector<3,float>(0,-1.0,0)),
         exp(exp) {
     }
     
@@ -75,12 +75,12 @@ public:
         }
     }
 
-    inline void Process() {
+    inline void Process(float dt) {
         if (!active) return;
         
-        tmpnode->SetPosition(tmpnode->GetPosition()+deltapos);
-        deltapos *= 0.99;
-        deltapos += gravity;
+        tmpnode->SetPosition(tmpnode->GetPosition()+deltapos*dt);
+        //deltapos *= 0.99;
+        deltapos += gravity*dt;
 
         Vector<3,float> h = heightMap.HeightAt(tmpnode->GetPosition());
         if (tmpnode->GetPosition()[1] < h[1]-0.1) {

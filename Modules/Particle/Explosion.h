@@ -48,6 +48,7 @@ private:
     TransformationNode tnode;
     float charge, initLife, initSize, initSpeed;
     BoidsModifier<FireEffect::TYPE> boidsMod;
+    unsigned int maxEmits;
 public:
     Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
               TextureLoader& textureLoader,
