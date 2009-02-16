@@ -25,27 +25,23 @@ OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
                        BoidsSystem& boidsSystem): 
     FireEffect(system,
                50,     //numParticles
+               0.04,   //emitRate
                10.0,   //number 
                2.0,    //numberVar
                0.30,   //life
                0.1,    //lifeVar
-               3.0,    //size
-               0.1,    //sizeVar
-               2.0,    //maxSize
                2*PI,   //angle
                230.0,    //spin
                100.0,    //spinVar
                9.0,    //speed
                2.0,    //speedVar
-               Vector<4,float>(1.0,1.0,1.0,.4),//(.9,.9,0.0,.9),  //startColor
-               Vector<4,float>(.9,0.0,0.0,.9), //endColor
                Vector<3,float>(0.0,0.0,0.0),   //antigravity
                textureLoader),                 
     exp(Explosion(system, textureLoader, boidsSystem)),
     transMod(*this, 50.0, heightMap, exp),
     charging(false),
     firing(false),
-    charge(0.0), chargeStep(0.01), initLife(life), initSize(sizemod.GetMaxSizeVar()),
+    charge(0.0), chargeStep(0.01), initLife(life), initSize(3),
     initSpeed(50.0)
     
 {
@@ -56,7 +52,19 @@ OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
     ITextureResourcePtr tex1 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
     AddTexture(tex1);
-    
+ 
+    // color modifier
+    colormod.AddValue( .9, Vector<4,float>(0.1, 0.01, .01, .4)); // blackish
+    //colormod.AddValue( .7, Vector<4,float>( .7,  0.3,  .1, .6)); // redish
+    colormod.AddValue( .2, Vector<4,float>( .9, 0.75,  .2, .7)); // orangeish
+    colormod.AddValue( .0, Vector<4,float>(0.2,  0.2,  .3, .1)); // blueish
+
+    // size variations 
+    sizem.AddValue(1.0, 2); 
+    sizem.AddValue(.65, 5);
+    sizem.AddValue( .2, 4);    
+    sizem.AddValue( .0, 2);    
+   
     // attach explosion rendernode 
     GetSceneNode()->AddNode(exp.GetSceneNode());
 }
@@ -68,7 +76,6 @@ OEFireBall::~OEFireBall() {
 void OEFireBall::Charge() {
     if (charging || firing)
         return;
-    sizemod.SetMaxSizeVar(initSize);
     life = initLife;
     charge = 0.0;
     charging = true;
@@ -93,8 +100,7 @@ void OEFireBall::Handle(ParticleEventArg e) {
         if (charge > 1.0) {
             charge = 1.0;
         }
-        life = initLife + 0.1 * charge;
-        sizemod.SetMaxSizeVar(initSize + 10 * charge);
+        life = initLife +  0.5 * charge;
     }
     FireEffect::Handle(e);
 //     for (particles->iterator.Reset(); 

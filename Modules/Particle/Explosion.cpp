@@ -22,23 +22,19 @@ Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
                      TextureLoader& textureLoader, BoidsSystem& boidsSystem): 
     FireEffect(system,
                100,     //numParticles
-               20.0,    //number 
+               0.04,    //emitRate
+               10.0,    //number 
                5.0,     //numberVar
                0.2,     //life
                0.1,     //lifeVar
-               3.0,     //size
-               0.1,     //sizeVar
-               6.0,     //maxSize
                2*PI,    //angle
                230,     //spin
                100,     //spinVar
                15,      //speed
                5,       //speedVar
-               Vector<4,float>(.9,.9,0.0,.9),  //startColor
-               Vector<4,float>(.9,0.0,0.0,.9), //endColor
                Vector<3,float>(0.0,0.0,0.0),   //antigravity
                textureLoader),
-    charge(1.0), initLife(life), initSize(size), initSpeed(speed), 
+    charge(1.0), initLife(life), initSize(3), initSpeed(speed), 
     boidsMod(boidsSystem, 700), maxEmits(150)
 {
     system.ProcessEvent().Attach(*this);
@@ -46,6 +42,18 @@ Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
     AddTexture(tex1);
     
+    // color modifier
+    colormod.AddValue( .9, Vector<4,float>(0.1, 0.01, .01, .4)); // blackish
+    colormod.AddValue( .7, Vector<4,float>( .7,  0.3,  .1, .6)); // redish
+    colormod.AddValue( .2, Vector<4,float>( .9, 0.75,  .2, .7)); // orangeish
+    colormod.AddValue( .0, Vector<4,float>(0.2,  0.2,  .3, .1)); // blueish
+
+    // size variations 
+    sizem.AddValue(1.0, 2); 
+    sizem.AddValue(.65, 9);
+    sizem.AddValue( .2, 7);    
+    sizem.AddValue( .0, 4);    
+
     SetTransformationNode(&tnode);
 }
 
@@ -74,7 +82,6 @@ void Explosion::Handle(ParticleEventArg e) {
 
 void Explosion::SetCharge(float p) {
     life = initLife + initLife * charge;
-    size = initSize + initSize * charge;
     speed = initSpeed + initSpeed * charge;
     boidsMod.SetStrength(700*charge);
 }

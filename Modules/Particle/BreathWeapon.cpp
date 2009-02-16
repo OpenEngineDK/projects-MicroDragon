@@ -25,20 +25,16 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
                            BoidsSystem& boidssystem): 
     FireEffect(system,
                200,     //numParticles
-               6.0,     //number 
+               0.04,    //emitRate
+               4.0,     //number 
                2.0,     //numberVar
                2.1,     //life
                0.5,     //lifeVar
-               3.0,     //size
-               0.5,     //sizeVar
-               9.0,     //maxSize
-               0.11,    //angle
-               230.0,     //spin
-               100.0,     //spinVar
+               0.09,    //angle
+               230.0,   //spin
+               100.0,   //spinVar
                45.0,    //speed
                10.0,    //speedVar
-               Vector<4,float>(1.0,1.0,1.0,.4),  //startColor
-               Vector<4,float>(1.,1.0,1.0,.3),   //endColor
                Vector<3,float>(0,0.295,0),       //antigravity
                textureLoader),    
     heightMod(heightMap),
@@ -47,9 +43,21 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
     ITextureResourcePtr tex1 = 
         ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
     AddTexture(tex1);
+
+
+    // color modifier
+    colormod.AddValue( .9, Vector<4,float>(0.1, 0.01, .01, .4)); // blackish
+    colormod.AddValue( .7, Vector<4,float>( .7,  0.3,  .1, .6)); // redish
+    colormod.AddValue( .2, Vector<4,float>( .9, 0.75,  .2, .7)); // orangeish
+    colormod.AddValue( .0, Vector<4,float>(0.2,  0.2,  .3, .1)); // blueish
+
+    // size variations 
+    sizem.AddValue(1.0, 2); 
+    sizem.AddValue(.65, 7);
+    sizem.AddValue( .2, 5);    
+    sizem.AddValue( .0, 3);    
     
     system.ProcessEvent().Attach(*this);
-    
 }
 
 BreathWeapon::~BreathWeapon() {
