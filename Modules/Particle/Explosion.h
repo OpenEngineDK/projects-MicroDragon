@@ -49,6 +49,7 @@ private:
     float charge, initLife, initSize, initSpeed;
     BoidsModifier<FireEffect::TYPE> boidsMod;
     unsigned int maxEmits;
+    BoidsSystem& boidsSystem;
 public:
     Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
               TextureLoader& textureLoader,

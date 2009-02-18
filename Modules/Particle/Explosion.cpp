@@ -35,7 +35,7 @@ Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
                Vector<3,float>(0.0,0.0,0.0),   //antigravity
                textureLoader),
     charge(1.0), initLife(life), initSize(3), initSpeed(speed), 
-    boidsMod(boidsSystem, 700), maxEmits(150)
+    boidsMod(boidsSystem, 700), maxEmits(150), boidsSystem(boidsSystem)
 {
     system.ProcessEvent().Attach(*this);
     ITextureResourcePtr tex1 = 
@@ -64,6 +64,7 @@ Explosion::~Explosion() {
 void Explosion::Fire(Vector<3,float> pos) {
     GetTransformationNode()->SetPosition(pos);
     SetActive(true);
+    boidsSystem.Explosion(pos, 200*charge);
 }
 
 void Explosion::Handle(ParticleEventArg e) {

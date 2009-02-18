@@ -151,9 +151,23 @@ void BoidsSystem::HandleFire(Vector<3,float> position, float strength) {
     }
 }
 
-void BoidsSystem::Handle(ParticleSystemEventArg arg) {
-    Vector<3,float> position = arg.position;
-    float strength = arg.strength;
+// void BoidsSystem::Handle(ParticleSystemEventArg arg) {
+//     Vector<3,float> position = arg.position;
+//     float strength = arg.strength;
+
+//     for (int i=0; i<numberOfBoids; i++) {
+//         // Blow away from fireball
+//         Vector<3,float> dir = 
+// 	  boids[i]->getPosition() - (position+Vector<3,float>(0,-5,0));
+
+//         boids[i]->addExternalImpulse((dir.GetNormalize())*strength*
+// 				     (1/std::max(3.0f,dir.GetLength())));
+//     }
+// }
+
+void BoidsSystem::Explosion(Vector<3,float> position, float strength) {
+//     Vector<3,float> position = arg.position;
+//     float strength = arg.strength;
 
     for (int i=0; i<numberOfBoids; i++) {
         // Blow away from fireball
@@ -164,6 +178,7 @@ void BoidsSystem::Handle(ParticleSystemEventArg arg) {
 				     (1/std::max(3.0f,dir.GetLength())));
     }
 }
+
 
 void BoidsSystem::IncNumberOfShownBoids() {
     if( numberOfShownBoids < numberOfBoids )

@@ -68,8 +68,8 @@ using OpenEngine::Effects::TextEffect;
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
 class BoidsSystem : public IListener<InitializeEventArg>,
-                    public IListener<ProcessEventArg>, public RenderNode, 
-                    public IListener<ParticleSystemEventArg> {
+                    public IListener<ProcessEventArg>, public RenderNode {
+                    //                    public IListener<ParticleSystemEventArg> {
 private:
     TextEffect textEffect;
 public:
@@ -89,7 +89,8 @@ public:
 
     virtual void Apply(IRenderingView* rv);
   
-    void Handle(ParticleSystemEventArg arg);
+    //void Handle(ParticleSystemEventArg arg);
+    void Explosion(Vector<3,float> position, float strength);
     void HandleFire(Vector<3,float> position, float strength);
     void IncNumberOfShownBoids();
     void DecNumberOfShownBoids();
