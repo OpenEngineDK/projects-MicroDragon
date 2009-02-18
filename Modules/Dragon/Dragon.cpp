@@ -143,6 +143,7 @@ void Dragon::Handle(InitializeEventArg arg) {
     neck = new Tube( 2.5, 1.2, 1.0, 0.5, neckLength );
     headFocus = new Follower(target->getTarget());
     headPos = new Follower(target->getTarget());
+    moveNeckBack = 5.0;
 }
 
 void Dragon::Apply(IRenderingView* rv) {
@@ -195,8 +196,19 @@ void Dragon::Handle(ProcessEventArg arg) {
     double time = prevTime + timeStep;
 
     float unitsFromTarget = 12;
-    float moveNeckBack = 5.0;
+    //    float moveNeckBack = 5.0;
+
+    // hack to make the neck move back when charging fireball
+    if (chargingFireball) {
+        moveNeckBack += timeStep*5;
+        moveNeckBack = min(moveNeckBack, 10.0f);
+    } else {
+        moveNeckBack -= timeStep*10;
+        moveNeckBack = max(moveNeckBack, 5.0f);
+    }
+    
     float dragonLength = neckLength+moveNeckBack;
+
 
     Vector<3,float> startP = Vector<3,float>(30,-5,0);
     startP[1] = 0.0;
@@ -246,8 +258,8 @@ void Dragon::Handle(ProcessEventArg arg) {
     if (timeStep > 0.000001)
       fireSourceVel = (fireSource-fireSourcePrev)/timeStep;
 
-    neck->update(startP,Vector<3,float>(0.1,1,0),Vector<3,float>(1,0,0),
-		 fireSource,fireDir,fireSource-startP,true);
+//     neck->update(startP,Vector<3,float>(0.1,1,0),Vector<3,float>(1,0,0),
+// 		 fireSource,fireDir,fireSource-startP,true);
 
 
     // update the headNode Transformation node according to the new neck

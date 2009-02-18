@@ -34,6 +34,7 @@ private:
     TransformationNode* node;
     TransformationNode* tmpnode;
     float speed;
+    float time;
     bool active;
     HeightMap& heightMap;
     Vector<3,float> deltapos, gravity;
@@ -42,9 +43,8 @@ public:
     TransformationModifier(FireEffect& fire, float speed, HeightMap& heightMap,
                            Explosion& exp):
         fire(fire),
-        node(fire.GetTransformationNode()), 
         tmpnode(new TransformationNode()),
-        speed(speed), active(false), 
+        speed(speed), time(0.0), active(false), 
         heightMap(heightMap),
         gravity(Vector<3,float>(0,-1.0,0)),
         exp(exp) {
@@ -59,9 +59,10 @@ public:
     float GetSpeed() { return speed; }
 
     void SetActive(bool active) {
+        if (!node) return;
         this->active = active;
         if (active) {
-            node = fire.GetTransformationNode();
+            time = 0.0;
             Quaternion<float> q;
             Vector<3,float> pos;
             node->GetAccumulatedTransformations(&pos, &q);
@@ -75,19 +76,23 @@ public:
         }
     }
 
+    void SetTransformationNode(TransformationNode* node) {
+        this->node = node;
+    }
+
     inline void Process(float dt) {
         if (!active) return;
-        
+        time += dt;
         tmpnode->SetPosition(tmpnode->GetPosition()+deltapos*dt);
         //deltapos *= 0.99;
         deltapos += gravity*dt;
 
         Vector<3,float> h = heightMap.HeightAt(tmpnode->GetPosition());
-        if (tmpnode->GetPosition()[1] < h[1]-0.1) {
-            SetActive(false);
+        if (tmpnode->GetPosition()[1] < h[1]-0.1 || time > 3.0) {
             fire.SetActive(false);
             fire.Reset();
             exp.Fire(tmpnode->GetPosition());
+            SetActive(false);
         }
     }
 };

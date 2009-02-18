@@ -40,8 +40,6 @@ public:
             particle.velocity = q.RotateVector(particle.velocity);
             particle.velocity = Vector<3,float>(0.0,1.0,0.0)*particle.velocity.GetLength();
             particle.velocity *= 0.5;
-            //particle.forces += particle.velocity.GetNormalize()*(-0.1);
-
         }
     }
 

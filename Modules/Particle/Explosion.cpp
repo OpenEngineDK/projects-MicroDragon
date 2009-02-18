@@ -22,8 +22,8 @@ Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
                      TextureLoader& textureLoader, BoidsSystem& boidsSystem): 
     FireEffect(system,
                100,     //numParticles
-               0.04,    //emitRate
-               10.0,    //number 
+               0.03,    //emitRate
+               20.0,    //number 
                5.0,     //numberVar
                0.2,     //life
                0.1,     //lifeVar
@@ -35,7 +35,7 @@ Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
                Vector<3,float>(0.0,0.0,0.0),   //antigravity
                textureLoader),
     charge(1.0), initLife(life), initSize(3), initSpeed(speed), 
-    boidsMod(boidsSystem, 700), maxEmits(150), boidsSystem(boidsSystem)
+    boidsMod(boidsSystem, 700), maxEmits(50), boidsSystem(boidsSystem)
 {
     system.ProcessEvent().Attach(*this);
     ITextureResourcePtr tex1 = 

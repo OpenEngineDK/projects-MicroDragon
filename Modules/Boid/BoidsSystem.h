@@ -20,7 +20,7 @@
 
 // @todo: needs to be here for windows to compile
 #include "BoidSystemEvents.h"
-#include "../Particle/ParticleSystemEvents.h"
+//#include "../Particle/ParticleSystemEvents.h"
 
 // Text particle system
 #include <Effects/TextEffect.h>

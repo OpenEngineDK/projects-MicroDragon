@@ -25,10 +25,10 @@ OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
                        BoidsSystem& boidsSystem): 
     FireEffect(system,
                50,     //numParticles
-               0.04,   //emitRate
-               10.0,   //number 
+               0.005,   //emitRate
+               15.0,   //number 
                2.0,    //numberVar
-               0.30,   //life
+               0.40,   //life
                0.1,    //lifeVar
                2*PI,   //angle
                230.0,    //spin
@@ -76,6 +76,10 @@ OEFireBall::~OEFireBall() {
 void OEFireBall::Charge() {
     if (charging || firing)
         return;
+
+    if (GetTransformationNode())
+        transMod.SetTransformationNode(GetTransformationNode());
+
     life = initLife;
     charge = 0.0;
     charging = true;
@@ -83,6 +87,7 @@ void OEFireBall::Charge() {
 }
 
 void OEFireBall::Fire() {
+    if (!charging) return;
     charging = false;
     if (charge < 0.1) {
         SetActive(false);
@@ -116,3 +121,7 @@ void OEFireBall::Reset() {
     FireEffect::Reset();
     firing = charging = false;
 };
+
+void OEFireBall::SetTransformationNode(TransformationNode* node) {
+    FireEffect::SetTransformationNode(node);
+}

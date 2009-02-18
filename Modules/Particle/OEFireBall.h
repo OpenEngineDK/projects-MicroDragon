@@ -56,6 +56,8 @@ public:
     void Charge();
     void Fire();
     void Reset();
+    void SetTransformationNode(TransformationNode* node);
+
 };
 
 #endif

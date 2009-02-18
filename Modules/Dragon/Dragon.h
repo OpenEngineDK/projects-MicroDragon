@@ -98,6 +98,7 @@ private:
 
     double prevTime;
     float neckLength;
+    float moveNeckBack;
     Follower* headFocus;
     Follower* headPos;
     // Render flags
