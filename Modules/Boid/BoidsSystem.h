@@ -85,7 +85,7 @@ public:
     void Handle(InitializeEventArg arg);
     void Handle(ProcessEventArg arg);
 
-    void ResetBoids();
+    void ResetBoids(bool first = false);
 
     virtual void Apply(IRenderingView* rv);
   

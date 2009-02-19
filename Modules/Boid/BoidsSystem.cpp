@@ -66,10 +66,10 @@ BoidsSystem::~BoidsSystem() {
 
 void BoidsSystem::Handle(InitializeEventArg arg) {
     timer.Start();
-    ResetBoids();
+    ResetBoids(true);
 }
 
-void BoidsSystem::ResetBoids() {
+void BoidsSystem::ResetBoids(bool first) {
     numberOfShownBoids = numberOfBoids;
     aliveBoids = numberOfBoids;
     alignment = 0.3;
@@ -79,8 +79,8 @@ void BoidsSystem::ResetBoids() {
         for (int j=0; j<gridSize; j++) {
             float val = (i+gridSize*j)*1.0/numberOfBoids;
             unsigned int index = randGen.UniformInt(0,screams.size()-1);
-
-            delete boids[i*gridSize+j];
+            if (!first)
+                delete boids[i*gridSize+j];
             boids[i*gridSize+j] =
                 new Boid(heightMap,oscsurface,this,
                          Vector<3,float>(i*2-(gridSize-1),0,
