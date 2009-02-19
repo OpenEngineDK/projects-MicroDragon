@@ -19,10 +19,12 @@
 #include <Devices/IMouse.h>
 #include <Math/Vector.h>
 #include <Sound/MusicPlayer.h>
+#include <Scene/RenderStateNode.h>
+
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::TransformationNode;
-
+using OpenEngine::Scene::RenderStateNode;
 
 KeyHandler::KeyHandler(FollowCamera& camera,
                        TransformationNode& target,
@@ -34,7 +36,8 @@ KeyHandler::KeyHandler(FollowCamera& camera,
                        TimeModifier& timeModifier,
                        GameState& gamestate,
                        MusicPlayer& musicplayer,
-                       IFrame& frame)
+                       IFrame& frame,
+                       RenderStateNode* rn)
     : camera(camera)
     , target(target)
     , hmap(hmap)
@@ -45,7 +48,9 @@ KeyHandler::KeyHandler(FollowCamera& camera,
 
     , up(0),down(0),left(0),right(0)
     , cam_up(0),cam_down(0),cam_left(0),cam_right(0)
-    , musicplayer(musicplayer) {
+    , musicplayer(musicplayer)
+    , rn(rn)
+{
 
   this->island = island;
   this->dragon = dragon;
@@ -192,6 +197,10 @@ void KeyHandler::HandleDown(Key key) {
         break;
     case KEY_s:
         MoveBack(moveChunkKeyboard);
+        break;
+    case KEY_z:
+        rn->ToggleOption(RenderStateNode::LIGHTING);
+        rn->ToggleOption(RenderStateNode::WIREFRAME);
         break;
 	/*
     case KEY_z:

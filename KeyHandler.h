@@ -75,6 +75,7 @@ private:
     TimeModifier& timeModifier;
     GameState& gamestate;
     IFrame& frame;
+    RenderStateNode *rn;
 
     bool done, pause;
 
@@ -104,7 +105,8 @@ public:
                TimeModifier& timeModifer,
                GameState& gamestate,
                MusicPlayer& musicplayer,
-               IFrame& frame);
+               IFrame& frame,
+               RenderStateNode* rn);
     ~KeyHandler();
 
     void Handle(KeyboardEventArg arg);
