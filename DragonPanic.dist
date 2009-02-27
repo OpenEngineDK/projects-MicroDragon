@@ -60,8 +60,8 @@ win32 /libraries http://openengine.dk/data/libraries/vorbis-win32.zip
 # os x libraries
 
 # linux libraries
-linux /libraries http://openengine.dk/data/libraries/openal-linux32.zip
-linux /libraries http://openengine.dk/data/libraries/sdlimage-linux32.zip
+linux /libraries http://openengine.dk/data/libraries/openal-linux32.tar.gz
+linux /libraries http://openengine.dk/data/libraries/sdlimage-linux32.tar.gz
 
 
 
