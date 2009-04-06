@@ -20,9 +20,8 @@
 #include <Display/InterpolatedViewingVolume.h>
 #include <Display/ViewingVolume.h>
 // SDL implementation
-#include <Display/SDLFrame.h>
+#include <Display/SDLEnvironment.h>
 #include <Display/HUD.h>
-#include <Devices/SDLInput.h>
 
 // Rendering structures
 #include <Scene/RenderNode.h>
@@ -105,6 +104,7 @@ using namespace OpenEngine::Sound;
 struct Config {
     IEngine&              engine;
     EventProfiler         prof;
+    IEnvironment*         env;
     IFrame*               frame;
     Viewport*             viewport;
     IViewingVolume*       viewingvolume;
@@ -131,6 +131,7 @@ struct Config {
 
     Config(IEngine& engine)
         : engine(engine)
+        , env(NULL)
         , frame(NULL)
         , viewport(NULL)
         , viewingvolume(NULL)
@@ -282,8 +283,9 @@ void SetupDisplay(Config& config) {
         config.viewport      != NULL)
         throw Exception("Setup display dependencies are not satisfied.");
 
-    //config.frame         = new SDLFrame(1440, 900, 32, FRAME_FULLSCREEN);
-    config.frame         = new SDLFrame(800, 600, 32);
+    config.env = new SDLEnvironment(800, 600);
+    //config.frame         = new SDLFrame(1024, 768, 32, FRAME_FULLSCREEN);    
+    config.frame         = &config.env->GetFrame();
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
     //config.frustum       = new Frustum(*config.camera, 20, 3000);
@@ -297,22 +299,23 @@ void SetupDisplay(Config& config) {
 
 void SetupDevices(Config& config) {
     if (config.keyboard != NULL ||
-        config.mouse    != NULL)
+        config.mouse    != NULL ||
+        config.env      == NULL)
         throw Exception("Setup devices dependencies are not satisfied.");
     // Create the mouse and keyboard input modules
-    SDLInput* input = new SDLInput();
-    config.keyboard = input;
-    config.mouse = input;
-    config.joystick = input;
+    
+    config.keyboard = config.env->GetKeyboard();
+    config.mouse = config.env->GetMouse();
+    config.joystick = config.env->GetJoystick();
 
     // Bind the quit handler
     QuitHandler* quit_h = new QuitHandler(config.engine);
     config.keyboard->KeyEvent().Attach(*quit_h);
 
     // Bind to the engine for processing time
-    config.engine.InitializeEvent().Attach(*input);
-    config.engine.ProcessEvent().Attach(*input);
-    config.engine.DeinitializeEvent().Attach(*input);
+    config.engine.InitializeEvent().Attach(*config.env);
+    config.engine.ProcessEvent().Attach(*config.env);
+    config.engine.DeinitializeEvent().Attach(*config.env);
 }
 
 void SetupRendering(Config& config) {
@@ -495,7 +498,7 @@ void SetupDebugging(Config& config) {
 // #if OE_DEBUG
     // main engine events
     config.prof.Profile<ProcessEventArg>
-        ("Input System", config.engine.ProcessEvent(), *config.mouse);
+        ("Environment", config.engine.ProcessEvent(), *config.env);
     config.prof.Profile<ProcessEventArg>
         ("Sound System", config.engine.ProcessEvent(), *config.soundsystem);
     config.prof.Profile<ProcessEventArg>
