@@ -27,7 +27,7 @@
 #include <Scene/RenderNode.h>
 // OpenGL rendering implementation
 #include <Renderers/OpenGL/LightRenderer.h>
-#include <Renderers/OpenGL/BufferedRenderer.h>
+#include <Renderers/OpenGL/FBOBufferedRenderer.h>
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
 #include <Renderers/TextureLoader.h>
@@ -327,7 +327,7 @@ void SetupRendering(Config& config) {
 
     // Create a renderer
     config.renderer = new OpenGL::Renderer(config.viewport);
-    //config.renderer = new BufferedRenderer(config.viewport);
+    //config.renderer = new FBOBufferedRenderer(config.viewport);
 
     // Setup a rendering view
     IRenderingView* rv = new OpenGL::RenderingView(*config.viewport);
