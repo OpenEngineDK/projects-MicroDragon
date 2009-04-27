@@ -45,11 +45,10 @@ KeyHandler::KeyHandler(FollowCamera& camera,
     , timeModifier(timeModifier) 
     , gamestate(gamestate)
     , frame(frame)
-
+    , rn(rn)
     , up(0),down(0),left(0),right(0)
     , cam_up(0),cam_down(0),cam_left(0),cam_right(0)
     , musicplayer(musicplayer)
-    , rn(rn)
 {
 
   this->island = island;
