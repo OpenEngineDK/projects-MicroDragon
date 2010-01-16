@@ -341,7 +341,7 @@ void SetupRendering(Config& config) {
     config.renderer->InitializeEvent().Attach(*dlt);
 
     config.renderer->PreProcessEvent()
-        .Attach( *(new Renderers::OpenGL::LightRenderer(*config.camera)) );
+        .Attach( *(new Renderers::OpenGL::LightRenderer(*config.viewport)) );
 
     config.engine.InitializeEvent().Attach(*config.renderer);
     config.engine.ProcessEvent().Attach(*config.renderer);
