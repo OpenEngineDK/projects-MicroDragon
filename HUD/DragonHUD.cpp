@@ -10,9 +10,11 @@
 #include "DragonHUD.h"
 
 #include <string>
+#include <Math/Vector.h>
 #include <Resources/ResourceManager.h>
 #include <Utils/Convert.h>
 
+using namespace OpenEngine::Math;
 using namespace OpenEngine::Resources;
 
 DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate, HUD& hud, TextureLoader& texLoader)
