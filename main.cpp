@@ -418,7 +418,7 @@ void SetupScene(Config& config) {
     //init HeightMap
     string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
     ITextureResourcePtr hMap = 
-      ITextureResourcePtr(new RAWResource(filename, 1024, 1024, 8));
+      ITextureResourcePtr(new RAWResource(filename, 1024, 1024, 1));
     hMap->Load();
         
     ITextureResourcePtr texture =
