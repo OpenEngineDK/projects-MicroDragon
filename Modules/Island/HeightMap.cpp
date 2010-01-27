@@ -26,11 +26,11 @@ HeightMap::HeightMap(ITextureResourcePtr heightMap,
 
     HEIGHT_RATIO = heightRatio;
 
-    if (heightMap->GetDepth() != 8)
+    if (heightMap->GetChannels() != 1)
       throw Exception("can only generate heightmap from 8bit textures");
 
     if(heightMap->GetWidth() != heightMap->GetHeight())
-        logger.warning << "height map width != height - this has not been tested but shoul work!" << logger.end;
+        logger.warning << "height map width != height - this has not been tested but should work!" << logger.end;
 
     scaledHeightMap = ITextureResourcePtr
         ( new ScaledTextureResource(heightMap, stepSize) );
