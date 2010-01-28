@@ -169,8 +169,6 @@ void SetupScene(Config&);
 void SetupDebugging(Config&);
 
 int main(int argc, char** argv) {
-    InitializeGlut(&argc, argv);
-
     // Setup logging facilities.
     Logger::AddLogger(new StreamLogger(&std::cout));
 
