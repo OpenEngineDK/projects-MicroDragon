@@ -67,6 +67,7 @@ OEFireBall::OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
    
     // attach explosion rendernode 
     GetSceneNode()->AddNode(exp.GetSceneNode());
+    SetActive(false);
 }
 
 OEFireBall::~OEFireBall() {

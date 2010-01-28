@@ -52,6 +52,7 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
     numberOfRenderStates = 3;
     renderState = numberOfRenderStates-1;
     usingBreathWeapon = chargingFireball = false;
+    breathweapon->SetActive(false);
 
     //@todo does this make a difference?
     /*
@@ -136,6 +137,8 @@ Dragon::~Dragon() {
 
 void Dragon::Handle(InitializeEventArg arg) {
     usingBreathWeapon = false;
+    breathweapon->SetActive(false);
+    
     chargingFireball = false;
     fireballCharge = 0.0;
     prevTime = 0.0;

@@ -48,6 +48,7 @@ Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssyste
     this->boidssystem = boidssystem;
 
     boidfire = new BoidFire(oeparticlesystem, texloader);
+    boidfire->SetActive(false);
     fireTrans = new TransformationNode();
     boidfire->SetTransformationNode(fireTrans);
     particleRoot->AddNode(boidfire->GetSceneNode());
