@@ -290,9 +290,9 @@ void SetupDisplay(Config& config) {
     config.viewport      = new Viewport(*config.frame);
     config.viewport->SetViewingVolume(config.camera);
 
-    config.engine.InitializeEvent().Attach(*config.frame);
-    config.engine.ProcessEvent().Attach(*config.frame);
-    config.engine.DeinitializeEvent().Attach(*config.frame);
+    // config.engine.InitializeEvent().Attach(*config.frame);
+    // config.engine.ProcessEvent().Attach(*config.frame);
+    // config.engine.DeinitializeEvent().Attach(*config.frame);
 }
 
 void SetupDevices(Config& config) {
