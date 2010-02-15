@@ -102,7 +102,7 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
     jawNode->AddNode(jawRes->GetSceneNode());
 
 
-    neckTexture = ResourceManager<ITextureResource>
+    neckTexture = ResourceManager<ITexture2D>
         ::Create(folder + "DragonNeckColor128x512.tga");
     //neckTexture->Load();
     textureLoader.Load(neckTexture);

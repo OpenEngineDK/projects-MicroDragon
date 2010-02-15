@@ -39,7 +39,7 @@
 #include <Resources/ResourceManager.h>
 // OBJ and TGA plugins
 #include <Resources/RAWResource.h>
-#include <Resources/ITextureResource.h>
+#include <Resources/ITexture2D.h>
 #include <Resources/SDLImage.h>
 #include <Resources/OBJResource.h>
 
@@ -267,7 +267,7 @@ void SetupResources(Config& config) {
 
     // load resource plug-ins
     ResourceManager<IModelResource>::AddPlugin(new OBJPlugin());
-    ResourceManager<ITextureResource>::AddPlugin(new SDLImagePlugin());
+    ResourceManager<ITexture2D>::AddPlugin(new SDLImagePlugin());
     ResourceManager<ISoundResource>::AddPlugin(new VorbisResourcePlugin());
 
     config.resourcesLoaded = true;
@@ -415,18 +415,17 @@ void SetupScene(Config& config) {
 
     //init HeightMap
     string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
-    ITextureResourcePtr hMap = 
-      ITextureResourcePtr(new RAWResource(filename, 1024, 1024, 1));
+    UCharTexture2DPtr hMap = 
+        UCharTexture2DPtr(new RAWResource(filename, 1024, 1024, 1));
     hMap->Load();
         
-    ITextureResourcePtr texture =
-      ResourceManager<ITextureResource>::Create("Island/ground.tga");
+    ITexture2DPtr texture =
+      ResourceManager<ITexture2D>::Create("Island/ground.tga");
 
-    HeightMap* heightMap = new HeightMap(hMap, texture, 300.0, 0.25, 16);
+    HeightMap* heightMap = new HeightMap(hMap, texture, 300.0, 0.25, 2);
 
     Island* island = new Island(heightMap);
     config.scene->AddNode(island);
-    hMap->Unload();
 
     Target* target = config.target = new Target(*heightMap);
     TransformationNode* targetNode = target->GetTargetNode();

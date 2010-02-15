@@ -13,13 +13,13 @@
 #include <Logging/Logger.h>
 #include <Renderers/IRenderingView.h>
 #include <Resources/DirectoryManager.h>
-#include <Resources/ITextureResource.h>
+#include <Resources/ITexture2D.h>
 #include <Resources/ResourceManager.h>
 #include <Scene/TransformationNode.h>
 
 using OpenEngine::Resources::DirectoryManager;
-using OpenEngine::Resources::ITextureResource;
-using OpenEngine::Resources::ITextureResourcePtr;
+using OpenEngine::Resources::ITexture2D;
+using OpenEngine::Resources::ITexture2DPtr;
 using OpenEngine::Resources::ResourceManager;
 
 Island::Island(HeightMap* heightMap) : heightMap(heightMap) {

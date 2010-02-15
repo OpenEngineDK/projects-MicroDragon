@@ -13,11 +13,11 @@
 #include <ParticleSystem/ParticleSystem.h>
 #include <Renderers/TextureLoader.h>
 #include <Resources/ResourceManager.h>
-#include <Resources/ITextureResource.h>
+#include <Resources/ITexture2D.h>
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Resources::ResourceManager;
-using OpenEngine::Resources::ITextureResource;
+using OpenEngine::Resources::ITexture2D;
 
 BoidFire::BoidFire(OpenEngine::ParticleSystem::ParticleSystem& system,
                    TextureLoader& textureLoader): 
@@ -36,8 +36,8 @@ BoidFire::BoidFire(OpenEngine::ParticleSystem::ParticleSystem& system,
                Vector<3,float>(0,0.182,0),     //antigravity
                textureLoader)    
 {
-    ITextureResourcePtr tex1 = 
-        ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
+    ITexture2DPtr tex1 = 
+        ResourceManager<ITexture2D>::Create("Smoke/smoke01.tga");
     AddTexture(tex1);
 
 

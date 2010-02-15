@@ -12,11 +12,11 @@
 #include <ParticleSystem/ParticleSystem.h>
 #include <Renderers/TextureLoader.h>
 #include <Resources/ResourceManager.h>
-#include <Resources/ITextureResource.h>
+#include <Resources/ITexture2D.h>
 
 
 using OpenEngine::Resources::ResourceManager;
-using OpenEngine::Resources::ITextureResource;
+using OpenEngine::Resources::ITexture2D;
 
 Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
                      TextureLoader& textureLoader, BoidsSystem& boidsSystem): 
@@ -38,8 +38,8 @@ Explosion::Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
     boidsMod(boidsSystem, 700), maxEmits(50), boidsSystem(boidsSystem)
 {
     system.ProcessEvent().Attach(*this);
-    ITextureResourcePtr tex1 = 
-        ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
+    ITexture2DPtr tex1 = 
+        ResourceManager<ITexture2D>::Create("Smoke/smoke01.tga");
     AddTexture(tex1);
     
     // color modifier

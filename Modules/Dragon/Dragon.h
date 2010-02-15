@@ -8,7 +8,7 @@
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
 #include <Scene/RenderNode.h>
-#include <Resources/ITextureResource.h>
+#include <Resources/ITexture2D.h>
 
 #include <string>
 #include <list>
@@ -88,7 +88,7 @@ private:
     TransformationNode* jawAngleNode;
 
     Tube* neck;
-    ITextureResourcePtr neckTexture;
+    ITexture2DPtr neckTexture;
 
     list<Line*> redlines;
     list<Line*> bluelines;

@@ -1,3 +1,4 @@
+
 # OpenEngine Distribution file for DragonPanic.
 
 # main repository
@@ -17,7 +18,6 @@ darcs /extensions/GenericHandlers http://openengine.dk/code/extensions/GenericHa
 darcs /extensions/OBJResource     http://openengine.dk/code/extensions/OBJResource
 darcs /extensions/SDLImage     http://openengine.dk/code/extensions/SDLImage
 darcs /extensions/RAWResource     http://openengine.dk/code/extensions/RAWResource
-darcs /extensions/ScaledTextureResource http://openengine.dk/code/extensions/ScaledTextureResource
 darcs-dev /extensions/GLUT            fh.daimi.au.dk:/users/cgd/code/extensions/GLUT
 darcs-dev /extensions/SDL             fh.daimi.au.dk:/users/cgd/code/extensions/SDL
 darcs-dev /extensions/HUD             fh.daimi.au.dk:/users/cgd/code/extensions/HUD
@@ -26,7 +26,6 @@ darcs-dev /extensions/GenericHandlers fh.daimi.au.dk:/users/cgd/code/extensions/
 darcs-dev /extensions/OBJResource     fh.daimi.au.dk:/users/cgd/code/extensions/OBJResource
 darcs-dev /extensions/SDLImage     fh.daimi.au.dk:/users/cgd/code/extensions/SDLImage
 darcs-dev /extensions/RAWResource     fh.daimi.au.dk:/users/cgd/code/extensions/RAWResource
-darcs-dev /extensions/ScaledTextureResource fh.daimi.au.dk:/users/cgd/code/extensions/ScaledTextureResource
 
 # cairo extension
 darcs /extensions/CairoResource http://openengine.dk/code/extensions/CairoResource

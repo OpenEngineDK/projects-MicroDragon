@@ -12,7 +12,7 @@
 #include <Math/RandomGenerator.h>
 #include <Renderers/IRenderingView.h>
 #include <Resources/ResourceManager.h>
-#include <Resources/ITextureResource.h>
+#include <Resources/ITexture2D.h>
 
 #include <iostream>
 
@@ -38,20 +38,20 @@ ParticleSystem::~ParticleSystem(){
 }
 
 void ParticleSystem::Handle(InitializeEventArg arg) {
-    ITextureResourcePtr tex1 = 
-        ResourceManager<ITextureResource>::Create("Smoke/smoke01.tga");
+    ITexture2DPtr tex1 = 
+        ResourceManager<ITexture2D>::Create("Smoke/smoke01.tga");
     textureLoader.Load(tex1);
     textures[ textureIndex ] = tex1->GetID();
     textureIndex++;
 
-    ITextureResourcePtr tex2 = 
-      ResourceManager<ITextureResource>::Create("Smoke/smoke02.tga");
+    ITexture2DPtr tex2 = 
+      ResourceManager<ITexture2D>::Create("Smoke/smoke02.tga");
     textureLoader.Load(tex2);
     textures[ textureIndex ] = tex2->GetID();
     textureIndex++;
 
-    ITextureResourcePtr tex3 = 
-      ResourceManager<ITextureResource>::Create("Smoke/smoke03.tga");
+    ITexture2DPtr tex3 = 
+      ResourceManager<ITexture2D>::Create("Smoke/smoke03.tga");
     textureLoader.Load(tex3);
     textures[ textureIndex ] = tex3->GetID();
     textureIndex++;

@@ -5,8 +5,7 @@
 #include <Core/Exceptions.h>
 #include <Geometry/FaceSet.h>
 #include <Renderers/IRenderingView.h>
-#include <Resources/ITextureResource.h>
-#include <Resources/ScaledTextureResource.h>
+#include <Resources/ITexture2D.h>
 #include <Scene/GeometryNode.h>
 
 #include <Logging/Logger.h>
@@ -20,9 +19,10 @@ int HeightMap::Clamp(int x, int m) {
     return max(0,min(m,x));
 }
 
-HeightMap::HeightMap(ITextureResourcePtr heightMap,
-		     ITextureResourcePtr texture,
-                     float scale, float heightRatio, int stepSize) : scale(scale) {
+HeightMap::HeightMap(UCharTexture2DPtr heightMap,
+                     ITexture2DPtr texture,
+                     float scale, float heightRatio, int stepSize) 
+    : scale(scale), stepSize(stepSize), heightmap(heightMap) {
 
     HEIGHT_RATIO = heightRatio;
 
@@ -32,12 +32,8 @@ HeightMap::HeightMap(ITextureResourcePtr heightMap,
     if(heightMap->GetWidth() != heightMap->GetHeight())
         logger.warning << "height map width != height - this has not been tested but should work!" << logger.end;
 
-    scaledHeightMap = ITextureResourcePtr
-        ( new ScaledTextureResource(heightMap, stepSize) );
-    scaledHeightMap->Load();
-    width = scaledHeightMap->GetWidth();
-    height = scaledHeightMap->GetHeight();
-    data = scaledHeightMap->GetData();
+    width = heightmap->GetWidth() / stepSize;
+    height = heightmap->GetHeight() / stepSize;
 
     // @todo: calculate this, and move it to island
     translate = Vector<3,float>(-150,-3.75,-150);
@@ -64,7 +60,7 @@ HeightMap::~HeightMap() {
 /**
  * Constructs a geometry node from the scaled height map texture
  */
-GeometryNode* HeightMap::ConstructGeometry(ITextureResourcePtr texture) {
+GeometryNode* HeightMap::ConstructGeometry(ITexture2DPtr texture) {
     int x = 0, z = 0; //Create Some Variables For Readability
     Vector<3,float> normal[4];
     Vector<3,float> point[4];
@@ -141,7 +137,9 @@ float HeightMap::Height(int x, int z) {
     //if( !((0 < x < width) && (0 < z < height)) ) return 0.0f;
 
     // Index Into Our Height Array And Return The Height
-    return data[x + (z * width)]/255.0f;
+    unsigned char height = heightmap->GetPixel(x * stepSize, z * stepSize)[0]; 
+    return height / 255.0f;
+
 }
 
 /**
@@ -164,7 +162,7 @@ float HeightMap::HeightAt(float x, float z) {
     float zDir = fmod(floatZ,1.0f);
 
     // takes the height at the four surrounding points 
-    // and makes an linear interpolation in both directions
+    // and makes a linear interpolation in both directions
     return (
             Height( ((int)floatX), (int)floatZ )*(1-xDir)*(1-zDir)+
             

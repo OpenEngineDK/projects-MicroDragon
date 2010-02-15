@@ -20,8 +20,8 @@ using namespace OpenEngine::Resources;
 DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate, HUD& hud, TextureLoader& texLoader)
     : gamestate(gamestate), hud(hud), texLoader(texLoader) {
 
-    ITextureResourcePtr logo = 
-        ResourceManager<ITextureResource>::Create("logo/small.png");
+    ITexture2DPtr logo = 
+        ResourceManager<ITexture2D>::Create("logo/small.png");
     logo->Load();
     logoSurface = hud.CreateSurface(logo);
     logoSurface->SetPosition(HUD::Surface::RIGHT, HUD::Surface::TOP);
