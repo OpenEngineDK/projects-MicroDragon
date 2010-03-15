@@ -237,13 +237,14 @@ void SetupParticleSystem(Config& config) {
 }
 
 void SetupSound(Config& config) {
-    config.soundsystem = new OpenALSoundSystem(config.scene,config.camera);
-    config.musicplayer = new MusicPlayer(config.camera,config.soundsystem);
+    config.soundsystem = new OpenALSoundSystem();
+    config.musicplayer = new MusicPlayer(NULL,config.soundsystem);
     bool enableSound = true;
     if (enableSound) {
         // setup the sound system
         config.soundsystem->SetMasterGain(1.0);
-        config.engine.ProcessEvent().Attach(*config.soundsystem);
+        config.engine.InitializeEvent().Attach(*config.soundsystem);
+        config.engine.DeinitializeEvent().Attach(*config.soundsystem);
 
         // setup the music player
         config.musicplayer->AddSound("Music/beak.ogg");
@@ -347,6 +348,7 @@ void SetupRendering(Config& config) {
 
     config.hud = new HUD();
     config.renderer->PostProcessEvent().Attach( *config.hud );
+    config.renderer->PreProcessEvent().Attach(*config.soundsystem);
 }
 
 void SetupScene(Config& config) {
@@ -370,7 +372,7 @@ void SetupScene(Config& config) {
     renderStateNode->AddNode(glNode);
 
     // attach scene to soundsystem
-    config.soundsystem->SetRoot(config.scene);
+    // config.soundsystem->SetRoot(config.scene);
     
     // Set scene lighting
     float pFade = 1.4;
