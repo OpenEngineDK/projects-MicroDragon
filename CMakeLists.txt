@@ -60,6 +60,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   OpenEngine_Devices
   OpenEngine_Scene
   OpenEngine_Utils
+  OpenEngine_Geometry
   # Extension dependencies
   Extensions_GenericHandlers
   Extensions_HUD

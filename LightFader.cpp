@@ -2,7 +2,7 @@
 
 #include <Logging/Logger.h>
 
-LightFader::LightFader(LightNode* from, LightNode* to, LightNode* lightNode, float time) {
+LightFader::LightFader(Light* from, Light* to, Light* lightNode, float time) {
 
     this->from = from;
   this->to = to;//todo to.Clone();

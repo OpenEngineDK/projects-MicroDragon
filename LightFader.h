@@ -13,27 +13,27 @@
 // inherits from
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
-#include <Scene/LightNode.h>
+#include <Geometry/Light.h>
 
 #include <Utils/Timer.h>
 
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::ProcessEventArg;
-using OpenEngine::Scene::LightNode;
+using OpenEngine::Geometry::Light;
 using OpenEngine::Utils::Timer;
 
 class LightFader : public IListener<ProcessEventArg> {
 private:
-    LightNode* from;
-    LightNode* to;
-    LightNode* lightNode;
+    Light* from;
+    Light* to;
+    Light* lightNode;
     float time, beginPct, endPct, timeSpend;
     bool done;
 
     Timer timer;
 
 public:
-    LightFader(LightNode* from, LightNode* to, LightNode* lightNode, float time);
+    LightFader(Light* from, Light* to, Light* lightNode, float time);
     virtual ~LightFader();
 
     void Handle(ProcessEventArg arg);
