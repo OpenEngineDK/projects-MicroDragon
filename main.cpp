@@ -7,6 +7,8 @@
 // See the GNU General Public License for more details (see LICENSE). 
 //--------------------------------------------------------------------
 
+#include "Config.h"
+
 // OpenEngine stuff
 #include <Meta/Config.h>
 
@@ -21,8 +23,9 @@
 #include <Display/ViewingVolume.h>
 // SDL implementation
 #include <Display/SDLEnvironment.h>
+#ifdef DRAGON_HUD
 #include <Display/HUD.h>
-
+#endif
 // Rendering structures
 #include <Scene/RenderNode.h>
 // OpenGL rendering implementation
@@ -62,11 +65,12 @@
 // OERacer utility files
 #include <Utils/QuitHandler.h>
 
-// sound 
+// sound
+#ifdef DRAGON_SOUND
 #include <Sound/OpenALSoundSystem.h>
 #include <Sound/MusicPlayer.h>
 #include <Resources/VorbisResource.h>
-
+#endif
 #include <Meta/GLUT.h>
 
 // NEW OEPARTICLESYSTEM TEST
@@ -88,7 +92,9 @@
 #include "Modules/Dragon/Dragon.h"
 #include "Modules/Boid/BoidsSystem.h"
 
+#ifdef DRAGON_HUD
 #include "HUD/DragonHUD.h"
+#endif
 
 // Additional namespaces
 using namespace OpenEngine::Core;
@@ -116,15 +122,19 @@ struct Config {
     IJoystick*            joystick;
     ISceneNode*           scene;
     GameState*            gamestate;
+#ifdef DRAGON_SOUND    
     ISoundSystem*         soundsystem;
     MusicPlayer*          musicplayer;
+#endif
     TimeModifier*         timeModifier;
     Target*               target;
     BoidsSystem*          boids;
     OscSurface*           oscs;
     Dragon*               dragon;
     bool                  resourcesLoaded;
+#ifdef DRAGON_HUD
     HUD*                  hud;
+#endif
     OpenEngine::Renderers::TextureLoader* textureLoader;
     OpenEngine::ParticleSystem::ParticleSystem* particlesystem;
     OpenEngine::ParticleSystem::ParticleSystemTimer* pstimer;
@@ -143,15 +153,19 @@ struct Config {
         , joystick(NULL)
         , scene(NULL)
         , gamestate(NULL)
+#ifdef DRAGON_SOUND          
         , soundsystem(NULL)
         , musicplayer(NULL)
+#endif
         , timeModifier(NULL)
         , target(NULL)
         , boids(NULL)
         , oscs(NULL)
         , dragon(NULL)
         , resourcesLoaded(false)
+#ifdef DRAGON_HUD
         , hud(NULL)
+#endif
         , textureLoader(NULL)
         , particlesystem(NULL)
         , pstimer(NULL)
@@ -164,7 +178,9 @@ void SetupDevices(Config&);
 void SetupDisplay(Config&);
 void SetupRendering(Config&);
 void SetupParticleSystem(Config&);
+#ifdef DRAGON_SOUND
 void SetupSound(Config&);
+#endif
 void SetupScene(Config&);
 void SetupDebugging(Config&);
 
@@ -192,7 +208,9 @@ int main(int argc, char** argv) {
     SetupResources(config);
     SetupDisplay(config);
     SetupDevices(config);
+#ifdef DRAGON_SOUND
     SetupSound(config);
+#endif
     SetupParticleSystem(config);
     SetupRendering(config);
     SetupScene(config);
@@ -215,8 +233,9 @@ int main(int argc, char** argv) {
     // destroy all modules
     // post condition: no one has refs to the scene
     //delete config.boids; //delete sounds
+#ifdef DRAGON_SOUND    
     delete config.soundsystem; // close soundsystem
-
+#endif
     delete config.scene;
 
     // Return when the engine stops.
@@ -235,7 +254,7 @@ void SetupParticleSystem(Config& config) {
     config.engine.DeinitializeEvent().Attach(*config.particlesystem);
 
 }
-
+#ifdef DRAGON_SOUND
 void SetupSound(Config& config) {
     config.soundsystem = new OpenALSoundSystem();
     config.musicplayer = new MusicPlayer(NULL,config.soundsystem);
@@ -258,6 +277,7 @@ void SetupSound(Config& config) {
         config.engine.ProcessEvent().Attach(*config.musicplayer);
     }
 }
+#endif
 
 void SetupResources(Config& config) {
     // set the resources directory
@@ -269,8 +289,9 @@ void SetupResources(Config& config) {
     // load resource plug-ins
     ResourceManager<IModelResource>::AddPlugin(new OBJPlugin());
     ResourceManager<ITexture2D>::AddPlugin(new SDLImagePlugin());
+#ifdef DRAGON_SOUND
     ResourceManager<ISoundResource>::AddPlugin(new VorbisResourcePlugin());
-
+#endif
     config.resourcesLoaded = true;
 }
 
@@ -282,6 +303,7 @@ void SetupDisplay(Config& config) {
         config.viewport      != NULL)
         throw Exception("Setup display dependencies are not satisfied.");
 
+    //config.env = new SDLEnvironment(1280, 960, 32, FRAME_FULLSCREEN);
     config.env = new SDLEnvironment(800, 600);
     //config.frame         = new SDLFrame(1024, 768, 32, FRAME_FULLSCREEN);    
     config.frame         = &config.env->GetFrame();
@@ -320,8 +342,12 @@ void SetupDevices(Config& config) {
 void SetupRendering(Config& config) {
     if (config.viewport == NULL ||
         config.renderer != NULL ||
-        config.camera == NULL ||
-        config.soundsystem == NULL )
+        config.camera == NULL 
+#ifdef DRAGON_SOUND    
+        ||
+        config.soundsystem == NULL 
+#endif
+        )
         throw Exception("Setup renderer dependencies are not satisfied.");
 
     // Create a renderer
@@ -346,17 +372,24 @@ void SetupRendering(Config& config) {
     config.engine.ProcessEvent().Attach(*config.renderer);
     config.engine.DeinitializeEvent().Attach(*config.renderer);
 
+#ifdef DRAGON_HUD
+
     config.hud = new HUD();
     config.renderer->PostProcessEvent().Attach( *config.hud );
     config.renderer->PreProcessEvent().Attach(*config.soundsystem);
+#endif
 }
 
 void SetupScene(Config& config) {
     if (config.scene  != NULL ||
         config.mouse  == NULL ||
         config.keyboard == NULL ||
-        config.particlesystem == NULL ||
-        config.soundsystem == NULL ||
+        config.particlesystem == NULL 
+#ifdef DRAGON_SOUND    
+        ||
+        config.soundsystem == NULL 
+#endif
+        ||
         config.resourcesLoaded == false)
         throw Exception("Setup scene dependencies are not satisfied.");
 
@@ -444,7 +477,10 @@ void SetupScene(Config& config) {
     tpNode->AddNode(oscs);
 
     //@todo: Boids have transparent shadows
-    BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem,
+    BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,
+#ifdef DRAGON_SOUND                                                            
+                                                        *config.soundsystem,
+#endif
                                                         *config.particlesystem,
                                                         *config.textureLoader,
                                                         config.scene);
@@ -465,8 +501,20 @@ void SetupScene(Config& config) {
     config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
-    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap,
-                                       *config.mouse, island, dragon, boids, *timeModifier, *config.gamestate, *config.musicplayer, *config.frame, renderStateNode);
+    KeyHandler* key_h = new KeyHandler(*config.camera,
+                                       *targetNode,
+                                       *heightMap,
+                                       *config.mouse,
+                                       island, 
+                                       dragon, 
+                                       boids,
+                                       *timeModifier,
+                                       *config.gamestate,
+#ifdef DRAGON_SOUND    
+                                       *config.musicplayer,
+#endif
+                                       *config.frame,
+                                       renderStateNode);
     //    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate);
 
     config.engine.ProcessEvent().Attach(*key_h);
@@ -485,12 +533,15 @@ void SetupScene(Config& config) {
     config.renderer->SetSceneRoot(config.scene);
 
     //HUD
+#ifdef DRAGON_HUD
+
     config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_QUEUED);
     DragonHUD* hud = new DragonHUD(*config.frame, *config.gamestate,
                                    *config.hud, *config.textureLoader);
     config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_NEVER);
     //config.scene->AddNode(hud->GetLayerNode());
     config.engine.ProcessEvent().Attach(*hud);
+#endif
 }
 
 void SetupDebugging(Config& config) {
@@ -498,10 +549,12 @@ void SetupDebugging(Config& config) {
     // main engine events
     config.prof.Profile<ProcessEventArg>
         ("Environment", config.engine.ProcessEvent(), *config.env);
+#ifdef DRAGON_SOUND
     config.prof.Profile<ProcessEventArg>
         ("Sound System", config.engine.ProcessEvent(), *config.soundsystem);
     config.prof.Profile<ProcessEventArg>
         ("Music Player", config.engine.ProcessEvent(), *config.musicplayer);
+#endif
     config.prof.Profile<ProcessEventArg>
         ("Target",       config.engine.ProcessEvent(), *config.target);
     config.prof.Profile<ProcessEventArg>
@@ -509,8 +562,10 @@ void SetupDebugging(Config& config) {
     config.prof.Profile<ProcessEventArg>
         ("Dragon",       config.engine.ProcessEvent(), *config.dragon);
     // renderer events
+#ifdef DRAGON_HUD
     config.prof.Profile<RenderingEventArg>
         ("HUD", config.renderer->ProcessEvent(), *config.hud);
+#endif
     // time modified events
     config.prof.Profile<ProcessEventArg>
         ("Boids System",    config.timeModifier->ProcessEvent(), *config.boids);
@@ -539,12 +594,13 @@ void SetupDebugging(Config& config) {
                     << logger.end;
     }
 // #endif
-
+#ifdef DRAGON_HUD
     // FPS layer with cairo
     FPSSurfacePtr fps = FPSSurface::Create();
     config.textureLoader->Load(fps, TextureLoader::RELOAD_QUEUED);
     config.engine.ProcessEvent().Attach(*fps);
     HUD::Surface* fpshud = config.hud->CreateSurface(fps);
     fpshud->SetPosition(HUD::Surface::LEFT, HUD::Surface::TOP); 
+#endif    
 }
 

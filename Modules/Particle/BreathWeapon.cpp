@@ -38,7 +38,7 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
                Vector<3,float>(0,0.295,0),       //antigravity
                textureLoader),    
     heightMod(heightMap),
-    boidsMod(boidssystem, 3000) {
+    boidsMod(boidssystem, 6000) {
 
     ITexture2DPtr tex1 = 
         ResourceManager<ITexture2D>::Create("Smoke/smoke01.tga");

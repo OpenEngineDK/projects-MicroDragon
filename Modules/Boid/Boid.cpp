@@ -25,7 +25,9 @@
 // extensions
 #include <ParticleSystem/ParticleSystem.h>
 #include <Renderers/TextureLoader.h>
+#ifdef DRAGON_SOUND    
 #include <Sound/IMonoSound.h>
+#endif 
 
 using OpenEngine::Math::PI;
 using OpenEngine::Scene::TransformationNode;
@@ -34,14 +36,20 @@ using std::max;
 
 Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssystem,
            Vector<3,float> position, Vector<3,float> forward,
-           Vector<3,float> velocity, Vector<3,float> color, IMonoSound& voice,
+           Vector<3,float> velocity, Vector<3,float> color, 
+#ifdef DRAGON_SOUND    
+           IMonoSound& voice,
+#endif 
            OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
            OpenEngine::Renderers::TextureLoader& texloader,
            ISceneNode* particleRoot):
  
-    particleRoot(particleRoot),
-    oeparticlesystem(oeparticlesystem),
-    voice(voice) {
+           particleRoot(particleRoot),
+           oeparticlesystem(oeparticlesystem)
+#ifdef DRAGON_SOUND    
+           , voice(voice) 
+#endif
+           {
 
     this->heightMap = heightMap;
     this->oscsurface = oscsurface;
@@ -79,7 +87,8 @@ Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssyste
 
 Boid::~Boid(){
     // @todo how to handle deallocation of the particle renderer?
-    particleRoot->RemoveNode(boidfire->GetSceneNode());
+    if (particleRoot != NULL)
+        particleRoot->RemoveNode(boidfire->GetSceneNode());
     delete boidfire->GetSceneNode();
     delete boidfire;
     delete fireTrans;
@@ -226,8 +235,9 @@ void Boid::updatePhysics( double timeDelta ) {
 void Boid::updateLocomotion( double timeDelta ) {
     TransformationNode* tn = boidfire->GetTransformationNode();
     if (tn) tn->SetPosition(position);
+#ifdef DRAGON_SOUND    
     voice.SetPosition(position);
-
+#endif
     Vector<3,float> normal = heightMap->NormalAt(position);
     if (airborn && drowning) normal = Vector<3,float>(0,1,0);
 
@@ -281,7 +291,9 @@ void Boid::updateLocomotion( double timeDelta ) {
     }
     if (hot>1 && life>0) {
         if (!burning) {
+#ifdef DRAGON_SOUND    
             voice.Play();
+#endif
             boidfire->SetActive(true);
         }
         burning = true;
@@ -326,6 +338,9 @@ void Boid::HandleFire(Vector<3,float> firePosition, float fireStrength) {
 
     // Get burned
     float fireDist = (firePosition-position).GetLength();
+
+
+
     if (fireDist<4.0) {
         burned += (4.0/fireDist)*fireStrength;
     }

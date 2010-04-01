@@ -12,18 +12,26 @@
 #include <Scene/ISceneNode.h>
 
 #include <Resources/ResourceManager.h>
+#ifdef DRAGON_SOUND
 #include <Resources/ISoundResource.h>
 #include <Sound/IMonoSound.h>
+#endif
 
 using OpenEngine::Math::PI;
 
-BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSystem& soundsystem,
+BoidsSystem::BoidsSystem(HeightMap* heightMap, 
+                         OscSurface* oscsurface,
+#ifdef DRAGON_SOUND
+                         ISoundSystem& soundsystem,
+#endif
                          OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
                          OpenEngine::Renderers::TextureLoader& texloader,
                          ISceneNode* particleRoot):
     textEffect(TextEffect(oeparticlesystem, texloader)),
     particleRoot(particleRoot),
+#ifdef DRAGON_SOUND    
     soundsystem(soundsystem),
+#endif
     oeparticlesystem(oeparticlesystem),
     texloader(texloader) {
     this->heightMap = heightMap;
@@ -36,18 +44,19 @@ BoidsSystem::BoidsSystem(HeightMap* heightMap, OscSurface* oscsurface, ISoundSys
     aliveBoids = numberOfBoids;
 
     randGen.SeedWithTime();
+#ifdef DRAGON_SOUND    
     AddSoundToList("SoundFX/vester-aargh.ogg");
     AddSoundToList("SoundFX/cpvc-AARGH.ogg");
     AddSoundToList("SoundFX/ian-aargh.ogg");
     AddSoundToList("SoundFX/jakob-aargh.ogg");
     AddSoundToList("SoundFX/salomon-aargh.ogg");
     AddSoundToList("SoundFX/ptx-jargh.ogg");
-
+#endif
     particleRoot->AddNode(textEffect.GetSceneNode());
     oeparticlesystem.ProcessEvent().Attach(textEffect);
     }
 
-
+#ifdef DRAGON_SOUND    
 void BoidsSystem::AddSoundToList(std::string soundfile) {
     Resources::ISoundResourcePtr screamres =
         Resources::ResourceManager<Resources::ISoundResource>
@@ -56,12 +65,15 @@ void BoidsSystem::AddSoundToList(std::string soundfile) {
         soundsystem.CreateSound(screamres);
     screams.push_back(screamsound);
 }
+#endif
 
 BoidsSystem::~BoidsSystem() {
+#ifdef DRAGON_SOUND    
     std::vector<Sound::IMonoSound*>::iterator itr;
     for (itr=screams.begin(); itr!=screams.end(); itr++)
         delete *itr;
     screams.clear();
+#endif
 }
 
 void BoidsSystem::Handle(InitializeEventArg arg) {
@@ -69,7 +81,7 @@ void BoidsSystem::Handle(InitializeEventArg arg) {
     ResetBoids(true);
 }
 
-void BoidsSystem::ResetBoids(bool first) {
+ void BoidsSystem::ResetBoids(bool first) {
     numberOfShownBoids = numberOfBoids;
     aliveBoids = numberOfBoids;
     alignment = 0.3;
@@ -78,7 +90,9 @@ void BoidsSystem::ResetBoids(bool first) {
     for (int i=0; i<gridSize; i++) {
         for (int j=0; j<gridSize; j++) {
             float val = (i+gridSize*j)*1.0/numberOfBoids;
+#ifdef DRAGON_SOUND    
             unsigned int index = randGen.UniformInt(0,screams.size()-1);
+#endif
             if (!first)
                 delete boids[i*gridSize+j];
             boids[i*gridSize+j] =
@@ -90,7 +104,10 @@ void BoidsSystem::ResetBoids(bool first) {
                          Vector<3,float>(sin(2*PI*(0.0/3+val))*0.5+0.5,
                                          sin(2*PI*(1.0/3+val))*0.5+0.5, 
                                          sin(2*PI*(2.0/3+val))*0.5+0.5)
-                         .GetNormalize(), *screams.at(index),
+                         .GetNormalize(),
+#ifdef DRAGON_SOUND
+                         *screams.at(index),
+#endif
                          oeparticlesystem, texloader,
                          particleRoot);
         }

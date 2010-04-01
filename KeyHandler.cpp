@@ -7,6 +7,8 @@
 // See the GNU General Public License for more details (see LICENSE). 
 //--------------------------------------------------------------------
 
+#include "Config.h"
+
 #include "KeyHandler.h"
 
 #include "Modules/Boid/BoidsSystem.h"
@@ -18,7 +20,9 @@
 #include <Logging/Logger.h>
 #include <Devices/IMouse.h>
 #include <Math/Vector.h>
+#ifdef DRAGON_SOUND
 #include <Sound/MusicPlayer.h>
+#endif
 #include <Scene/RenderStateNode.h>
 
 
@@ -35,7 +39,9 @@ KeyHandler::KeyHandler(FollowCamera& camera,
                        BoidsSystem* boidssystem,
                        TimeModifier& timeModifier,
                        GameState& gamestate,
+#ifdef DRAGON_SOUND    
                        MusicPlayer& musicplayer,
+#endif
                        IFrame& frame,
                        RenderStateNode* rn)
     : camera(camera)
@@ -62,8 +68,8 @@ KeyHandler::KeyHandler(FollowCamera& camera,
   done = pause = false;
   rotChunkMouse = 0.05;
   moveChunkMouse = 0.0015;
-  rotChunkKeyboard = 0.2; //rotChunkMouse*200;
-  moveChunkKeyboard = 2; //moveChunkMouse*400;
+  rotChunkKeyboard = 0.05; //rotChunkMouse*200;
+  moveChunkKeyboard = 1; //moveChunkMouse*400;
   warping = false;
 
   ResetCamera();
@@ -127,7 +133,7 @@ void KeyHandler::Handle(ProcessEventArg arg) {
 
     // handle joystick.
     
-    float move_factor = 2.5;
+    float move_factor = 1.0;
 
     if (up)
 	MoveForward(up*move_factor);
@@ -185,21 +191,27 @@ void KeyHandler::HandleDown(Key key) {
     case KEY_9:
         boidssystem->IncNumberOfShownBoids();
         break;
-    case KEY_a:
+    case KEY_LEFT:
         MoveLeft(moveChunkKeyboard);
         break;
-    case KEY_d:
+    case KEY_RIGHT:
         MoveRight(moveChunkKeyboard);
         break;
-    case KEY_w:
+    case KEY_UP:
         MoveForward(moveChunkKeyboard);
         break;
-    case KEY_s:
+    case KEY_DOWN:
         MoveBack(moveChunkKeyboard);
         break;
-    case KEY_z:
-        rn->ToggleOption(RenderStateNode::LIGHTING);
-        rn->ToggleOption(RenderStateNode::WIREFRAME);
+    case KEY_z:       
+        rn->EnableOption(RenderStateNode::WIREFRAME);
+        break;
+    case KEY_x:
+        rn->DisableOption(RenderStateNode::WIREFRAME);
+        break;
+
+    case KEY_j:
+        rn->EnableOption(RenderStateNode::HARD_NORMAL);
         break;
 	/*
     case KEY_z:
@@ -239,12 +251,14 @@ void KeyHandler::HandleDown(Key key) {
     case KEY_q:
         dragon->ChargeFireball();
         break;
+#ifdef DRAGON_SOUND
     case KEY_COMMA:
         musicplayer.SetGain(musicplayer.GetGain()-gainStep);
         break;
     case KEY_PERIOD:
         musicplayer.SetGain(musicplayer.GetGain()+gainStep);
         break;
+#endif
 
 //     case KEY_F1:
 //         //inputgrabber->rotateViewAbsolute( 30, 5, 50, 1.0 );
@@ -274,14 +288,14 @@ void KeyHandler::HandleDown(Key key) {
 //         break;
     case KEY_n: //KEY_F11
          if (done) return;
-         timeFactor -= 0.1;
+         timeFactor -= 0.01;
 	 if (timeFactor < 0.0) timeFactor = 0.0;
          timeModifier.SetFactor(timeFactor);
 	 logger.info << "time factor: " << timeFactor << logger.end;
          break;
      case KEY_m: //KEY_F12
          if (done) return;
-         timeFactor += 0.1;
+         timeFactor += 0.01;
 	 if (timeFactor > 100.0) timeFactor = 100.0;
          timeModifier.SetFactor(timeFactor);
 	 logger.info << "time factor: " << timeFactor << logger.end;
@@ -298,16 +312,16 @@ void KeyHandler::HandleDown(Key key) {
     case KEY_END:
         //inputgrabber->decMultiplier();
         break;
-    case KEY_UP:
+    case KEY_w:
         RotateUp(moveChunkKeyboard);
         break;
-    case KEY_DOWN:
+    case KEY_s:
         RotateDown(moveChunkKeyboard);
         break;
-    case KEY_LEFT:
+    case KEY_a:
         RotateLeft(rotChunkKeyboard);
         break;
-    case KEY_RIGHT:
+    case KEY_d:
         RotateRight(rotChunkKeyboard);
         break;
     default:

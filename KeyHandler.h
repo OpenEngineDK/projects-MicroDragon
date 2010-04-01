@@ -104,7 +104,9 @@ public:
                BoidsSystem* boidssystem,
                TimeModifier& timeModifer,
                GameState& gamestate,
+#ifdef DRAGON_SOUND    
                MusicPlayer& musicplayer,
+#endif
                IFrame& frame,
                RenderStateNode* rn);
     ~KeyHandler();

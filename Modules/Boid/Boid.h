@@ -1,6 +1,8 @@
 #ifndef _BOID_H_
 #define _BOID_H_
 
+#include "../../Config.h"
+
 //include templated classes only
 #include <Math/Vector.h>
 
@@ -27,6 +29,7 @@ namespace OpenEngine {
 using OpenEngine::Scene::ISceneNode;
 using OpenEngine::Scene::TransformationNode;
 
+#ifdef DRAGON_SOUND    
 namespace OpenEngine {
     namespace Sound {
         class IMonoSound;
@@ -34,12 +37,16 @@ namespace OpenEngine {
 }
 
 using namespace OpenEngine::Sound;
+#endif
 
 class Boid {
 public:
     Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssystem, 
          Vector<3,float> position, Vector<3,float> forward,
-         Vector<3,float> velocity, Vector<3,float> color, IMonoSound& voice,
+         Vector<3,float> velocity, Vector<3,float> color,
+#ifdef DRAGON_SOUND
+         IMonoSound& voice,
+#endif
          OpenEngine::ParticleSystem::ParticleSystem& oeparticlesystem,
          OpenEngine::Renderers::TextureLoader& texloader,
          ISceneNode* particleRoot);
@@ -70,9 +77,9 @@ private:
 
     Vector<3,float> color;
     bool airborn;
-
+#ifdef DRAGON_SOUND    
     IMonoSound& voice;
-
+#endif
     void draw2(  bool shadow );
 
     // accumulated variables. to accumulate force for all boids before applying it
@@ -84,7 +91,7 @@ private:
   
     // Vehicle model:
     void updatePhysics( double timeDelta );
-    double mass, max_force, max_speed;
+    float mass, max_force, max_speed;
     Vector<3,float> position, velocity, forward, up, left;
   
     // Additional physics:

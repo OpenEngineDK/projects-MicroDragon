@@ -84,7 +84,7 @@ void Explosion::Handle(ParticleEventArg e) {
 void Explosion::SetCharge(float p) {
     life = initLife + initLife * charge;
     speed = initSpeed + initSpeed * charge;
-    boidsMod.SetStrength(700*charge);
+    boidsMod.SetStrength(10000*charge);
 }
 
 float Explosion::GetCharge() {
