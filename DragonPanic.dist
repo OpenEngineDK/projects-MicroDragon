@@ -3,11 +3,13 @@
 
 # main repository
 darcs / http://openengine.dk/code/openengine
-darcs-dev / fh.daimi.au.dk:/users/cgd/code/openengine
+
+darcs / http://openengine.dk/code/branches/bp10/openengine
+darcs-dev / fh.daimi.au.dk:/users/cgd/code/branches/bp10/openengine
 
 # DragonPanic project
-darcs /projects/DragonPanic http://openengine.dk/code/projects/DragonPanic
-darcs-dev /projects/DragonPanic fh.daimi.au.dk:/users/cgd/code/projects/DragonPanic
+darcs /projects/MicroDragon http://openengine.dk/code/projects/MicroDragon
+darcs-dev /projects/DragonPanic fh.daimi.au.dk:/users/cgd/code/projects/MicroDragon
 
 # standard set of extensions
 darcs /extensions/GLUT            http://openengine.dk/code/extensions/GLUT

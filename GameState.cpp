@@ -3,7 +3,7 @@
 #include "Modules/Boid/BoidsSystem.h"
 #include "Modules/Boid/BoidSystemEvents.h"
 
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 
 GameState::GameState(unsigned int duration) : duration(duration) {
   timer.Start();

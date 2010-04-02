@@ -56,8 +56,8 @@
 #include <Scene/PointLightNode.h>
 
 // Utilities and logger
-#include <Logging/Logger.h>
-#include <Logging/StreamLogger.h>
+//#include <Logging/Logger.h>
+//#include <Logging/StreamLogger.h>
 #include <Utils/EventProfiler.h>
 #include <Utils/FPSSurface.h>
 #include <Scene/DotVisitor.h>
@@ -98,7 +98,7 @@
 
 // Additional namespaces
 using namespace OpenEngine::Core;
-using namespace OpenEngine::Logging;
+//using namespace OpenEngine::Logging;
 using namespace OpenEngine::Devices;
 using namespace OpenEngine::Display;
 using namespace OpenEngine::Renderers;
@@ -186,19 +186,19 @@ void SetupDebugging(Config&);
 
 int main(int argc, char** argv) {
     // Setup logging facilities.
-    Logger::AddLogger(new StreamLogger(&std::cout));
+    //Logger::AddLogger(new StreamLogger(&std::cout));
 
     // Print usage info.
-    logger.info << "========= ";
-    logger.info << "Running The OpenEngine DragonPanic Project";
-    logger.info << " =========" << logger.end;
+    // logger.info << "========= ";
+    // logger.info << "Running The OpenEngine DragonPanic Project";
+    // logger.info << " =========" << logger.end;
 
-    logger.info << "This project is a simple testing project for OpenEngine.";
-    logger.info << logger.end;
+    // logger.info << "This project is a simple testing project for OpenEngine.";
+    // logger.info << logger.end;
 
-    logger.info << "  for control information see: ";
-    logger.info << "KeyboardLayout.txt in the project repository" << logger.end;
-    logger.info << logger.end;
+    // logger.info << "  for control information see: ";
+    // logger.info << "KeyboardLayout.txt in the project repository" << logger.end;
+    // logger.info << logger.end;
 
     // Create an engine and config object
     Engine* engine = new Engine();
@@ -216,7 +216,7 @@ int main(int argc, char** argv) {
     SetupScene(config);
     
     // Possibly add some debugging stuff
-    SetupDebugging(config);
+    //SetupDebugging(config);
 
     // Start up the engine.
     engine->Start();
@@ -543,7 +543,7 @@ void SetupScene(Config& config) {
     config.engine.ProcessEvent().Attach(*hud);
 #endif
 }
-
+/*
 void SetupDebugging(Config& config) {
 // #if OE_DEBUG
     // main engine events
@@ -604,3 +604,4 @@ void SetupDebugging(Config& config) {
 #endif    
 }
 
+*/

@@ -4,7 +4,7 @@
 #include "../Island/HeightMap.h"
 
 #include <Core/Exceptions.h>
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 #include <Meta/OpenGL.h>
 #include <Renderers/IRenderingView.h>
 #include <Utils/Convert.h>

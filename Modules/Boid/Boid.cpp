@@ -18,7 +18,7 @@
 // OpenEngine Core
 #include <Meta/GLUT.h>
 #include <Math/Math.h>
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 #include <Scene/ISceneNode.h>
 #include <Scene/TransformationNode.h>
 

@@ -6,7 +6,7 @@
 #include "../OscSurface/OscSurface.h"
 
 #include <Math/Math.h>
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 #include <ParticleSystem/ParticleSystem.h>
 #include <Renderers/TextureLoader.h>
 #include <Scene/ISceneNode.h>
@@ -209,12 +209,12 @@ void BoidsSystem::DecNumberOfShownBoids() {
 
 void BoidsSystem::IncAlignment() {
     if( alignment < 1 ) alignment += 0.05;
-    logger.info << "Boids alignment: " << alignment << logger.end;
+    //logger.info << "Boids alignment: " << alignment << logger.end;
 }
 
 void BoidsSystem::DecAlignment() {
     if( alignment > 0 ) alignment -= 0.05;
-    logger.info << "Boids alignment: " << alignment << logger.end;
+    //logger.info << "Boids alignment: " << alignment << logger.end;
 }
 
 float BoidsSystem::getAlignment() { 
@@ -222,24 +222,24 @@ float BoidsSystem::getAlignment() {
 }
 
 void BoidsSystem::toggleRenderState() {
-    logger.info << "BoidsSystem status: ";
+    //logger.info << "BoidsSystem status: ";
     enabled = true;
     renderState++;
     renderState %= numberOfRenderStates;
     switch ( renderState ){
     case 0: //without logic
         disableLogic = true;
-        logger.info << "without logic";
+        //logger.info << "without logic";
         break;
     case 1: //disabled
         enabled = false;
-        logger.info << "disabled";
+        //logger.info << "disabled";
         break;
     default: //render all, reset variables
         enabled = true;
         disableLogic = false;
-        logger.info << "fully enabled";
+        //logger.info << "fully enabled";
         break;
     }
-    logger.info << logger.end;
+    //logger.info << //logger.end;
 }

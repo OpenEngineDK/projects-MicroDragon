@@ -5,7 +5,7 @@
 
 #include <Meta/OpenGL.h>
 #include <Meta/GLUT.h>
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 
 using namespace std;
 
@@ -52,7 +52,7 @@ void Target::setTarget( Vector<3,float> v ){
 }
 
 void Target::printTarget() {
-  logger.info << target << logger.end;
+    //logger.info << target << logger.end;
 }
 
 Target::TargetRenderNode::TargetRenderNode() {

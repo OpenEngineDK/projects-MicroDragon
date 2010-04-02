@@ -8,7 +8,7 @@
 #include <Resources/ITexture2D.h>
 #include <Scene/GeometryNode.h>
 
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 
 using OpenEngine::Core::Exception;
 using OpenEngine::Math::PI;
@@ -29,8 +29,8 @@ HeightMap::HeightMap(UCharTexture2DPtr heightMap,
     if (heightMap->GetChannels() != 1)
       throw Exception("can only generate heightmap from 8bit textures");
 
-    if(heightMap->GetWidth() != heightMap->GetHeight())
-        logger.warning << "height map width != height - this has not been tested but should work!" << logger.end;
+    if(heightMap->GetWidth() != heightMap->GetHeight()) {}
+    //logger.warning << "height map width != height - this has not been tested but should work!" << logger.end;
 
     width = heightmap->GetWidth() / stepSize;
     height = heightmap->GetHeight() / stepSize;

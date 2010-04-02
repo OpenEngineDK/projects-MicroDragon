@@ -54,7 +54,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   # Core library dependencies
   OpenEngine_Core
   OpenEngine_Math
-  OpenEngine_Logging
+  #OpenEngine_Logging
   OpenEngine_Display
   OpenEngine_Resources
   OpenEngine_Devices

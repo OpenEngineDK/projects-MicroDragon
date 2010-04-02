@@ -11,7 +11,7 @@
 #define _DRAGON_PANIC_BOIDS_MODIFIER_H_
 
 #include "../Boid/BoidsSystem.h"
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 
 /**
  * Particle Modifier to make boids react to fire

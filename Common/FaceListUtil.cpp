@@ -1,6 +1,6 @@
 #include "FaceListUtil.h"
 
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 
 /** Max: returns the maximum of two floats */
 float FaceListUtil::Max(float a, float b) {

@@ -17,7 +17,7 @@
 #include "Modules/OscSurface/OscSurface.h"
 #include "Modules/Target/Target.h"
 
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 #include <Devices/IMouse.h>
 #include <Math/Vector.h>
 #ifdef DRAGON_SOUND
@@ -291,14 +291,14 @@ void KeyHandler::HandleDown(Key key) {
          timeFactor -= 0.01;
 	 if (timeFactor < 0.0) timeFactor = 0.0;
          timeModifier.SetFactor(timeFactor);
-	 logger.info << "time factor: " << timeFactor << logger.end;
+                       //logger.info << "time factor: " << timeFactor << logger.end;
          break;
      case KEY_m: //KEY_F12
          if (done) return;
          timeFactor += 0.01;
 	 if (timeFactor > 100.0) timeFactor = 100.0;
          timeModifier.SetFactor(timeFactor);
-	 logger.info << "time factor: " << timeFactor << logger.end;
+                       //logger.info << "time factor: " << timeFactor << logger.end;
          break;
     case KEY_PAGEUP:
         ZoomIn(moveChunkKeyboard);
@@ -428,7 +428,7 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
 	    timeFactor -= 0.1;
 	    if (timeFactor < 0.0) timeFactor = 0.0;
 	    timeModifier.SetFactor(timeFactor);
-	    logger.info << "time factor: " << timeFactor << logger.end;
+	    //logger.info << "time factor: " << timeFactor << logger.end;
 	    break;
 	}
     case JBUTTON_EIGHT:
@@ -437,7 +437,7 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
 	    timeFactor += 0.1;
 	    if (timeFactor > 100.0) timeFactor = 100.0;
 	    timeModifier.SetFactor(timeFactor);
-	    logger.info << "time factor: " << timeFactor << logger.end;
+	    //logger.info << "time factor: " << timeFactor << logger.end;
 	    break;
 	}
 

@@ -10,7 +10,7 @@
 #include <Math/Math.h>
 #include <iostream>
 
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 #include <Renderers/IRenderingView.h>
 #include <Resources/DirectoryManager.h>
 #include <Resources/ITexture2D.h>
@@ -61,7 +61,7 @@ Island::Island(HeightMap* heightMap) : heightMap(heightMap) {
 	      numberOfTrees++;
             }
         }
-    logger.info << "Number of trees generated: " << numberOfTrees << logger.end;
+    //logger.info << "Number of trees generated: " << numberOfTrees << logger.end;
 }
 
 Island::~Island() {

@@ -1,6 +1,6 @@
 #include "LightFader.h"
 
-#include <Logging/Logger.h>
+//#include <Logging/Logger.h>
 
 LightFader::LightFader(Light* from, Light* to, Light* lightNode, float time) {
 
