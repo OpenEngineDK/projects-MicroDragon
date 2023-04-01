@@ -3,51 +3,52 @@
 
 # main repository
 git / https://github.com/OpenEngineDK/openengine.git
+git-dev / git@github.com:OpenEngineDK/openengine.git
 
-git / https://github.com/OpenEngineDK/branches/bp10-openengine.git
-git-dev / git@github.com:OpenEngineDK/branches/bp10-openengine.git
+#git / https://github.com/OpenEngineDK/branches/bp10-openengine.git
+#git-dev / git@github.com:OpenEngineDK/branches/bp10-openengine.git
 
 # DragonPanic project
-git /projects/MicroDragon https://github.com/OpenEngineDK/projects-MicroDragon.git
-git-dev /projects/DragonPanic git@github.com:OpenEngineDK/projects-MicroDragon.git
+git /projects/MicroDragon https://github.com/OpenEngineDK/projects-MicroDragon.git
+git-dev /projects/MicroDragon git@github.com:OpenEngineDK/projects-MicroDragon.git
 
 # standard set of extensions
-git /extensions/GLUT            https://github.com/OpenEngineDK/extensions-GLUT.git
-git /extensions/SDL             https://github.com/OpenEngineDK/extensions-SDL.git
-git /extensions/HUD             https://github.com/OpenEngineDK/extensions-HUD.git
-git /extensions/OpenGLRenderer  https://github.com/OpenEngineDK/extensions-OpenGLRenderer.git
-git /extensions/GenericHandlers https://github.com/OpenEngineDK/extensions-GenericHandlers.git
-git /extensions/OBJResource     https://github.com/OpenEngineDK/extensions-OBJResource.git
-git /extensions/SDLImage     https://github.com/OpenEngineDK/extensions-SDLImage.git
-git /extensions/RAWResource     https://github.com/OpenEngineDK/extensions-RAWResource.git
-git-dev /extensions/GLUT            git@github.com:OpenEngineDK/extensions-GLUT.git
-git-dev /extensions/SDL             git@github.com:OpenEngineDK/extensions-SDL.git
-git-dev /extensions/HUD             git@github.com:OpenEngineDK/extensions-HUD.git
-git-dev /extensions/OpenGLRenderer  git@github.com:OpenEngineDK/extensions-OpenGLRenderer.git
-git-dev /extensions/GenericHandlers git@github.com:OpenEngineDK/extensions-GenericHandlers.git
-git-dev /extensions/OBJResource     git@github.com:OpenEngineDK/extensions-OBJResource.git
-git-dev /extensions/SDLImage     git@github.com:OpenEngineDK/extensions-SDLImage.git
-git-dev /extensions/RAWResource     git@github.com:OpenEngineDK/extensions-RAWResource.git
+git /extensions/GLUT            https://github.com/OpenEngineDK/extensions-GLUT.git
+git /extensions/SDL             https://github.com/OpenEngineDK/extensions-SDL.git
+git /extensions/HUD             https://github.com/OpenEngineDK/extensions-HUD.git
+git /extensions/OpenGLRenderer  https://github.com/OpenEngineDK/extensions-OpenGLRenderer.git
+git /extensions/GenericHandlers https://github.com/OpenEngineDK/extensions-GenericHandlers.git
+git /extensions/OBJResource     https://github.com/OpenEngineDK/extensions-OBJResource.git
+git /extensions/SDLImage     https://github.com/OpenEngineDK/extensions-SDLImage.git
+git /extensions/RAWResource     https://github.com/OpenEngineDK/extensions-RAWResource.git
+git-dev /extensions/GLUT            git@github.com:OpenEngineDK/extensions-GLUT.git
+git-dev /extensions/SDL             git@github.com:OpenEngineDK/extensions-SDL.git
+git-dev /extensions/HUD             git@github.com:OpenEngineDK/extensions-HUD.git
+git-dev /extensions/OpenGLRenderer  git@github.com:OpenEngineDK/extensions-OpenGLRenderer.git
+git-dev /extensions/GenericHandlers git@github.com:OpenEngineDK/extensions-GenericHandlers.git
+git-dev /extensions/OBJResource     git@github.com:OpenEngineDK/extensions-OBJResource.git
+git-dev /extensions/SDLImage     git@github.com:OpenEngineDK/extensions-SDLImage.git
+git-dev /extensions/RAWResource     git@github.com:OpenEngineDK/extensions-RAWResource.git
 
 # cairo extension
-git /extensions/CairoResource https://github.com/OpenEngineDK/extensions-CairoResource.git
-git-dev /extensions/CairoResource git@github.com:OpenEngineDK/extensions-CairoResource.git
+git /extensions/CairoResource https://github.com/OpenEngineDK/extensions-CairoResource.git
+git-dev /extensions/CairoResource git@github.com:OpenEngineDK/extensions-CairoResource.git
 
 #sound
-git /extensions/OpenALSoundSystem https://github.com/OpenEngineDK/extensions-OpenALSoundSystem.git
-git /extensions/VorbisResource    https://github.com/OpenEngineDK/extensions-VorbisResource.git
-git /extensions/MusicPlayer       https://github.com/OpenEngineDK/extensions-MusicPlayer.git
-git /extensions/Shapes            https://github.com/OpenEngineDK/extensions-Shapes.git
-git-dev /extensions/OpenALSoundSystem git@github.com:OpenEngineDK/extensions-OpenALSoundSystem.git
-git-dev /extensions/VorbisResource    git@github.com:OpenEngineDK/extensions-VorbisResource.git
-git-dev /extensions/MusicPlayer       git@github.com:OpenEngineDK/extensions-MusicPlayer.git
-git-dev /extensions/Shapes            git@github.com:OpenEngineDK/extensions-Shapes.git
+git /extensions/OpenALSoundSystem https://github.com/OpenEngineDK/extensions-OpenALSoundSystem.git
+git /extensions/VorbisResource    https://github.com/OpenEngineDK/extensions-VorbisResource.git
+git /extensions/MusicPlayer       https://github.com/OpenEngineDK/extensions-MusicPlayer.git
+git /extensions/Shapes            https://github.com/OpenEngineDK/extensions-Shapes.git
+git-dev /extensions/OpenALSoundSystem git@github.com:OpenEngineDK/extensions-OpenALSoundSystem.git
+git-dev /extensions/VorbisResource    git@github.com:OpenEngineDK/extensions-VorbisResource.git
+git-dev /extensions/MusicPlayer       git@github.com:OpenEngineDK/extensions-MusicPlayer.git
+git-dev /extensions/Shapes            git@github.com:OpenEngineDK/extensions-Shapes.git
 
 #particle system
-git /extensions/OEParticleSystem https://github.com/OpenEngineDK/extensions-OEParticleSystem.git
-git /extensions/Effects          https://github.com/OpenEngineDK/extensions-Effects.git
-git-dev /extensions/OEParticleSystem  git@github.com:OpenEngineDK/extensions-OEParticleSystem.git
-git-dev /extensions/Effects           git@github.com:OpenEngineDK/extensions-Effects.git
+git /extensions/OEParticleSystem https://github.com/OpenEngineDK/extensions-OEParticleSystem.git
+git /extensions/Effects          https://github.com/OpenEngineDK/extensions-Effects.git
+git-dev /extensions/OEParticleSystem  git@github.com:OpenEngineDK/extensions-OEParticleSystem.git
+git-dev /extensions/Effects           git@github.com:OpenEngineDK/extensions-Effects.git
 
 # windows libraries
 win32 /libraries http://openengine.dk/data/libraries/boost-win32.zip
